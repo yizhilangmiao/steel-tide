@@ -24,6 +24,12 @@ Minecraft 1.21.1 + NeoForge 整合包。
 3. 按 `modmind.pack.json` 的记录在 ModMind 内同步 `mods/`，不要手工从旧机器拷 jar
 4. 启动客户端。`mods/` 只有 jar、`.modmind/` 为空都是正常状态
 
+## 运行要求（实测）
+
+- **堆内存 ≥ 4 GB**。本包已验证配置为 6144 MB；**1024 MB 会在模组加载阶段 `java.lang.OutOfMemoryError: Java heap space` 直接崩溃**（2026-11-04 实测）。
+- JVM/加载器：NeoForge 21.1.265，Java 21（64-bit）。
+- 已装模组共 13 个 jar；进主菜单后杂项列表显示 33 mods 属正常（含 jar-in-jar 嵌套库）。
+
 ## 提交约定
 
 - 只有 `main`，常绿：每次提交至少能进主菜单

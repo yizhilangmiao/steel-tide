@@ -1,0 +1,29 @@
+{
+  "_format": 1,
+  "id": "core_base_3",
+  "tier": "T1",
+  "edge": 3,
+  "anchor": "irontide:andesite_core",
+  "allowRotation": false,
+
+  "legend": {
+    "#": "create:andesite_casing",
+    "B": "create:brass_casing",
+    "G": "create:gearbox",
+    "C": "irontide:andesite_core"
+  },
+
+  "layers": {
+    "-1": ["###", "###", "###"],
+    "0": ["#G#", "GCG", "#G#"],
+    "1": ["###", "###", "###"]
+  },
+
+  "markers": {
+    "controller": "C",
+    "stressOutput": "G",
+    "shellSwap": ["#", "B"]
+  },
+
+  "notes": "中层四角是机壳，四向是十字齿轮箱（应力出口），中心是安山核心；控制器坐标永不改变，升档只向外长"
+}

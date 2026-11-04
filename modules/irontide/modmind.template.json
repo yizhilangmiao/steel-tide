@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/NeoForgeMDKs/MDK-1.21.11-ModDevGradle",
+  "loader": "neoforge",
+  "minecraftVersion": "1.21.1",
+  "pluginVersion": "2.0.143",
+  "gradleVersion": "9.2.1",
+  "projectVersion": "1.1.3",
+  "generatedAt": "2026-11-04T06:09:17.301Z"
+}

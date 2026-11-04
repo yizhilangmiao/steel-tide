@@ -83,5 +83,13 @@
       "addedAt": "2026-11-04T04:48:01.153Z"
     }
   ],
-  "modules": []
+  "modules": [
+    {
+      "name": "IronTide",
+      "namespace": "irontide",
+      "path": "modules/irontide",
+      "createdAt": "2026-11-04T06:09:17.301Z",
+      "side": "both"
+    }
+  ]
 }

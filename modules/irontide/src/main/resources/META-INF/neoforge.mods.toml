@@ -1,0 +1,21 @@
+license="MIT"
+
+[[mods]]
+modId="irontide"
+version="${version}"
+displayName="IronTide"
+description='''Created with ModMind'''
+
+[[dependencies.irontide]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.265,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.irontide]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

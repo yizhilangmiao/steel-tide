@@ -1,0 +1,14 @@
+{
+  "name": "钢铁潮汐",
+  "loader": "neoforge",
+  "minecraftVersion": "1.21.1",
+  "kind": "modpack",
+  "namespace": "mod_l61phe",
+  "namespaceSource": "generated",
+  "path": "E:\\ioncreating\\mod_l61phe",
+  "createdAt": "2026-11-04T04:17:27.931Z",
+  "loaderVersion": "21.1.265",
+  "javaVersion": 21,
+  "projectVersion": "1.1.3",
+  "toolDataDirectory": ".modmind"
+}

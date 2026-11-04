@@ -1,0 +1,33 @@
+# ModMind 工具状态：会话、快照、请求证据、构建缓存、测试实例
+.modmind/
+
+# ModMind 每轮自动生成的 AI 记录（含对话正文，不进公开仓库）
+docs/last-ai-change.json
+docs/last-ai-response.txt
+
+# 第三方模组 jar：靠 modmind.pack.json 清单重下，不入库
+mods/*.jar
+mods/*.jar.disabled
+
+# 构建与运行派生物
+build/
+out/
+runs/
+run/
+logs/
+crash-reports/
+saves/
+screenshots/
+*.log
+
+# 本地编辑器 / 系统文件
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# 临时目录
+tmp/
+temp/

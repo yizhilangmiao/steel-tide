@@ -1,0 +1,13 @@
+* text=auto
+*.js text eol=lf
+*.json text eol=lf
+*.json5 text eol=lf
+*.snbt text eol=lf
+*.md text eol=lf
+*.bbmodel text eol=lf
+*.png binary
+*.jpg binary
+*.ogg binary
+*.zip binary
+*.mrpack binary
+*.jar binary

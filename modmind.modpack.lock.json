@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "minecraftVersion": "1.21.1",
+  "loader": "neoforge",
+  "generatedAt": "2026-11-04T04:50:31.976Z",
+  "mods": [
+    {
+      "provider": "modrinth",
+      "projectId": "iHLDc0eo",
+      "versionId": "uPFbnD32",
+      "versionName": "2101.1.0-build.5",
+      "fileName": "better-advanced-tooltips-2101.1.0-build.5.jar",
+      "sha256": "0f76d46f2f18eb67e67c7974170d7b27deb66473396461c8dc50d6949de1449b",
+      "size": 37653,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/iHLDc0eo/versions/uPFbnD32/better-advanced-tooltips-2101.1.0-build.5.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:58.581Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "LNytGWDc",
+      "versionId": "UjX6dr61",
+      "versionName": "6.0.10+mc1.21.1",
+      "fileName": "create-1.21.1-6.0.10.jar",
+      "sha256": "ef87fe5709f1ba1f5b8bb20a2925b5afb4669e178fd6d8bf10c167759eefe37a",
+      "size": 19123767,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/LNytGWDc/versions/UjX6dr61/create-1.21.1-6.0.10.jar"
+      ],
+      "installedAt": "2026-11-04T04:37:18.283Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "oWaK0Q19",
+      "versionId": "44pLdPGg",
+      "versionName": "1.3.2+mc1.21.1",
+      "fileName": "create-aeronautics-bundled-1.21.1-1.3.2.jar",
+      "sha256": "a3f330d4757640f8715d991a43eedb826e4d0e51558d859c843ae6693bd35f1e",
+      "size": 33123131,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/oWaK0Q19/versions/44pLdPGg/create-aeronautics-bundled-1.21.1-1.3.2.jar"
+      ],
+      "installedAt": "2026-11-04T04:39:24.092Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "nvQzSEkH",
+      "versionId": "eYz2YBGT",
+      "versionName": "15.10.6+neoforge",
+      "fileName": "Jade-1.21.1-NeoForge-15.10.6.jar",
+      "sha256": "276f1f65a20d04f536989c4f311949d770b52c440c23c2b904a08860f3c93810",
+      "size": 726853,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/nvQzSEkH/versions/eYz2YBGT/Jade-1.21.1-NeoForge-15.10.6.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:43.448Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "u6dRKJwZ",
+      "versionId": "1vC6z8wV",
+      "versionName": "19.70.0.469",
+      "fileName": "jei-1.21.1-neoforge-19.70.0.469.jar",
+      "sha256": "9ab82d9bdbc8d9a08b80bc2023e1d886f6335b92f937d3afac878c9ea995dc33",
+      "size": 4784333,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/u6dRKJwZ/versions/1vC6z8wV/jei-1.21.1-neoforge-19.70.0.469.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:36.284Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "umyGl7zF",
+      "versionId": "GDXCpKlp",
+      "versionName": "2101.7.2-build.381",
+      "fileName": "kubejs-neoforge-2101.7.2-build.381.jar",
+      "sha256": "07d8cb7ac1f7ef81f17ae00bfd84c92c18ac0398e83e64a27d91717969316bc0",
+      "size": 2295092,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/umyGl7zF/versions/GDXCpKlp/kubejs-neoforge-2101.7.2-build.381.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:02.061Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "7tEfOcA7",
+      "versionId": "sL7Ghaz1",
+      "versionName": "0.6.10",
+      "fileName": "mezz_config-1.21.1-neoforge-0.6.10-standalone.jar",
+      "sha256": "6f596cec9b531dd386ad6342c3deb5b27de4b4a4754ce30835f8ecc2e75f8703",
+      "size": 346260,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/7tEfOcA7/versions/sL7Ghaz1/mezz_config-1.21.1-neoforge-0.6.10-standalone.jar"
+      ],
+      "installedAt": "2026-11-04T04:48:01.042Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "5A34Stj8",
+      "versionId": "BqhDf7W8",
+      "versionName": "1.21.1-2.4.0+neoforge",
+      "fileName": "ponderjs-neoforge-1.21.1-2.4.0.jar",
+      "sha256": "d9139c619cb0fa0a0a3058001c4ca993ecdf955c9aa8a81640bc24702b443466",
+      "size": 1571893,
+      "side": "client",
+      "sources": [
+        "https://cdn.modrinth.com/data/5A34Stj8/versions/BqhDf7W8/ponderjs-neoforge-1.21.1-2.4.0.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:10.428Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "sk9knFPE",
+      "versionId": "SqkDvOLG",
+      "versionName": "2101.2.8-build.91+Rhino-1.21",
+      "fileName": "rhino-2101.2.8-build.91.jar",
+      "sha256": "1d53d962aa4dac54bcbb4f998c1845980cf194318f1d6b1580ea6ac15cce5ef3",
+      "size": 980936,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/sk9knFPE/versions/SqkDvOLG/rhino-2101.2.8-build.91.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:58.073Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "T9PomCSv",
+      "versionId": "fg9dTRz9",
+      "versionName": "2.0.6+mc1.21.1",
+      "fileName": "sable-neoforge-1.21.1-2.0.6.jar",
+      "sha256": "9c199157843bf953a47dff625fc5bb41c01a90538d35ad18e6996bbcb8a617c2",
+      "size": 12986135,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/T9PomCSv/versions/fg9dTRz9/sable-neoforge-1.21.1-2.0.6.jar"
+      ],
+      "installedAt": "2026-11-04T04:39:08.791Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "AANobbMI",
+      "versionId": "uMOpc5uV",
+      "versionName": "mc1.21.1-0.8.13-neoforge",
+      "fileName": "sodium-neoforge-0.8.13+mc1.21.1.jar",
+      "sha256": "575d187b15328d7bddd8a9b1bee64333c22c14735f5780ec49eac0cd5503c08d",
+      "size": 1292934,
+      "side": "client",
+      "sources": [
+        "https://cdn.modrinth.com/data/AANobbMI/versions/uMOpc5uV/sodium-neoforge-0.8.13%2Bmc1.21.1.jar"
+      ],
+      "installedAt": "2026-11-04T04:47:51.504Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "OypNE65K",
+      "versionId": "62q6mB5Q",
+      "versionName": "1.1.8-hotfix-r7",
+      "fileName": "tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar",
+      "sha256": "fa3a09f15265a4065a566960a8deab315f6c601a5f9a542840b362d455dd5470",
+      "size": 57247579,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/OypNE65K/versions/62q6mB5Q/tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar"
+      ],
+      "installedAt": "2026-11-04T04:46:38.917Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "fx5N8Hgd",
+      "versionId": "KBxw9pI3",
+      "versionName": "2.1.3",
+      "fileName": "tacz-pack-upgrader-2.1.3.jar",
+      "sha256": "58d326d6c4924f4a1e8e16341b0973c9d361276adb4f2ca522d87c0b0a0f5473",
+      "size": 1704774,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/fx5N8Hgd/versions/KBxw9pI3/tacz-pack-upgrader-2.1.3.jar"
+      ],
+      "installedAt": "2026-11-04T04:46:48.927Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "R0bDWFAW",
+      "versionId": "tXG1TkGx",
+      "versionName": "1.5.3-neoforge+mc1.21.1",
+      "fileName": "touhoulittlemaid-1.5.3-neoforge+mc1.21.1.jar",
+      "sha256": "f6db04195820c8508704277ea76d63723804ff236a7b780369ba59ebe5cd9c27",
+      "size": 24408776,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/R0bDWFAW/versions/tXG1TkGx/touhoulittlemaid-1.5.3-neoforge%2Bmc1.21.1.jar"
+      ],
+      "installedAt": "2026-11-04T04:40:55.071Z",
+      "aliases": []
+    }
+  ]
+}

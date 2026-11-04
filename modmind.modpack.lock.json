@@ -2,7 +2,7 @@
   "version": 1,
   "minecraftVersion": "1.21.1",
   "loader": "neoforge",
-  "generatedAt": "2026-11-04T04:50:31.976Z",
+  "generatedAt": "2026-11-04T05:51:22.404Z",
   "mods": [
     {
       "provider": "modrinth",
@@ -92,21 +92,6 @@
         "https://cdn.modrinth.com/data/umyGl7zF/versions/GDXCpKlp/kubejs-neoforge-2101.7.2-build.381.jar"
       ],
       "installedAt": "2026-11-04T04:47:02.061Z",
-      "aliases": []
-    },
-    {
-      "provider": "modrinth",
-      "projectId": "7tEfOcA7",
-      "versionId": "sL7Ghaz1",
-      "versionName": "0.6.10",
-      "fileName": "mezz_config-1.21.1-neoforge-0.6.10-standalone.jar",
-      "sha256": "6f596cec9b531dd386ad6342c3deb5b27de4b4a4754ce30835f8ecc2e75f8703",
-      "size": 346260,
-      "side": "both",
-      "sources": [
-        "https://cdn.modrinth.com/data/7tEfOcA7/versions/sL7Ghaz1/mezz_config-1.21.1-neoforge-0.6.10-standalone.jar"
-      ],
-      "installedAt": "2026-11-04T04:48:01.042Z",
       "aliases": []
     },
     {

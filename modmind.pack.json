@@ -41,12 +41,6 @@
       "addedAt": "2026-11-04T04:48:01.081Z"
     },
     {
-      "fileName": "mezz_config-1.21.1-neoforge-0.6.10-standalone.jar",
-      "sha256": "6f596cec9b531dd386ad6342c3deb5b27de4b4a4754ce30835f8ecc2e75f8703",
-      "size": 346260,
-      "addedAt": "2026-11-04T04:48:01.070Z"
-    },
-    {
       "fileName": "ponderjs-neoforge-1.21.1-2.4.0.jar",
       "sha256": "d9139c619cb0fa0a0a3058001c4ca993ecdf955c9aa8a81640bc24702b443466",
       "size": 1571893,

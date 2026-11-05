@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-05T17:04:29+08:00",
+  "generatedAt": "2026-11-05T20:05:00+08:00",
   "project": "钢铁潮汐",
   "engine": "neoforge 21.1.265",
   "minecraft": "1.21.1",
   "java": "java-runtime-delta",
   "modsDir": "E:\\ioncreating\\mod_l61phe\\.modmind\\minecraft\\mods",
-  "count": 14,
-  "totalMB": 152.9,
+  "count": 15,
+  "totalMB": 156.5,
   "mods": [
     {
       "file": "better-advanced-tooltips-2101.1.0-build.5.jar",
@@ -231,8 +231,8 @@
     {
       "file": "modmind-local-irontide.jar",
       "sizeMB": 0.07,
-      "sha256_16": "6e3eb2ed28245f73",
-      "mtime": "2026-11-05T14:03:32",
+      "sha256_16": "f8ce0d03f71f7018",
+      "mtime": "2026-11-05T19:53:35",
       "modId": "irontide",
       "version": "0.1.0",
       "nameVer": null,
@@ -254,6 +254,55 @@
         {
           "modId": "create",
           "range": "[6.0.0,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "ponderer-1.21.1-neoforge-1.11.0.jar",
+      "sizeMB": 3.6,
+      "sha256_16": "337b519b79da209a",
+      "mtime": "2026-11-05T20:02:29",
+      "modId": "ponderer",
+      "version": "1.11.0",
+      "nameVer": "1.11.0",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "flywheel",
+        "ponder"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.22)",
+          "type": "required"
+        },
+        {
+          "modId": "ponder",
+          "range": "[1.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "flywheel",
+          "range": "[1.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "jei",
+          "range": "[19.21.0.243,)",
+          "type": "optional"
+        },
+        {
+          "modId": "resourcify",
+          "range": "[1.0,)",
           "type": "optional"
         }
       ],

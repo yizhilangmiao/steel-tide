@@ -12,8 +12,8 @@ MC 相关目录共五个，从今天起只有**第一行**是现役；其余是�
 | 目录 | 定位 | 体量 / 内容 |
 |---|---|---|
 | `E:\ioncreating\mod_l61phe` | **现役工程**（唯一写入点） | 整合包「钢铁潮汐」，见下 |
-| `E:\creatingmc` | 方案根：`整合包总方案-1.21.1-NeoForge.md`、`AGENTS.md`、`mod_12rr0lu`（并行项目「霸机动力」，11-04 导入 SkyExplorer 205 mod） | 不进构建 |
-| `E:\mcmc` | 旧 PCL 便携根 | 10.0 GB / 26802 文件：assets、libraries、versions、SkyExplorer、launcher_profiles.json |
+| `E:\creatingmc` | 方案根：`整合包总方案-1.21.1-NeoForge.md`、`AGENTS.md`（原 `mod_12rr0lu` 已于 2026-11-05 删除，小文档归档在 `_archive\mod_12rr0lu-20261105\`） | 不进构建 |
+| `E:\mcmc` | 老大自己玩的 PCL 便携根（**不属工程范围**） | 10.0 GB / 26802 文件：assets、libraries、versions、SkyExplorer、launcher_profiles.json |
 | `E:\mcserve` | 服务端 jar 收藏 | 47 MB / 3 个：arclight-fabric-1.20.4、fabric-1.21.10、paper-1.19.4 |
 | `E:\mcserver` | 旧服务端运行时 | 299 MB / 249 文件：cache、config、libraries、logs、plugins、versions |
 
@@ -80,7 +80,8 @@ pwsh -File E:\_ai\scripts\mc-mods-lock.ps1 -Project E:\ioncreating\mod_l61phe -L
 
 ## 卡点
 
-- `mod_12rr0lu`（「霸机动力」）与 `mod_l61phe`（「钢铁潮汐」）两个整合包并存。2026-11-05 处置：**不合并**，`mod_12rr0lu` 留在 `E:\creatingmc` 当并行项目，各自维护；要不要收敛成一个仍待老大定。
+- ~~两个整合包并存~~ 已定（2026-11-05 老大）：「霸机动力」= ModMind 旧工程名，与钢铁潮汐是同一个项目。`E:\creatingmc\mod_12rr0lu`（13.4 GB / 61672 文件）已删到回收站，小文档归档在 `E:\creatingmc\_archive\mod_12rr0lu-20261105\`；`E:\mcmc` 是他自己玩的，不属工程范围。
+- MC 线只剩一个写入点 `E:\ioncreating\mod_l61phe`。
 - `env.json` 里 `path:temp / modmindApp / modmindProject` 三项还没确认真实路径，doctor 因此红；按铁律**不为消除漂移去动 ModMind 基础设施**，漂移当已知项。
 
 ## 铁律（MC 线）

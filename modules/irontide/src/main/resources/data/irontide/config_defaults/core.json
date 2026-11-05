@@ -1,0 +1,60 @@
+{
+  "_format": 1,
+  "_placeholder": "数值待实测平衡；载入时只校验范围，不自动纠正",
+
+  "health": {
+    "base": 500,
+    "minRatioOnUpgrade": 0.0,
+    "carryRatioOnUpgrade": true
+  },
+
+  "fuel": {
+    "capacity": 12000,
+    "burnPerSecond": 5,
+    "noFuelModuleCapacity": 12000,
+    "noFuelModuleEfficiency": 1.5,
+    "lowFuelRatio": 0.15
+  },
+
+  "stress": {
+    "outputFaces": 3,
+    "wood": { "rpm": 16, "capacity": 256, "match": "fuelClass:wood" },
+    "coal": { "rpm": 64, "capacity": 1024, "match": "fuelClass:coal" },
+    "lowFuel": { "rpm": 16, "capacity": 256 }
+  },
+
+  "casing": {
+    "andesite": {
+      "id": "create:andesite_casing",
+      "armor": 0.0,
+      "healthMul": 1.0,
+      "fuelEfficiency": 1.0
+    },
+    "brass": {
+      "id": "create:brass_casing",
+      "armor": 0.05,
+      "healthMul": 1.6,
+      "fuelEfficiency": 1.15
+    }
+  },
+
+  "armorCap": 0.85,
+
+  "tiers": [
+    { "id": "T1", "edge": 3, "maxBlocks": 27, "blueprint": false },
+    { "id": "T2", "edge": 5, "maxBlocks": 125, "blueprint": true },
+    { "id": "T3", "edge": 7, "maxBlocks": 343, "blueprint": true },
+    { "id": "T4", "edge": 9, "maxBlocks": 729, "blueprint": true }
+  ],
+
+  "build": {
+    "blocksPerTick": 3,
+    "allowReplaceableBlocks": true,
+    "abortOnWhitelistMiss": true
+  },
+
+  "modules": {
+    "levels": ["I", "II", "III"],
+    "maxLevel": { "T1": "III", "T2": "V", "T3": "VII", "T4": "VII" }
+  }
+}

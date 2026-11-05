@@ -17,7 +17,7 @@
   },
 
   "stress": {
-    "outputFaces": 4,
+    "outputFaces": 3,
     "wood": { "rpm": 16, "capacity": 256, "match": "fuelClass:wood" },
     "coal": { "rpm": 64, "capacity": 1024, "match": "fuelClass:coal" },
     "lowFuel": { "rpm": 16, "capacity": 256 }

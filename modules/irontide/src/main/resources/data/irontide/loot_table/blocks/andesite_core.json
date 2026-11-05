@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "irontide:blocks/andesite_core",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "conditions": [
+        { "condition": "minecraft:survives_explosion" }
+      ],
+      "entries": [
+        { "type": "minecraft:item", "name": "irontide:andesite_core" }
+      ]
+    }
+  ]
+}

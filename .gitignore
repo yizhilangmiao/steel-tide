@@ -4,6 +4,9 @@
 # ModMind 每轮自动生成的 AI 记录（含对话正文，不进公开仓库）
 docs/last-ai-change.json
 docs/last-ai-response.txt
+# 同一规则要覆盖模块子目录，否则 modules/*/docs 下的会漏进公开仓库
+**/last-ai-change.json
+**/last-ai-response.txt
 
 # 第三方模组 jar：靠 modmind.pack.json 清单重下，不入库
 mods/*.jar
@@ -31,3 +34,14 @@ desktop.ini
 # 临时目录
 tmp/
 temp/
+# 模块级研究临时目录（下载的源码 / 反编译产物，几十 MB，靠文档里的链接重取）
+research-tmp/
+
+# 协同内核本地状态（脚本与清单入库，锁与流水不入库）
+.agents/claim/
+.agents/journal.jsonl
+# 技能副本是 E:\_ai 母本的拷贝，靠 skills.selected.json 重建，不入库
+.agents/skills/
+# 内核脚本的临时备份
+.agents/*.bak-*
+*.bak-*

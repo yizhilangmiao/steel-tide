@@ -1,0 +1,487 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-05T17:04:29+08:00",
+  "project": "钢铁潮汐",
+  "engine": "neoforge 21.1.265",
+  "minecraft": "1.21.1",
+  "java": "java-runtime-delta",
+  "modsDir": "E:\\ioncreating\\mod_l61phe\\.modmind\\minecraft\\mods",
+  "count": 14,
+  "totalMB": 152.9,
+  "mods": [
+    {
+      "file": "better-advanced-tooltips-2101.1.0-build.5.jar",
+      "sizeMB": 0.04,
+      "sha256_16": "0f76d46f2f18eb67",
+      "mtime": "2026-11-04T12:47:58",
+      "modId": "betteradvancedtooltips",
+      "version": "2101.1.0-build.5",
+      "nameVer": "2101.1.0",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": {
+        "modId": "neoforge",
+        "range": "[21.1.199,)",
+        "type": "required"
+      },
+      "error": null
+    },
+    {
+      "file": "create-1.21.1-6.0.10.jar",
+      "sizeMB": 18.24,
+      "sha256_16": "ef87fe5709f1ba1f",
+      "mtime": "2026-11-04T12:37:18",
+      "modId": "create",
+      "version": "6.0.10",
+      "nameVer": "6.0.10",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "flywheel",
+        "ponder"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.219,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "flywheel",
+          "range": "[1.0.0,2.0)",
+          "type": "required"
+        },
+        {
+          "modId": "ponder",
+          "range": "[1.0.82,)",
+          "type": "required"
+        },
+        {
+          "modId": "sodium",
+          "range": "[0.6.9,)",
+          "type": "optional"
+        },
+        {
+          "modId": "lithium",
+          "range": "[0.14.7,)",
+          "type": "optional"
+        },
+        {
+          "modId": "journeymap",
+          "range": "[1.21.1-6.0.0-beta.46,)",
+          "type": "optional"
+        },
+        {
+          "modId": "xaeroworldmap",
+          "range": "[1.40.2,)",
+          "type": "optional"
+        },
+        {
+          "modId": "radium",
+          "range": "",
+          "type": "incompatible"
+        },
+        {
+          "modId": "palladium",
+          "range": "",
+          "type": "incompatible"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "create-aeronautics-bundled-1.21.1-1.3.2.jar",
+      "sizeMB": 31.59,
+      "sha256_16": "a3f330d4757640f8",
+      "mtime": "2026-11-04T12:39:24",
+      "modId": "aeronautics_bundled",
+      "version": "1.3.2",
+      "nameVer": "1.3.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "aeronautics",
+        "offroad",
+        "simulated"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.228,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "Jade-1.21.1-NeoForge-15.10.6.jar",
+      "sizeMB": 0.69,
+      "sha256_16": "276f1f65a20d04f5",
+      "mtime": "2026-11-04T12:47:43",
+      "modId": "jade",
+      "version": "15.10.6",
+      "nameVer": "15.10.6",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": {
+        "modId": "neoforge",
+        "range": "[21.0.143, )",
+        "type": "required"
+      },
+      "error": null
+    },
+    {
+      "file": "jei-1.21.1-neoforge-19.70.0.469.jar",
+      "sizeMB": 4.56,
+      "sha256_16": "9ab82d9bdbc8d9a0",
+      "mtime": "2026-11-04T12:47:36",
+      "modId": "jei",
+      "version": "19.70.0.469",
+      "nameVer": "19.70.0.469",
+      "side": "IGNORE_SERVER_VERSION",
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": "mezz_config",
+      "deps": [
+        {
+          "modId": "mezz_config",
+          "range": "[0.6.10,1.0.0)",
+          "type": "required"
+        },
+        {
+          "modId": "mezz_config_gui",
+          "range": "[0.5.5,)",
+          "type": "optional"
+        },
+        {
+          "modId": "neoforge",
+          "range": "[21.1.238,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21, 1.21.1)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "kubejs-neoforge-2101.7.2-build.381.jar",
+      "sizeMB": 2.19,
+      "sha256_16": "07d8cb7ac1f7ef81",
+      "mtime": "2026-11-04T12:47:02",
+      "modId": "kubejs",
+      "version": "2101.7.2-build.381",
+      "nameVer": "2101.7.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": "betteradvancedtooltips",
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.199,)",
+          "type": "required"
+        },
+        {
+          "modId": "rhino",
+          "range": "[2101.2.7-build.81,)",
+          "type": "required"
+        },
+        {
+          "modId": "jei",
+          "range": "[19.25.0.322,)",
+          "type": "optional"
+        },
+        {
+          "modId": "roughlyenoughitems",
+          "range": "[16.0.799,)",
+          "type": "optional"
+        },
+        {
+          "modId": "emi",
+          "range": "[1.1.22,)",
+          "type": "optional"
+        },
+        {
+          "modId": "betteradvancedtooltips",
+          "range": "[2101.1.0-build.1,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "modmind-local-irontide.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "6e3eb2ed28245f73",
+      "mtime": "2026-11-05T14:03:32",
+      "modId": "irontide",
+      "version": "0.1.0",
+      "nameVer": null,
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.265,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "create",
+          "range": "[6.0.0,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "ponderjs-neoforge-1.21.1-2.4.0.jar",
+      "sizeMB": 1.5,
+      "sha256_16": "d9139c619cb0fa0a",
+      "mtime": "2026-11-04T12:47:10",
+      "modId": "ponderjs",
+      "version": "1.21.1-2.4.0",
+      "nameVer": "2.4.0",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "ponder",
+        "flywheel"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.209,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.20.1,)",
+          "type": "required"
+        },
+        {
+          "modId": "kubejs",
+          "range": "[2101.7.2-build.264,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "rhino-2101.2.8-build.91.jar",
+      "sizeMB": 0.94,
+      "sha256_16": "1d53d962aa4dac54",
+      "mtime": "2026-11-04T12:47:58",
+      "modId": "rhino",
+      "version": "2101.2.8-build.91",
+      "nameVer": "2101.2.8",
+      "side": "NONE",
+      "hasMeta": true,
+      "metaFile": "META-INF/mods.toml",
+      "nested": null,
+      "deps": null,
+      "error": null
+    },
+    {
+      "file": "sable-neoforge-1.21.1-2.0.6.jar",
+      "sizeMB": 12.38,
+      "sha256_16": "9c199157843bf953",
+      "mtime": "2026-11-04T12:39:08",
+      "modId": "sable",
+      "version": "2.0.6",
+      "nameVer": "2.0.6",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "sablecompanion",
+        "veil"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.228,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "flywheel",
+          "range": "[1.0.6,)",
+          "type": "optional"
+        },
+        {
+          "modId": "create",
+          "range": "[6.0.10,6.1.0)",
+          "type": "optional"
+        },
+        {
+          "modId": "sablecompanion",
+          "range": "(1.6.0,)",
+          "type": "incompatible"
+        },
+        {
+          "modId": "sodium",
+          "range": "(,0.8.12-alpha.2+mc1.21.1)",
+          "type": "incompatible"
+        },
+        {
+          "modId": "scalablelux",
+          "range": "",
+          "type": "incompatible"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "sodium-neoforge-0.8.13+mc1.21.1.jar",
+      "sizeMB": 1.23,
+      "sha256_16": "575d187b15328d7b",
+      "mtime": "2026-11-04T12:47:51",
+      "modId": "sodium",
+      "version": "0.8.13+mc1.21.1",
+      "nameVer": "0.8.13",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "fabric_api_base",
+        "fabric_block_view_api_v2",
+        "fabric_renderer_api_v1",
+        "fabric_rendering_data_attachment_v1",
+        "sodium"
+      ],
+      "deps": [
+        {
+          "modId": "minecraft",
+          "range": "1.21.1",
+          "type": "required"
+        },
+        {
+          "modId": "neoforge",
+          "range": "[21.1.82,)",
+          "type": "required"
+        },
+        {
+          "modId": "embeddium",
+          "range": "[0.0.1,)",
+          "type": "incompatible"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar",
+      "sizeMB": 54.6,
+      "sha256_16": "fa3a09f15265a406",
+      "mtime": "2026-11-04T12:46:38",
+      "modId": "tacz",
+      "version": "1.1.8-hotfix-r7",
+      "nameVer": "1.1.8",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": "simplebedrockmodel",
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21,)",
+          "type": "REQUIRED"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "REQUIRED"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "tacz-pack-upgrader-2.1.3.jar",
+      "sizeMB": 1.63,
+      "sha256_16": "58d326d6c4924f4a",
+      "mtime": "2026-11-04T12:46:48",
+      "modId": "taczpackupgrader",
+      "version": "2.1.3",
+      "nameVer": "2.1.3",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21,)",
+          "type": "REQUIRED"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "REQUIRED"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "touhoulittlemaid-1.5.3-neoforge+mc1.21.1.jar",
+      "sizeMB": 23.28,
+      "sha256_16": "f6db04195820c850",
+      "mtime": "2026-11-04T12:40:55",
+      "modId": "touhou_little_maid",
+      "version": "1.5.3-neoforge+mc1.21.1",
+      "nameVer": "1.5.3",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.21.2)",
+          "type": "required"
+        },
+        {
+          "modId": "kubejs",
+          "range": "[2101.7.2-build.309,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    }
+  ],
+  "issues": []
+}

@@ -1,0 +1,22 @@
+{
+  "project": "E:\\ioncreating\\mod_l61phe",
+  "updated_at": "2026-11-05T14:47:04",
+  "items": [
+    {
+      "name": "create-3d-model",
+      "mode": "copy",
+      "source_scope": "plugin",
+      "source_path": "~\\.dsh\\profiles\\desktop\\node_modules\\dsh-blender\\skills\\create-3d-model\\SKILL.md",
+      "source_sha1": "3c917b627743",
+      "added_at": "2026-11-05T14:47:04"
+    },
+    {
+      "name": "bailian-protocol",
+      "mode": "copy",
+      "source_scope": "dsh-global",
+      "source_path": "~\\.dsh\\skills\\bailian-protocol\\SKILL.md",
+      "source_sha1": "2bd95d47f810",
+      "added_at": "2026-11-05T14:47:04"
+    }
+  ]
+}

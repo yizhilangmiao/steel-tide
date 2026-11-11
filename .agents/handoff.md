@@ -4,7 +4,9 @@
 
 **进度**：M1 约 85%。弹药组装已换实现：KubeJS 探针作废并删除，改为 Create 搅拌机多产物配方（10 口径，`modules/irontide/src/main/resources/data/irontide/recipe/ammo/*.json`），一次出 4 发（40mm 出 2 发）。2026-11-11 二次修正：`create:mixing` 是集合匹配，原先 9mm/45acp/22wmr 与 308/545x39/556x45/762x39 各组配料相同会串味，已改为 10 组两两不同（铜粒/锌粒/铁粒/铁锭/黄铜锭/火药组合），静态校验 10/10 唯一，jar 已重建并同步。
 
-**下一步**：① 启动后 JEI 逐口径确认唯一配方（762x39 = 「1 弹壳 + 1 发射药 + 2 锌粒 → 4 发」）；② 遗迹战利品实机验（`/loot give @s loot irontide:dungeon_inject`）；③ FTB 任务书三章实机验；④ 打 tag `m1`。
+**2026-11-11 深夜追加**：加 Superb Warfare 0.8.9.2（+ KotlinForForge 5.12.0）与 Patchouli，51 Mod；帕秋莉手册 `mod_l61phe:irontide_arms`「钢铁潮汐·军械手册」5 章 19 条，首次进服由 `overrides/kubejs/server_scripts/irontide_guide.js` 发一本；`overrides/options.txt` 把 Iris 默认「重载光影 = R」解绑为 `key.keyboard.unknown`，R 归 TaCZ 换弹。
+
+**下一步**：① 卓越前线实机跑一轮（研究台出蓝图 → 锻造成枪 → 打一发）；② 帕秋莉手册开一次确认五章排版；③ 打 tag `m1`。
 
 **卡点**（已解）：ModMind 清单元数据已按磁盘重建（2026-11-11）——`modmind.pack.json` 47 条（逐条 sha256，排除模块产物与 `.disabled`）、`modmind.modpack.lock.json` 13 条全部核验通过（sodium→`S3DUMfBo`、tacz 1.2.0→`SzzJttH8/O2Pfsh6w`）。托管构建/同步已通（48 Mod + 7 override）。顺手修了同步器的坑：纯数据 jar 若 `neoforge.mods.toml` 写 `javafml` 又没 class 会被拒，用 `脚本/patch_datapack_modloader.ps1` 改成 `lowcodefml`（已对 DnT、malfu 执行）。无头验证在本包不可用：Sodium 拒 HeadlessMC 的 LWJGL 3.3.3，只能走 rendered。另有一条定论：KubeJS `shapeless` 结果只支持单个 ItemStack，多发必须走 Create 的 `results` 数组。
 

@@ -1,0 +1,11 @@
+{
+  "name": "五种弹药",
+  "icon": "superbwarfare:heavy_ammo",
+  "category": "mod_l61phe:ammo",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "卓越前线的枪只吃它自己的弹药，分五类：\n\n手枪弹：GLOCK、M1911A1、MP-443\n步枪弹：AK 系、M4A1、HK-416、QBZ 系、SKS、RPK、M60\n霰弹：AA-12、M870\n狙击弹：AWM、M98B、SVD、KAR-98K、莫辛纳甘、NTW-20\n重型弹：重机枪、载具武器、火箭筒类\n\n拿错弹种装不进枪里。"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "驾驶与操控",
+  "icon": "superbwarfare:large_battery_pack",
+  "category": "mod_l61phe:vehicles",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "载具有独立键位组「卓越前线」：前进/后退控制油门，空格刹车或起落架，Shift 减速，Ctrl 加力。\n\n按离开载具下机。电池包给电动载具供电。"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "载具装配台",
+  "icon": "superbwarfare:vehicle_assembling_table",
+  "category": "mod_l61phe:vehicles",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "载具不能在工作台直接合，要用载具装配台组装。\n\nAC-130H、AH-6、BL-132 这类大家伙都在这里出。装之前先确认材料和燃料够。"
+    }
+  ]
+}

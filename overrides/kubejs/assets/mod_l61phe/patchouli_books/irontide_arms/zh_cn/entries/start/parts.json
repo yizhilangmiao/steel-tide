@@ -1,0 +1,11 @@
+{
+  "name": "枪械零件",
+  "icon": "superbwarfare:steel_barrel",
+  "category": "mod_l61phe:start",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "钢锭横排三个（AAA）合出一根钢枪管。\n\n机匣、弹簧、扳机是同一套思路，都用钢锭在工作台里切出来，具体排布查 JEI。\n\n先做齐四件，再往下走。"
+    }
+  ]
+}

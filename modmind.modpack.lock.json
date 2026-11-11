@@ -2,7 +2,7 @@
   "version": 1,
   "minecraftVersion": "1.21.1",
   "loader": "neoforge",
-  "generatedAt": "2026-11-04T05:51:22.404Z",
+  "generatedAt": "2026-11-11T11:41:24.328Z",
   "mods": [
     {
       "provider": "modrinth",
@@ -81,6 +81,21 @@
     },
     {
       "provider": "modrinth",
+      "projectId": "ordsPcFz",
+      "versionId": "uhJhCT7X",
+      "versionName": "5.12.0",
+      "fileName": "kotlinforforge-5.12.0-all.jar",
+      "sha256": "2785a4dd6de5c6c56065fd8eb789c82771bd2ee773c30794c23160a3b2c39139",
+      "size": 7279264,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/ordsPcFz/versions/uhJhCT7X/kotlinforforge-5.12.0-all.jar"
+      ],
+      "installedAt": "2026-11-11T11:40:14.408Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
       "projectId": "umyGl7zF",
       "versionId": "GDXCpKlp",
       "versionName": "2101.7.2-build.381",
@@ -92,6 +107,21 @@
         "https://cdn.modrinth.com/data/umyGl7zF/versions/GDXCpKlp/kubejs-neoforge-2101.7.2-build.381.jar"
       ],
       "installedAt": "2026-11-04T04:47:02.061Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "nU0bVIaL",
+      "versionId": "BIogJv2D",
+      "versionName": "1.21.1-93-neoforge",
+      "fileName": "Patchouli-1.21.1-93-NEOFORGE.jar",
+      "sha256": "959af52ed6640c316c3a8469203420be4aeea11ad6603890ba83bf48f5d9f993",
+      "size": 646777,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/nU0bVIaL/versions/BIogJv2D/Patchouli-1.21.1-93-NEOFORGE.jar"
+      ],
+      "installedAt": "2026-11-11T11:41:24.306Z",
       "aliases": []
     },
     {
@@ -152,6 +182,21 @@
         "https://cdn.modrinth.com/data/AANobbMI/versions/S3DUMfBo/sodium-neoforge-0.8.12%2Bmc1.21.1.jar"
       ],
       "installedAt": "2026-11-10T05:53:12.206Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "Cd3DYqzn",
+      "versionId": "izD7dnxq",
+      "versionName": "0.8.9.2-hotfix",
+      "fileName": "superbwarfare-0.8.9.2-hotfix-mc1.21.1-e0c2b27f.jar",
+      "sha256": "f1003f5e6b9d8a6c5e27592aa33df9b88c87b71ff3b5e623f4224222ae140535",
+      "size": 41638430,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/Cd3DYqzn/versions/izD7dnxq/superbwarfare-0.8.9.2-hotfix-mc1.21.1-e0c2b27f.jar"
+      ],
+      "installedAt": "2026-11-11T11:40:13.635Z",
       "aliases": []
     },
     {

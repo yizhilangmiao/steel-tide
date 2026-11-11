@@ -1,0 +1,11 @@
+{
+  "name": "狙击步枪",
+  "icon": "superbwarfare:m_98b",
+  "category": "mod_l61phe:guns",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "AWM、M98B、SVD、KAR-98K、莫辛纳甘、NTW-20。\n\n吃狙击弹。远距离一枪一个，但拉栓慢，站定再打。NTW-20 是反器材级，别拿它打人堆。"
+    }
+  ]
+}

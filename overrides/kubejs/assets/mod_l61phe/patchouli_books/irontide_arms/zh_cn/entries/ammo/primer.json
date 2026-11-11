@@ -1,0 +1,11 @@
+{
+  "name": "底火与铜板",
+  "icon": "superbwarfare:primer",
+  "category": "mod_l61phe:ammo",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "铜板：铜锭 + 锤子，无序合成。锤子 = 铁锭 + 铁块 + 木棍，做一把能用很久。\n\n底火：燧石 + 铜板，一次出 4 个。\n\n这两样是所有弹药的前置，先批量备货。"
+    }
+  ]
+}

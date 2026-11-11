@@ -1,0 +1,11 @@
+{
+  "name": "两套枪系",
+  "icon": "irontide:propellant",
+  "category": "mod_l61phe:tide",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "包里同时有两套枪：\n\nTaCZ：口径弹药（9mm、5.56、7.62 等），用 Create 搅拌机做，弹壳 + 发射药 + 金属料。\n卓越前线：钢制零件 + 蓝图体系，弹药自成一套。\n\n两套弹药不通用，别混着往弹匣里塞。守家打遗迹用哪套都行，看手上有什么。"
+    }
+  ]
+}

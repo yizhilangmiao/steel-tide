@@ -1,0 +1,11 @@
+{
+  "name": "炼钢",
+  "icon": "superbwarfare:steel_ingot",
+  "category": "mod_l61phe:start",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "钢是一切的底子。\n\n铁粉 + 煤粉 无序合成得到煤铁粉；煤铁粉丢进高炉烧 100 秒，出来就是钢锭。\n\n铁粉、煤粉本模组自带来源，也可以用 Create 的粉碎轮磨铁矿石和煤块批量出料。攒钢锭时一次多烧几炉，后面零件很吃钢。"
+    }
+  ]
+}

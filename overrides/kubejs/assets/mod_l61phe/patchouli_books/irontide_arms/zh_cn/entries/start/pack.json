@@ -1,0 +1,11 @@
+{
+  "name": "稀有材料包",
+  "icon": "superbwarfare:rare_material_pack",
+  "category": "mod_l61phe:start",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "钢枪管、钢机匣、钢弹簧、钢扳机，四件无序合成一个稀有材料包。\n\n这是每一把枪的骨架。想造几把枪就准备几包。"
+    }
+  ]
+}

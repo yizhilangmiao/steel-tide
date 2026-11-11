@@ -1,0 +1,11 @@
+{
+  "name": "遗迹补给",
+  "icon": "irontide:raid_scrap",
+  "category": "mod_l61phe:tide",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "遗迹战利品里能翻到枪、弹药和蓝图芯片，是本包里最省事的起步方式。\n\n捡到不认识的枪，先看它要哪种弹药，再回工作台补弹。"
+    }
+  ]
+}

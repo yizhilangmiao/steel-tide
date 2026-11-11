@@ -1,0 +1,11 @@
+{
+  "name": "手枪",
+  "icon": "superbwarfare:glock_17",
+  "category": "mod_l61phe:guns",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "GLOCK-17 / GLOCK-18 / M1911A1 / MP-443。\n\n吃手枪弹，近距离自卫够用，胜在轻、装填快。GLOCK-18 可以连发。"
+    }
+  ]
+}

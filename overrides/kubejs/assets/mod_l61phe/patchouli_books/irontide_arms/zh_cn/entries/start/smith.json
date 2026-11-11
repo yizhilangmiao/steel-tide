@@ -1,0 +1,11 @@
+{
+  "name": "锻造成枪",
+  "icon": "superbwarfare:ak_47",
+  "category": "mod_l61phe:start",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "锻造台里放上蓝图 + 稀有材料包 + 任意原木，就能敲出成品枪。\n\n三样缺一不可：蓝图决定型号，材料包提供枪身，原木是枪托木料。\n\n枪造出来不等于能用——先看弹药章节。"
+    }
+  ]
+}

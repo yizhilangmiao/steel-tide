@@ -1,0 +1,11 @@
+{
+  "name": "键位",
+  "icon": "minecraft:iron_ingot",
+  "category": "mod_l61phe:tide",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "R 是换弹键，TaCZ 和卓越前线的装填都挂在这上面。\n\nIris 光影原本默认也占 R（重载光影），本包已把这条默认键位解绑，需要重载光影请到 选项 → 控制 → 按键绑定 里自己设一个不冲突的键。\n\n瞄准是右键按住，开火是左键，和原版一致。"
+    }
+  ]
+}

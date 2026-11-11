@@ -1,0 +1,11 @@
+{
+  "name": "特种武器",
+  "icon": "superbwarfare:aa_12",
+  "category": "mod_l61phe:guns",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "AA-12、M870 走霰弹；RPG-7、M79、FGM-148 标枪、IGLA-9K38 走爆炸物；M134 转轮机枪、泰瑟枪各有玩法。\n\n爆炸物会伤到自己，室内慎用。"
+    }
+  ]
+}

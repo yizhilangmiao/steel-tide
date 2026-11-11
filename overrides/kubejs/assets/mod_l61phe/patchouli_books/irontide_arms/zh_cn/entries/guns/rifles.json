@@ -1,0 +1,11 @@
+{
+  "name": "步枪与机枪",
+  "icon": "superbwarfare:ak_47",
+  "category": "mod_l61phe:guns",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "AK-47、AK-12、M4A1、HK-416、QBZ-95-1、QBZ-191、SKS、RPK、M60。\n\n吃步枪弹。AK 系和 M4/HK 系是主力，RPK 和 M60 走压制，弹匣大但重。"
+    }
+  ]
+}

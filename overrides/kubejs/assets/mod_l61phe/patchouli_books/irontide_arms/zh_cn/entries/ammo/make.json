@@ -1,0 +1,11 @@
+{
+  "name": "装弹",
+  "icon": "superbwarfare:rifle_ammo",
+  "category": "mod_l61phe:ammo",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "手枪弹：铜锭 + 铜板 ×2 + 火药 + 底火 = 64 发\n\n步枪弹：钢锭 + 铜板 ×2 + 火药 + 底火 = 48 发\n\n霰弹、狙击弹、重型弹是同一套排布换主料，产量看 JEI。\n\n弹药盒用铁锭 ×5 + 绿色染料，用来收纳成堆弹药。"
+    }
+  ]
+}

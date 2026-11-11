@@ -1,0 +1,270 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: "arms_manual"
+	group: ""
+	icon: {
+		id: "superbwarfare:blueprint_research_table"
+	}
+	id: "2000000000000004"
+	images: [ ]
+	order_index: 3
+	quest_links: [ ]
+	quests: [
+		{
+			id: "5000000000000001"
+			subtitle: "卓越前线的全套流程：炼钢 → 零件 → 蓝图 → 锻造成枪 → 装弹 → 载具。\n带勾的任务点一下就完成；带物品图标的任务只要做过或身上有这件东西即可，不会扣材料。"
+			tasks: [{
+				id: "5100000000000001"
+				type: "checkmark"
+			}]
+			title: "军械手册 · 从这里开始"
+			x: 0.0d
+			y: 0.0d
+		},
+		{
+			dependencies: ["5000000000000001"]
+			id: "5000000000000002"
+			subtitle: "铁粉 + 煤粉 → 煤铁粉（无序）。\n煤铁粉丢进高炉烧 100 秒 = 钢锭。\n铁粉、煤粉也可以用 Create 粉碎轮磨铁矿石和煤块批量出。零件很吃钢，攒的时候一次多烧几炉。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000002"
+				item: { count: 1, id: "superbwarfare:steel_ingot" }
+				type: "item"
+			}]
+			title: "炼钢"
+			x: 0.0d
+			y: 1.5d
+		},
+		{
+			dependencies: ["5000000000000002"]
+			id: "5000000000000003"
+			subtitle: "钢锭横排三个（AAA）合出一根钢枪管。\n机匣、弹簧、扳机是同一套思路，都用钢锭在工作台里切，具体排布查 JEI。\n四件做齐再往下走。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000003"
+				item: { count: 1, id: "superbwarfare:steel_barrel" }
+				type: "item"
+			}]
+			title: "枪械零件"
+			x: 0.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["5000000000000003"]
+			id: "5000000000000004"
+			subtitle: "钢枪管 + 钢机匣 + 钢弹簧 + 钢扳机，无序合成一个稀有材料包。\n这是每一把枪的骨架，想造几把就备几包。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000004"
+				item: { count: 1, id: "superbwarfare:rare_material_pack" }
+				type: "item"
+			}]
+			title: "稀有材料包"
+			x: 0.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["5000000000000004"]
+			id: "5000000000000005"
+			subtitle: "蓝图研究台 = 铁锭 ×6 + 电池 + 制图台 + 红石块 + 钢锭 ×3。\n把蓝图数据芯片放进去研究，得到对应枪械蓝图。芯片分普通、稀有、史诗、传说四档，档位越高出好东西概率越大。\n遗迹箱子里常翻到芯片，别扔。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000005"
+				item: { count: 1, id: "superbwarfare:blueprint_research_table" }
+				type: "item"
+			}]
+			title: "蓝图与研究台"
+			x: 0.0d
+			y: 6.0d
+		},
+		{
+			dependencies: ["5000000000000005"]
+			id: "5000000000000006"
+			subtitle: "锻造台里放上蓝图 + 稀有材料包 + 任意原木，敲出成品枪。\n蓝图决定型号，材料包提供枪身，原木是枪托木料，三样缺一不可。\n枪造出来不等于能用，接着看弹药。"
+			tasks: [{
+				id: "5100000000000006"
+				type: "checkmark"
+			}]
+			title: "锻造成枪"
+			x: 0.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["5000000000000006"]
+			id: "5000000000000007"
+			subtitle: "卓越前线的枪只吃它自己的弹药，分五类：\n手枪弹：GLOCK、M1911A1、MP-443\n步枪弹：AK 系、M4A1、HK-416、QBZ 系、SKS、RPK、M60\n霰弹：AA-12、M870\n狙击弹：AWM、M98B、SVD、KAR-98K、莫辛纳甘、NTW-20\n重型弹：重机枪、载具武器、火箭筒\n拿错弹种装不进枪里。"
+			tasks: [{
+				id: "5100000000000007"
+				type: "checkmark"
+			}]
+			title: "五种弹药"
+			x: 3.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["5000000000000007"]
+			id: "5000000000000008"
+			subtitle: "铜板：铜锭 + 锤子，无序合成。锤子 = 铁锭 + 铁块 + 木棍，做一把能用很久。\n底火：燧石 + 铜板，一次出 4 个。\n这两样是所有弹药的前置，先批量备货。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000008"
+				item: { count: 1, id: "superbwarfare:copper_plate" }
+				type: "item"
+			}]
+			title: "铜板与底火"
+			x: 3.0d
+			y: 6.0d
+		},
+		{
+			dependencies: ["5000000000000008"]
+			id: "5000000000000009"
+			subtitle: "手枪弹：铜锭 + 铜板 ×2 + 火药 + 底火 = 64 发。\n步枪弹：钢锭 + 铜板 ×2 + 火药 + 底火 = 48 发。\n霰弹、狙击弹、重型弹是同一套排布换主料，产量看 JEI。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000009"
+				item: { count: 1, id: "superbwarfare:handgun_ammo" }
+				type: "item"
+			}]
+			title: "装弹"
+			x: 3.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["5000000000000009"]
+			id: "5000000000000010"
+			subtitle: "铁锭 ×5 + 绿色染料合成弹药盒，用来成堆收纳。\n手枪弹盒、步枪弹盒、霰弹盒、狙击弹盒、重型弹盒各一份，别把弹种装混。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000010"
+				item: { count: 1, id: "superbwarfare:ammo_box" }
+				type: "item"
+			}]
+			title: "弹药盒"
+			x: 3.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["5000000000000010"]
+			id: "5000000000000011"
+			subtitle: "GLOCK-17 / GLOCK-18 / M1911A1 / MP-443。\n吃手枪弹，近距离自卫够用，胜在轻、装填快。GLOCK-18 可以连发。"
+			tasks: [{
+				id: "5100000000000011"
+				type: "checkmark"
+			}]
+			title: "手枪"
+			x: 3.0d
+			y: 1.5d
+		},
+		{
+			dependencies: ["5000000000000011"]
+			id: "5000000000000012"
+			subtitle: "AK-47、AK-12、M4A1、HK-416、QBZ-95-1、QBZ-191、SKS、RPK、M60。\n吃步枪弹。AK 系和 M4/HK 系是主力，RPK 和 M60 走压制，弹匣大但重。"
+			tasks: [{
+				id: "5100000000000012"
+				type: "checkmark"
+			}]
+			title: "步枪与机枪"
+			x: 6.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["5000000000000012"]
+			id: "5000000000000013"
+			subtitle: "AWM、M98B、SVD、KAR-98K、莫辛纳甘、NTW-20。\n吃狙击弹，远距离一枪一个，但拉栓慢，站定再打。NTW-20 是反器材级，别拿它打人堆。"
+			tasks: [{
+				id: "5100000000000013"
+				type: "checkmark"
+			}]
+			title: "狙击步枪"
+			x: 6.0d
+			y: 6.0d
+		},
+		{
+			dependencies: ["5000000000000013"]
+			id: "5000000000000014"
+			subtitle: "AA-12、M870 走霰弹；RPG-7、M79、FGM-148 标枪、IGLA-9K38 走爆炸物；\nM134 转轮机枪、泰瑟枪各有玩法。爆炸物会伤到自己，室内慎用。"
+			tasks: [{
+				id: "5100000000000014"
+				type: "checkmark"
+			}]
+			title: "特种武器"
+			x: 6.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["5000000000000014"]
+			id: "5000000000000015"
+			subtitle: "载具不能在工作台直接合，要用载具装配台组装。\nAC-130H、AH-6、BL-132 这类大家伙都在这里出，装之前先确认材料和燃料够。"
+			tasks: [{
+				consume_items: false
+				id: "5100000000000015"
+				item: { count: 1, id: "superbwarfare:vehicle_assembling_table" }
+				type: "item"
+			}]
+			title: "载具装配台"
+			x: 9.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["5000000000000015"]
+			id: "5000000000000016"
+			subtitle: "载具有独立键位组「卓越前线」：前进 / 后退控制油门，空格刹车或起落架，Shift 减速，Ctrl 加力。\n按离开载具键下机。电池包给电动载具供电。"
+			tasks: [{
+				id: "5100000000000016"
+				type: "checkmark"
+			}]
+			title: "驾驶与操控"
+			x: 9.0d
+			y: 6.0d
+		},
+		{
+			dependencies: ["5000000000000016"]
+			id: "5000000000000017"
+			subtitle: "包里同时有两套枪：\nTaCZ：口径弹药（9mm、5.56、7.62 等），用 Create 搅拌机做，弹壳 + 发射药 + 金属料。\n卓越前线：钢制零件 + 蓝图体系，弹药自成一套。\n两套弹药不通用，别混着往弹匣里塞。"
+			tasks: [{
+				id: "5100000000000017"
+				type: "checkmark"
+			}]
+			title: "两套枪系"
+			x: 12.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["5000000000000017"]
+			id: "5000000000000018"
+			subtitle: "R 是换弹键，TaCZ 和卓越前线的装填都挂在这上面。\nIris 光影原本默认也占 R（重载光影），本包已把这条默认键位解绑；需要重载光影请到 选项 → 控制 → 按键绑定 里自己设一个不冲突的键。\n瞄准是右键按住，开火是左键。"
+			tasks: [{
+				id: "5100000000000018"
+				type: "checkmark"
+			}]
+			title: "键位 · R 换弹"
+			x: 12.0d
+			y: 6.0d
+		},
+		{
+			dependencies: ["5000000000000018"]
+			id: "5000000000000019"
+			subtitle: "遗迹战利品里能翻到枪、弹药和蓝图芯片，是本包里最省事的起步方式。\n捡到不认识的枪，先看它要哪种弹药，再回工作台补弹。"
+			tasks: [{
+				id: "5100000000000019"
+				type: "checkmark"
+			}]
+			title: "遗迹补给"
+			x: 12.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["5000000000000019"]
+			id: "5000000000000020"
+			subtitle: "按住反引号键（Tab 上方那个按键）再挖矿、砍树、锄地，一次带走整片同类方块。\n按住它 + Shift 滚动滚轮可以换形状：无序、小隧道、3×3 大隧道、矿道、逃生隧道。\n消耗按方块数量算耐久和饥饿，快坏的镐子别硬用。"
+			tasks: [{
+				id: "5100000000000020"
+				type: "checkmark"
+			}]
+			title: "连锁采集 · FTB Ultimine"
+			x: 12.0d
+			y: 3.0d
+		}
+	]
+}

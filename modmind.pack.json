@@ -8,7 +8,7 @@
       "fileName": "architectury-13.0.11-neoforge.jar",
       "sha256": "9cc92f2c09533fc5482c60f993bd891c655a0e32b637037cdcb7c2b23adedeeb",
       "size": 584734,
-      "addedAt": "2026-11-08T14:11:15.099Z"
+      "addedAt": "2026-11-11T12:08:19.803Z"
     },
     {
       "fileName": "better-advanced-tooltips-2101.1.0-build.5.jar",
@@ -86,7 +86,7 @@
       "fileName": "ftb-library-neoforge-2101.1.39.jar",
       "sha256": "ca64bd1b5f335406900f74eeafacea5a3580a3933d61de6b6600a64eb12a9a95",
       "size": 1477833,
-      "addedAt": "2026-11-08T14:11:15.127Z"
+      "addedAt": "2026-11-11T12:08:19.805Z"
     },
     {
       "fileName": "ftb-quests-neoforge-2101.1.38.jar",
@@ -99,6 +99,12 @@
       "sha256": "b3f33436070b7ae4a706280561f1d2f1d1eb1a089cb13ec9851e99646165aed2",
       "size": 308430,
       "addedAt": "2026-11-08T14:11:15.18Z"
+    },
+    {
+      "fileName": "ftb-ultimine-neoforge-2101.1.15.jar",
+      "sha256": "1393a85ceb6e4794450d5f06043e3a033278e31b86de8e03950d8b87604b2213",
+      "size": 177109,
+      "addedAt": "2026-11-11T12:08:19.801Z"
     },
     {
       "fileName": "gd656killicon-1.1.0.020-1.21.1-neoforge.jar",

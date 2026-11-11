@@ -6,7 +6,9 @@
 
 **2026-11-11 深夜追加**：加 Superb Warfare 0.8.9.2（+ KotlinForForge 5.12.0）与 Patchouli，51 Mod；帕秋莉手册 `mod_l61phe:irontide_arms`「钢铁潮汐·军械手册」5 章 19 条，首次进服由 `overrides/kubejs/server_scripts/irontide_guide.js` 发一本；`overrides/options.txt` 把 Iris 默认「重载光影 = R」解绑为 `key.keyboard.unknown`，R 归 TaCZ 换弹。
 
-**下一步**：① 卓越前线实机跑一轮（研究台出蓝图 → 锻造成枪 → 打一发）；② 帕秋莉手册开一次确认五章排版；③ 打 tag `m1`。
+**2026-11-11 又追加**：FTB 任务书补第 4 章「军械手册」（chapters/arms_manual.snbt，20 个任务，与帕秋莉手册一一对应，末尾含连锁采集说明）；加 FTB Ultimine 2101.1.15（依赖 FTB Library/Architectury 已在包内），52 Mod；Ultimine 默认反引号无冲突未改键。构建通过（52 Mod + 39 override），章节内容未在游戏内打开验证。
+
+**下一步**：① 卓越前线实机跑一轮（研究台出蓝图 → 锻造成枪 → 打一发）；② 进世界打开 FTB 任务书第 4 章「军械手册」确认排版与连线（章节 SNBT 只在世界加载时解析）；③ 试一次连锁采集默认键（反引号）；④ 打 tag m1。
 
 **卡点**（已解）：ModMind 清单元数据已按磁盘重建（2026-11-11）——`modmind.pack.json` 47 条（逐条 sha256，排除模块产物与 `.disabled`）、`modmind.modpack.lock.json` 13 条全部核验通过（sodium→`S3DUMfBo`、tacz 1.2.0→`SzzJttH8/O2Pfsh6w`）。托管构建/同步已通（48 Mod + 7 override）。顺手修了同步器的坑：纯数据 jar 若 `neoforge.mods.toml` 写 `javafml` 又没 class 会被拒，用 `脚本/patch_datapack_modloader.ps1` 改成 `lowcodefml`（已对 DnT、malfu 执行）。无头验证在本包不可用：Sodium 拒 HeadlessMC 的 LWJGL 3.3.3，只能走 rendered。另有一条定论：KubeJS `shapeless` 结果只支持单个 ItemStack，多发必须走 Create 的 `results` 数组。
 

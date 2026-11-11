@@ -142,31 +142,31 @@
     {
       "provider": "modrinth",
       "projectId": "AANobbMI",
-      "versionId": "uMOpc5uV",
-      "versionName": "mc1.21.1-0.8.13-neoforge",
-      "fileName": "sodium-neoforge-0.8.13+mc1.21.1.jar",
-      "sha256": "575d187b15328d7bddd8a9b1bee64333c22c14735f5780ec49eac0cd5503c08d",
-      "size": 1292934,
+      "versionId": "S3DUMfBo",
+      "versionName": "mc1.21.1-0.8.12-neoforge",
+      "fileName": "sodium-neoforge-0.8.12+mc1.21.1.jar",
+      "sha256": "2f9e69ec9521e657100ef83b3bdf3f18dba6078d57f9853722d7643a577b2266",
+      "size": 1291418,
       "side": "client",
       "sources": [
-        "https://cdn.modrinth.com/data/AANobbMI/versions/uMOpc5uV/sodium-neoforge-0.8.13%2Bmc1.21.1.jar"
+        "https://cdn.modrinth.com/data/AANobbMI/versions/S3DUMfBo/sodium-neoforge-0.8.12%2Bmc1.21.1.jar"
       ],
-      "installedAt": "2026-11-04T04:47:51.504Z",
+      "installedAt": "2026-11-10T05:53:12.206Z",
       "aliases": []
     },
     {
       "provider": "modrinth",
-      "projectId": "OypNE65K",
-      "versionId": "62q6mB5Q",
-      "versionName": "1.1.8-hotfix-r7",
-      "fileName": "tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar",
-      "sha256": "fa3a09f15265a4065a566960a8deab315f6c601a5f9a542840b362d455dd5470",
-      "size": 57247579,
+      "projectId": "SzzJttH8",
+      "versionId": "O2Pfsh6w",
+      "versionName": "1.2.0",
+      "fileName": "tacz-neoforge-1.21.1-1.2.0.jar",
+      "sha256": "b01384895b51a32e65ae9e2de6b99fa92b2f9285c2dafcac2112932fc93bff21",
+      "size": 68786458,
       "side": "both",
       "sources": [
-        "https://cdn.modrinth.com/data/OypNE65K/versions/62q6mB5Q/tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar"
+        "https://cdn.modrinth.com/data/SzzJttH8/versions/O2Pfsh6w/tacz-neoforge-1.21.1-1.2.0.jar"
       ],
-      "installedAt": "2026-11-04T04:46:38.917Z",
+      "installedAt": "2026-11-07T09:14:15.730Z",
       "aliases": []
     },
     {

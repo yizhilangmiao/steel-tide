@@ -59,18 +59,6 @@
       "addedAt": "2026-11-04T04:48:01.123Z"
     },
     {
-      "fileName": "sodium-neoforge-0.8.13+mc1.21.1.jar",
-      "sha256": "575d187b15328d7bddd8a9b1bee64333c22c14735f5780ec49eac0cd5503c08d",
-      "size": 1292934,
-      "addedAt": "2026-11-04T04:48:01.076Z"
-    },
-    {
-      "fileName": "tacz-neoforge-1.21.1-1.1.8-hotfix-r7.jar",
-      "sha256": "fa3a09f15265a4065a566960a8deab315f6c601a5f9a542840b362d455dd5470",
-      "size": 57247579,
-      "addedAt": "2026-11-04T04:48:01.211Z"
-    },
-    {
       "fileName": "tacz-pack-upgrader-2.1.3.jar",
       "sha256": "58d326d6c4924f4a1e8e16341b0973c9d361276adb4f2ca522d87c0b0a0f5473",
       "size": 1704774,
@@ -81,6 +69,222 @@
       "sha256": "f6db04195820c8508704277ea76d63723804ff236a7b780369ba59ebe5cd9c27",
       "size": 24408776,
       "addedAt": "2026-11-04T04:48:01.153Z"
+    },
+    {
+      "fileName": "architectury-13.0.11-neoforge.jar",
+      "sha256": "9cc92f2c09533fc5482c60f993bd891c655a0e32b637037cdcb7c2b23adedeeb",
+      "size": 584734,
+      "addedAt": "2026-11-08T14:11:15.099Z"
+    },
+    {
+      "fileName": "bettercombat-neoforge-2.4.0+1.21.1.jar",
+      "sha256": "0446e9faa98b764ba010ac31e337d14ac96bbb2fbfeff9b599e1efd510dfde5a",
+      "size": 1045389,
+      "addedAt": "2026-11-08T14:11:01.71Z"
+    },
+    {
+      "fileName": "cloth-config-15.0.140-neoforge.jar",
+      "sha256": "65e722e0d98431a07c45f8bdd8d529a217cc8c175fde1740248bd5c1b4f3c0d4",
+      "size": 1163890,
+      "addedAt": "2026-11-08T14:11:01.72Z"
+    },
+    {
+      "fileName": "Clumps-neoforge-1.21.1-19.0.0.1.jar",
+      "sha256": "b524ccdace2ef8fd19f5b2074f7de1103ac5065c52553f064c00e098346c293e",
+      "size": 18382,
+      "addedAt": "2026-11-08T14:11:01.518Z"
+    },
+    {
+      "fileName": "CreateNumismatics-1.1.0+neoforge-mc1.21.1.jar",
+      "sha256": "d33a33b46f923462ae6806a024851afaefa473ced0e95bf405f8ebc13abce767",
+      "size": 1894517,
+      "addedAt": "2026-11-08T14:11:15.073Z"
+    },
+    {
+      "fileName": "cristellib-neoforge-1.21.1-3.1.7.jar",
+      "sha256": "11e05dbc97bd3fe1790bd6361747240e314c1dbf40b590ea20cc691dc8396c38",
+      "size": 583525,
+      "addedAt": "2026-11-08T14:11:01.732Z"
+    },
+    {
+      "fileName": "dungeons-and-taverns-v4.4.4.jar",
+      "sha256": "dff3cbfab76425d83aa76d869ffebf9c1d6903d929d0f04dece968007159820f",
+      "size": 12876053,
+      "addedAt": "2026-11-11T08:10:47.407Z"
+    },
+    {
+      "fileName": "DungeonsArise-1.21.1-2.1.68-release.jar",
+      "sha256": "7eee1eca7e3b2c6c1bede055934f391ae2e8349ffe33e106f451176d2cfcf0e4",
+      "size": 11842679,
+      "addedAt": "2026-11-08T14:11:01.644Z"
+    },
+    {
+      "fileName": "entityculling-neoforge-1.11.3-mc1.21.1.jar",
+      "sha256": "fa73ac70a3766568203b730a1573b4b54d88fb48dff4a33d8c4a80be9b8d17d5",
+      "size": 1510075,
+      "addedAt": "2026-11-08T14:11:01.774Z"
+    },
+    {
+      "fileName": "ferritecore-7.0.3-neoforge.jar",
+      "sha256": "d87ea28262715ebff45b8a82d493e6b468e7a4521bc021df5d88302196d030a8",
+      "size": 121559,
+      "addedAt": "2026-11-08T14:11:01.787Z"
+    },
+    {
+      "fileName": "ftb-library-neoforge-2101.1.39.jar",
+      "sha256": "ca64bd1b5f335406900f74eeafacea5a3580a3933d61de6b6600a64eb12a9a95",
+      "size": 1477833,
+      "addedAt": "2026-11-08T14:11:15.127Z"
+    },
+    {
+      "fileName": "ftb-quests-neoforge-2101.1.38.jar",
+      "sha256": "3752657a82c69b0a80c034700df86f1a3d7c5f3e3aad814b5af748b9082a834b",
+      "size": 1635517,
+      "addedAt": "2026-11-08T14:11:15.154Z"
+    },
+    {
+      "fileName": "ftb-teams-neoforge-2101.1.12.jar",
+      "sha256": "b3f33436070b7ae4a706280561f1d2f1d1eb1a089cb13ec9851e99646165aed2",
+      "size": 308430,
+      "addedAt": "2026-11-08T14:11:15.18Z"
+    },
+    {
+      "fileName": "gd656killicon-1.1.0.020-1.21.1-neoforge.jar",
+      "sha256": "4dda31eb7ad0768ad3dda874c4f1ab36a88830442e7c4282c86d2e2268f544c2",
+      "size": 5939602,
+      "addedAt": "2026-11-08T14:11:01.817Z"
+    },
+    {
+      "fileName": "hitmarker-neoforge-1.21.1.jar",
+      "sha256": "4c57889fbf568e525c962b9c6fa633839be4f93014305f9dfacc7f391f485bfe",
+      "size": 32197,
+      "addedAt": "2026-11-09T14:24:48.771Z"
+    },
+    {
+      "fileName": "IMBlocker-5.6.2.1-neoforge+1.20.6-1.21.8.jar",
+      "sha256": "e41dc09209a527b839e79080b9103e138aafc850ae81c8274c306e639e9c623a",
+      "size": 225646,
+      "addedAt": "2026-11-10T07:18:35.059Z"
+    },
+    {
+      "fileName": "ImmediatelyFast-NeoForge-1.6.15+1.21.1.jar",
+      "sha256": "7d7b1d7b9f71d5303e42b2fa45f222a5ab06e0ef5982abb6da5dd9cc449b3702",
+      "size": 368896,
+      "addedAt": "2026-11-08T14:11:01.657Z"
+    },
+    {
+      "fileName": "iris-neoforge-1.8.14-beta.1+mc1.21.1.jar",
+      "sha256": "60d5f8bf52f25e9986440f4a4270a6bd986d9cff994510e1108ac1547063b314",
+      "size": 2540723,
+      "addedAt": "2026-11-10T05:53:12.235Z"
+    },
+    {
+      "fileName": "irisveil-0.4.0.jar",
+      "sha256": "5b48035a2469d788a3f9e20e8dd7111be0292d1a8549ac279f4340033b429915",
+      "size": 956798,
+      "addedAt": "2026-11-10T05:53:12.258Z"
+    },
+    {
+      "fileName": "jecharacters-1.21.1-neoforge-4.5.30.jar",
+      "sha256": "1b8e41c97fe4bc3b569475c2adb1351a38547e25bfda322a6ab80e44efd992e1",
+      "size": 255428,
+      "addedAt": "2026-11-10T07:18:35.073Z"
+    },
+    {
+      "fileName": "lootr-ftb-neoforge-1.21.1-0.0.0.1.jar",
+      "sha256": "df1a19c8aa56f1727e81e7d1d1334736537699a95e686957c1721d73c2cb1646",
+      "size": 4337,
+      "addedAt": "2026-11-10T05:24:01.885Z"
+    },
+    {
+      "fileName": "lootr-neoforge-1.21.1-1.11.38.127.jar",
+      "sha256": "5c74de4709d1c13b25880fdd241a89d5d9f331346d20edc76f80ccd4d99dc66c",
+      "size": 1075929,
+      "addedAt": "2026-11-10T05:24:01.871Z"
+    },
+    {
+      "fileName": "malfu-combat-animation-3.1-1.21.1-fixed.jar",
+      "sha256": "a67cb22cd80362d46d4b0ac996c9be8f708ceca3634a3ca783a198b7d24d7d10",
+      "size": 482205,
+      "addedAt": "2026-11-11T08:12:01.304Z"
+    },
+    {
+      "fileName": "modernfix-neoforge-5.27.27+mc1.21.1.jar",
+      "sha256": "7010aae2e837122fe8dabd5932358e2ba334fcbc62ca6530cb1cb00402d2c63b",
+      "size": 614138,
+      "addedAt": "2026-11-08T14:11:01.829Z"
+    },
+    {
+      "fileName": "notenoughanimations-neoforge-1.12.7-mc1.21.1.jar",
+      "sha256": "5b8107cf01128523233287d9b0789f743f9d6186bda651de838e02350b311828",
+      "size": 1868196,
+      "addedAt": "2026-11-08T14:11:01.843Z"
+    },
+    {
+      "fileName": "ParCool-1.21.1-4.0.2.0.jar",
+      "sha256": "82363025dff28359d740c19457b37ce80fd142a1ebc75df96cd85e2dc12c05ef",
+      "size": 1265497,
+      "addedAt": "2026-11-09T14:24:48.734Z"
+    },
+    {
+      "fileName": "player-animation-lib-forge-2.0.4+1.21.1.jar",
+      "sha256": "dbe5de45f5cd60c0e5e47af14e6d564534a98456e973cf670cb881f6938eee92",
+      "size": 203149,
+      "addedAt": "2026-11-08T14:11:01.855Z"
+    },
+    {
+      "fileName": "ponderer-1.21.1-neoforge-1.11.0.jar",
+      "sha256": "337b519b79da209a614cb5bf9d3f680cce274fe456bd6b0116d4a1f219efde23",
+      "size": 3770337,
+      "addedAt": "2026-11-08T14:11:15.217Z"
+    },
+    {
+      "fileName": "ShoulderSurfing-NeoForge-1.21.1-5.3.0.jar",
+      "sha256": "6be971980420ce54f5e76d6f73f78c10e785429da78a6200a93f8fdc018464f0",
+      "size": 435072,
+      "addedAt": "2026-11-09T14:24:48.753Z"
+    },
+    {
+      "fileName": "sodium-extra-neoforge-0.9.3+mc1.21.1.jar",
+      "sha256": "fa553bce38bad6fdd478841a270a79a31dc05f87d7892b1cf839850602ac9186",
+      "size": 465013,
+      "addedAt": "2026-11-10T05:58:08.272Z"
+    },
+    {
+      "fileName": "sodium-neoforge-0.8.12+mc1.21.1.jar",
+      "sha256": "2f9e69ec9521e657100ef83b3bdf3f18dba6078d57f9853722d7643a577b2266",
+      "size": 1291418,
+      "addedAt": "2026-11-10T05:53:12.206Z"
+    },
+    {
+      "fileName": "Structory_26.2_v1.3.7.jar",
+      "sha256": "e9079b2bb9bc2efb9b0f1244376488e41f8b50f25415094d8f03dc753cdfb131",
+      "size": 1261346,
+      "addedAt": "2026-11-08T14:11:01.671Z"
+    },
+    {
+      "fileName": "t_and_t-fabric-neoforge-1.13.11.jar",
+      "sha256": "270fc0d1c99e54bc15f43d64bdaac60a90cb896efc357af624988e677136440f",
+      "size": 3553006,
+      "addedAt": "2026-11-08T14:11:01.885Z"
+    },
+    {
+      "fileName": "tacz-neoforge-1.21.1-1.2.0.jar",
+      "sha256": "b01384895b51a32e65ae9e2de6b99fa92b2f9285c2dafcac2112932fc93bff21",
+      "size": 68786458,
+      "addedAt": "2026-11-07T09:14:15.73Z"
+    },
+    {
+      "fileName": "YungsApi-1.21.1-NeoForge-5.1.9.jar",
+      "sha256": "375e0b2f988ab4f5bde182166c0f0b102377adc8f823660c24ade08b0b3cde56",
+      "size": 413763,
+      "addedAt": "2026-11-08T14:11:01.684Z"
+    },
+    {
+      "fileName": "YungsBetterDungeons-1.21.1-NeoForge-5.1.4.jar",
+      "sha256": "61816c3b7c9d92c6b44f93dce87ceb0a22827f20285d5d9c4d10d519d734de04",
+      "size": 782160,
+      "addedAt": "2026-11-08T14:11:01.696Z"
     }
   ],
   "modules": [

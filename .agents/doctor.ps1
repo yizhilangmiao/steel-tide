@@ -179,6 +179,33 @@ if (-not (Test-Path $selfFile)) {
   }
 }
 
+# ---------- patches：出包前自证。真跑一次，不信「我记得打过了」 ----------
+if ($cfg.patches) {
+  $p = $cfg.patches
+  $pcwd = if ($p.cwd) { Resolve-P $p.cwd } else { $ws }
+  $saved_enc = $env:PYTHONIOENCODING
+  $env:PYTHONIOENCODING = 'utf-8'
+  $pout = ''
+  $pcode = 1
+  try {
+    $pout = (& pwsh -NoProfile -Command "Set-Location '$pcwd'; $($p.cmd)" 2>&1 | Out-String)
+    $pcode = $LASTEXITCODE
+  } catch {
+    $pout = $_.Exception.Message
+    $pcode = 1
+  }
+  $env:PYTHONIOENCODING = $saved_enc
+  $okp = ($pcode -eq 0)
+  if ($okp -and $p.expect) { $okp = ($pout -match [regex]::Escape($p.expect)) }
+  $lastline = ($pout -split "`r?`n" | Where-Object { $_.Trim() } | Select-Object -Last 1)
+  if (-not $okp) {
+    $problems += "patch:$($p.name)"
+    $rows += New-Row 'patch' $p.name $false ("EXIT=$pcode  $lastline")
+  } else {
+    $rows += New-Row 'patch' $p.name $true ("EXIT=0  " + ($lastline -replace '\s+', ' '))
+  }
+}
+
 # ---------- links (junction / symlink)：一个源码树只许有一个路径 ----------
 $proj = Split-Path $root -Parent
 $links = Get-ChildItem $proj -Directory -Force -Recurse -Depth 4 -ErrorAction SilentlyContinue |
@@ -208,10 +235,52 @@ if ($drift.Count -gt 0) {
   $rows += New-Row 'drift' '(none)' $true '磁盘与登记一致'
 }
 
+# ---------- temp：临时区体积闸门（>10 GiB 自动清到 8 GiB，24h 内活跃项不动） ----------
+# 2026-11-11 参数化：原来硬编码 E:\ailian\...\node.exe，铺到别的项目一律误红。
+# 现在按「项目自带 node → PATH 里的 node」两级找；项目根本没有 trim-temp.mjs 时整段跳过（不报红）。
+$trimJs = Join-Path $proj '工具\脚本\临时区管理\trim-temp.mjs'
+if (Test-Path $trimJs) {
+  $trimNode = $null
+  $bundled = Get-ChildItem (Join-Path $ws '工具\node') -Recurse -Filter 'node.exe' -Depth 2 -ErrorAction SilentlyContinue |
+             Select-Object -First 1
+  if ($bundled) { $trimNode = $bundled.FullName }
+  if (-not $trimNode) {
+    $g = Get-Command node -ErrorAction SilentlyContinue
+    if ($g) { $trimNode = $g.Source }
+  }
+  if (-not $trimNode) {
+    $rows += New-Row 'temp' '(missing)' $false '有 trim-temp.mjs 但找不到 node.exe（工具\node\ 或 PATH 皆无）'
+    $problems += 'temp:nonode'
+  } else {
+    try {
+      $tl = (& $trimNode $trimJs --auto 2>&1 | Select-Object -Last 1)
+      $rows += New-Row 'temp' '临时区' $true ([string]$tl).Trim()
+    } catch {
+      $rows += New-Row 'temp' '临时区' $false ('闸门执行失败: ' + $_.Exception.Message)
+      $problems += 'temp:fail'
+    }
+  }
+}
+
 # ---------- journal tail ----------
 $jf = Join-Path $root 'journal.jsonl'
 $last = @()
 if (Test-Path $jf) { $last = Get-Content $jf -Encoding UTF8 -Tail 3 }
+
+# ---------- progress：当前进度卡。新会话拿不到它会从零开始，所以在 doctor 里强制露出 ----------
+$pf = Join-Path $root 'progress.md'
+$progressMax = 50   # 正文上限（标题/说明/空行另给 4 行余量）
+$progressLines = @()
+if (Test-Path $pf) {
+  $progressLines = @(Get-Content $pf -Encoding UTF8 | Where-Object { $_.Trim() -ne '' })
+  if ($progressLines.Count -gt ($progressMax + 4)) {
+    $rows += New-Row 'progress' '超长' $false ("progress.md 有 {0} 行（上限 {1}），旧内容先归档到 memory\handoff.md" -f $progressLines.Count, $progressMax)
+    $problems += 'progress:oversize'
+  }
+} else {
+  $rows += New-Row 'progress' '(missing)' $false '缺 .agents\progress.md，新会话拿不到进度'
+  $problems += 'progress:missing'
+}
 
 if ($Json) {
   [pscustomobject]@{
@@ -221,6 +290,7 @@ if ($Json) {
     envBy    = $cfg.by
     rows     = $rows
     problems = $problems
+    progress = ($progressLines -join "`n")
   } | ConvertTo-Json -Depth 6
   exit ([int]($problems.Count -gt 0))
 }
@@ -236,7 +306,7 @@ if (-not $Quiet) {
   } catch { }
   Write-Host $bar
 
-  foreach ($g in 'tool', 'svc', 'path', 'skill', 'link', 'drift') {
+  foreach ($g in 'tool', 'svc', 'path', 'patch', 'skill', 'link', 'drift', 'temp') {
     $set = $rows | Where-Object { $_.kind -eq $g }
     if (-not $set) { continue }
     Write-Host ""
@@ -261,6 +331,42 @@ if (-not $Quiet) {
     Write-Host "先补/确认，再动代码。补完务必登记：" -ForegroundColor Yellow
     Write-Host '  pwsh -File .agents\reg.ps1 -Agent <名字> -Act install -Target <东西> -Cmd "<命令>" -Result ok'
   }
+  Write-Host ""
+
+  # 新会话开场必读：这是"上一轮干到哪了"的唯一入口，放在最后一块，读完就开工
+  if ($progressLines.Count -gt 0) {
+    Write-Host $bar
+    Write-Host ("  当前进度  {0}" -f (Get-Item $pf).LastWriteTime.ToString('yyyy-MM-dd HH:mm'))
+    Write-Host $bar
+    foreach ($l in $progressLines) {
+      if ($l -match '^#\s') { Write-Host $l -ForegroundColor Cyan }
+      elseif ($l -match '^##\s') { Write-Host $l -ForegroundColor Cyan }
+      else { Write-Host "  $l" }
+    }
+    Write-Host ""
+    Write-Host "收工前覆盖写 .agents\progress.md（≤$progressMax 行），否则下一轮还是从零开始。" -ForegroundColor DarkGray
+    Write-Host ""
+  } else {
+    Write-Host "!! 缺 .agents\progress.md —— 新会话拿不到进度，先建一个。" -ForegroundColor Yellow
+    Write-Host ""
+  }
+
+  # 反向通道：老大在 QQ 里跟小鲸鱼说的话，靠 pull-qq.py 拉回来。
+  # 这里只报"上次拉到什么时候"，不去连服务器（会拖慢每次 doctor）。
+  $qs = Join-Path $root 'qq-inbox-state.json'
+  $qm = Join-Path $root 'inbox\老大留言.md'
+  $qPulled = $null
+  if (Test-Path $qs) {
+    try { $qPulled = (Get-Content $qs -Raw -Encoding UTF8 | ConvertFrom-Json).pulled_at } catch { }
+  }
+  Write-Host "-- 老大的 QQ 留言 --"
+  if ($qPulled) {
+    $qTip = if (Test-Path $qm) { '本地有存档' } else { '本地无存档' }
+    Write-Host ("  上次拉取 {0}（{1}）" -f $qPulled, $qTip)
+  } else {
+    Write-Host "  还没拉过"
+  }
+  Write-Host "  拉新的：python 工具\脚本\pull-qq.py --quiet" -ForegroundColor DarkGray
   Write-Host ""
 }
 

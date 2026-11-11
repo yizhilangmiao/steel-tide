@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "irontide:raid_scrap",
+      "count": 8
+    },
+    {
+      "item": "irontide:fuel_module_1"
+    },
+    {
+      "item": "minecraft:charcoal"
+    },
+    {
+      "item": "minecraft:coal_block"
+    }
+  ],
+  "result": {
+    "id": "irontide:fuel_module_2",
+    "count": 1
+  }
+}

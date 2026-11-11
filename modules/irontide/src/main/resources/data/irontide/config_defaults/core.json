@@ -55,6 +55,26 @@
 
   "modules": {
     "levels": ["I", "II", "III"],
-    "maxLevel": { "T1": "III", "T2": "V", "T3": "VII", "T4": "VII" }
+    "maxLevel": { "T1": "III", "T2": "V", "T3": "VII", "T4": "VII" },
+    "fuel": [
+      { "capacity": 60000, "efficiency": 1.00 },
+      { "capacity": 120000, "efficiency": 0.80 },
+      { "capacity": 240000, "efficiency": 0.60 }
+    ],
+    "armor": [
+      { "health": 1500, "reduction": 0.10 },
+      { "health": 4000, "reduction": 0.25 },
+      { "health": 9000, "reduction": 0.40 }
+    ],
+    "beacon": [
+      { "reward": 0.10 },
+      { "reward": 0.25 },
+      { "reward": 0.50 }
+    ],
+    "transfer": [
+      { "axes": 0 },
+      { "axes": 1 },
+      { "axes": 2 }
+    ]
   }
 }

@@ -2,6 +2,7 @@ package dev.modmind.irontide.menu;
 
 import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
+import dev.modmind.irontide.item.CoreModuleItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -40,21 +41,31 @@ public class CoreMenu extends AbstractContainerMenu {
 
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int FUEL_SLOT_X = 23;
-    private static final int FUEL_SLOT_Y = 66;
+    private static final int FUEL_SLOT_Y = 68;
+    /** 四个模块槽紧跟在燃料槽后面：1 燃料 / 2 装甲 / 3 信标 / 4 传输。 */
+    private static final int MODULE_SLOT_START = 1;
+    private static final int MODULE_SLOT_COUNT = 4;
+    private static final int MODULE_SLOT_X = 23;
+    private static final int MODULE_SLOT_Y = 104;
+    private static final int MODULE_SLOT_STEP = 20;
+    /** 核心自己的槽到这里为止（不含），之后的都是玩家背包。 */
+    private static final int CORE_SLOT_END = MODULE_SLOT_START + MODULE_SLOT_COUNT;
     private static final int INVENTORY_X = 23;
-    private static final int INVENTORY_Y = 122;
-    private static final int HOTBAR_Y = 184;
+    private static final int INVENTORY_Y = 128;
+    private static final int HOTBAR_Y = 188;
 
     private final ContainerLevelAccess access;
     private final ContainerData data;
     private final Container fuelSlot;
+    private final Container moduleSlots;
 
     /** 服务端构造：直接绑定方块实体。 */
     public CoreMenu(int containerId, Inventory playerInventory, AndesiteCoreBlockEntity core) {
         this(containerId, playerInventory,
                 ContainerLevelAccess.create(core.getLevel(), core.getBlockPos()),
                 new CoreData(core),
-                core.getFuelSlot());
+                core.getFuelSlot(),
+                core.getModuleSlots());
     }
 
     /**
@@ -73,6 +84,13 @@ public class CoreMenu extends AbstractContainerMenu {
                     public boolean canPlaceItem(int index, ItemStack stack) {
                         return stack.getBurnTime(RecipeType.SMELTING) > 0;
                     }
+                },
+                new SimpleContainer(MODULE_SLOT_COUNT) {
+                    @Override
+                    public boolean canPlaceItem(int index, ItemStack stack) {
+                        return stack.getItem() instanceof CoreModuleItem module
+                                && AndesiteCoreBlockEntity.slotOf(module.moduleType()) == index;
+                    }
                 });
     }
 
@@ -81,11 +99,12 @@ public class CoreMenu extends AbstractContainerMenu {
     }
 
     private CoreMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access,
-                     ContainerData data, Container fuelSlot) {
+                     ContainerData data, Container fuelSlot, Container moduleSlots) {
         super(ModMindEntry.CORE_MENU.get(), containerId);
         this.access = access;
         this.data = data;
         this.fuelSlot = fuelSlot;
+        this.moduleSlots = moduleSlots;
 
         addSlot(new Slot(fuelSlot, 0, FUEL_SLOT_X, FUEL_SLOT_Y) {
             @Override
@@ -93,6 +112,17 @@ public class CoreMenu extends AbstractContainerMenu {
                 return stack.getBurnTime(RecipeType.SMELTING) > 0;
             }
         });
+
+        for (int i = 0; i < MODULE_SLOT_COUNT; i++) {
+            final int moduleIndex = i;
+            addSlot(new Slot(moduleSlots, i, MODULE_SLOT_X + i * MODULE_SLOT_STEP, MODULE_SLOT_Y) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return stack.getItem() instanceof CoreModuleItem module
+                            && AndesiteCoreBlockEntity.slotOf(module.moduleType()) == moduleIndex;
+                }
+            });
+        }
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
@@ -138,11 +168,13 @@ public class CoreMenu extends AbstractContainerMenu {
         ItemStack stack = slot.getItem();
         ItemStack copy = stack.copy();
 
-        if (index == FUEL_SLOT_INDEX) {
-            if (!moveItemStackTo(stack, FUEL_SLOT_INDEX + 1, slots.size(), true)) {
+        if (index < CORE_SLOT_END) {
+            // 核心自己的槽 → 往玩家背包挪
+            if (!moveItemStackTo(stack, CORE_SLOT_END, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(stack, FUEL_SLOT_INDEX, FUEL_SLOT_INDEX + 1, false)) {
+        } else if (!moveItemStackTo(stack, FUEL_SLOT_INDEX, CORE_SLOT_END, false)) {
+            // 背包里拿的东西：先试着塞进燃料槽或对应模块槽，放不下就原地不动
             return ItemStack.EMPTY;
         }
 

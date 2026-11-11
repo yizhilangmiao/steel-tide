@@ -4,12 +4,23 @@ import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
 import dev.modmind.irontide.data.IronTideData;
 import dev.modmind.irontide.multiblock.StructureValidator;
+import dev.modmind.irontide.raid.RaidScheduler;
+import dev.modmind.irontide.raid.SafeZone;
 import dev.modmind.irontide.util.BlockNames;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -33,6 +44,58 @@ public final class IronTideEvents {
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onEntityPlace);
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onBlockBreak);
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onChunkLoad);
+        NeoForge.EVENT_BUS.addListener(IronTideEvents::onMobSpawn);
+        NeoForge.EVENT_BUS.addListener(IronTideEvents::onLivingDrops);
+    }
+
+    /**
+     * 怪潮怪物掉硬币。硬币没有任何合成配方（Numismatics 本就不给），
+     * 所以这是玩家唯一的"印钞"之外的正规来源之一（另一个是商店买卖）。
+     * 没装 Numismatics 时静默跳过。
+     */
+    private static void onLivingDrops(LivingDropsEvent event) {
+        if (!(event.getEntity() instanceof Mob mob)) {
+            return;
+        }
+        if (!(mob.level() instanceof ServerLevel level)) {
+            return;
+        }
+        if (!RaidScheduler.isRaider(mob.getUUID())) {
+            return;
+        }
+        int wave = RaidScheduler.currentWave();
+        var random = level.random;
+        int spurs = 1 + (random.nextInt(3) == 0 ? 1 : 0);
+        dropCoin(level, mob, event, "spur", spurs);
+        if (wave >= 5 && random.nextFloat() < 0.10F) {
+            dropCoin(level, mob, event, "bevel", 1);
+        }
+    }
+
+    private static void dropCoin(ServerLevel level, Mob mob, LivingDropsEvent event, String path, int count) {
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("numismatics", path));
+        if (item == Items.AIR) {
+            return;
+        }
+        ItemEntity drop = new ItemEntity(level, mob.getX(), mob.getY() + 0.5D, mob.getZ(),
+                new ItemStack(item, count));
+        drop.setDefaultPickUpDelay();
+        event.getDrops().add(drop);
+    }
+
+    /**
+     * 安全区内一律不刷怪。这是"安全区"的硬保证——光照只是视觉，拦在这里才真的不刷。
+     */
+    private static void onMobSpawn(MobSpawnEvent.PositionCheck event) {
+        if (!SafeZone.isActive()) {
+            return;
+        }
+        int x = (int) Math.floor(event.getX());
+        int y = (int) Math.floor(event.getY());
+        int z = (int) Math.floor(event.getZ());
+        if (SafeZone.contains(x, y, z)) {
+            event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+        }
     }
 
     private static void onServerAboutToStart(ServerAboutToStartEvent event) {
@@ -46,10 +109,14 @@ public final class IronTideEvents {
 
     private static void onServerStopped(ServerStoppedEvent event) {
         AndesiteCoreBlockEntity.clearLoaded();
+        RaidScheduler.reset();
         tickCounter = 0;
     }
 
     private static void onServerTick(ServerTickEvent.Post event) {
+        if (IronTideData.isLoaded()) {
+            RaidScheduler.tick(event.getServer());
+        }
         if (++tickCounter < 100) {
             return;
         }

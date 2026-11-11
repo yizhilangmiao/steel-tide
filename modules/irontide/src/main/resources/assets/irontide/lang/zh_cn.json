@@ -1,4 +1,20 @@
 {
   "itemGroup.irontide": "钢铁潮汐",
-  "block.irontide.andesite_core": "安山核心"
+  "block.irontide.andesite_core": "安山核心",
+  "item.irontide.fuel_module_1": "燃料模块 I",
+  "item.irontide.fuel_module_2": "燃料模块 II",
+  "item.irontide.fuel_module_3": "燃料模块 III",
+  "item.irontide.armor_module_1": "装甲模块 I",
+  "item.irontide.armor_module_2": "装甲模块 II",
+  "item.irontide.armor_module_3": "装甲模块 III",
+  "item.irontide.beacon_module_1": "信标模块 I",
+  "item.irontide.beacon_module_2": "信标模块 II",
+  "item.irontide.beacon_module_3": "信标模块 III",
+  "item.irontide.transfer_module_1": "传输模块 I",
+  "item.irontide.transfer_module_2": "传输模块 II",
+  "item.irontide.transfer_module_3": "传输模块 III",
+  "item.irontide.raid_scrap": "怪潮残骸",
+  "item.irontide.core_repair_kit": "核心维修套件",
+  "item.irontide.bullet_casing": "弹壳",
+  "item.irontide.propellant": "发射药"
 }

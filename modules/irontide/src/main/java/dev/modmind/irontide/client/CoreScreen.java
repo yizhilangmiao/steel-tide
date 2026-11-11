@@ -10,12 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * 核心面板。视觉照机械动力（Create）的容器界面走：浅灰标题带、深灰主区、
- * 木纹背包区、亮木快捷栏，全部纯色矩形自绘，不引用任何贴图。
+ * 核心面板：深棕标题带 + 米黄主体 + 像素风按钮，纯色自绘，不引用任何贴图。
  *
- * <p>配色取自 create-mcGUI 资源包（ARR，只借配色不拷文件）：
- * {@code #C6C6C6} 标题带、{@code #787878} 压线、{@code #575757} 主区、
- * {@code #8B8B8B} 槽面、{@code #926651}/{@code #8B584B} 木纹、{@code #B59370} 快捷栏。</p>
+ * <p>配色按实际运行截图校准：标题带 {@code #4C3426}、压线 {@code #C08F55}、
+ * 主体 {@code #E6D6AC}、燃料条底 {@code #8B7355}／填充 {@code #D7AA5E}。</p>
  */
 public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
     private static final int PANEL_WIDTH = 208;
@@ -23,47 +21,45 @@ public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
 
     // 与 CoreMenu 里的槽位坐标必须一致
     private static final int FUEL_SLOT_X = 23;
-    private static final int FUEL_SLOT_Y = 66;
+    private static final int FUEL_SLOT_Y = 68;
+    private static final int MODULE_SLOT_X = 23;
+    private static final int MODULE_SLOT_Y = 104;
+    private static final int MODULE_SLOT_STEP = 20;
+    private static final int MODULE_SLOT_COUNT = 4;
     private static final int INVENTORY_X = 23;
-    private static final int INVENTORY_Y = 122;
-    private static final int HOTBAR_Y = 184;
+    private static final int INVENTORY_Y = 128;
+    private static final int HOTBAR_Y = 188;
 
     private static final int TITLE_H = 18;
-    private static final int MAIN_END = 112;
-    private static final int INV_END = 178;
-    private static final int HOTBAR_END = 204;
+    private static final int INV_END = 182;
 
-    private static final int BAR_X = 48;
-    private static final int BAR_Y = 69;
+    private static final int BAR_X = 45;
+    private static final int BAR_Y = 71;
     private static final int BAR_WIDTH = 140;
     private static final int BAR_HEIGHT = 10;
 
     private static final int BUTTON_Y = 208;
 
-    // Create 风格色板
-    private static final int BLACK = 0xFF000000;
-    private static final int TITLE_BG = 0xFFC6C6C6;
-    private static final int TITLE_LINE = 0xFF787878;
-    private static final int TITLE_TOP = 0xFFE8E8E8;
-    private static final int MAIN_BG = 0xFF575757;
-    private static final int MAIN_DARK = 0xFF393939;
-    private static final int SLOT_FACE = 0xFF8B8B8B;
-    private static final int SLOT_DARK = 0xFF4A4A4A;
-    private static final int SLOT_LIGHT = 0xFFC6C6C6;
-    private static final int WOOD_LIGHT = 0xFF926651;
-    private static final int WOOD_DARK = 0xFF8B584B;
-    private static final int WOOD_EDGE = 0xFF5E393E;
-    private static final int WOOD_TOP = 0xFFA87060;
-    private static final int HOTBAR_BG = 0xFFB59370;
-    private static final int HOTBAR_DARK = 0xFF8C5D4B;
-    private static final int HOTBAR_LIGHT = 0xFFC9A882;
+    private static final int OUTLINE = 0xFF2A1A0E;
+    private static final int TITLE_BG = 0xFF4C3426;
+    private static final int TITLE_TEXT = 0xFFE6D6AC;
+    private static final int ACCENT_LINE = 0xFFC08F55;
+    private static final int MAIN_BG = 0xFFE6D6AC;
+    private static final int SLOT_FACE = 0xFFD7C59D;
+    private static final int SLOT_DARK = 0xFFB9A580;
+    private static final int SLOT_LIGHT = 0xFFF3E6C2;
+    private static final int BAG_BG = 0xFFD7C59D;
+    private static final int BAG_FACE = 0xFFCBAE7E;
+    private static final int BAG_DARK = 0xFFB0956A;
+    private static final int BAG_LIGHT = 0xFFE8D8B0;
+    private static final int BAR_BG = 0xFF8B7355;
+    private static final int BAR_EDGE = 0xFF6B5137;
 
-    private static final int TEXT_DARK = 0xFF3A3A3A;
-    private static final int TEXT_LIGHT = 0xFFE8E8E8;
-    private static final int TEXT_DIM = 0xFFB0B0B0;
-    private static final int TEXT_HEALTH = 0xFFFF9E8A;
-    private static final int TEXT_OK = 0xFF7CE07C;
-    private static final int TEXT_WARN = 0xFFFFC24D;
+    private static final int TEXT_MAIN = 0xFF3A2A18;
+    private static final int TEXT_HEALTH = 0xFFA83A24;
+    private static final int TEXT_OK = 0xFF3E7030;
+    private static final int TEXT_WARN = 0xFFA05A18;
+    private static final int TEXT_DIM = 0xFF6B5441;
 
     private String feedback = "";
     private long feedbackUntil;
@@ -96,38 +92,23 @@ public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
         int x = leftPos;
         int y = topPos;
 
-        // 底 + 外框
-        graphics.fill(x, y, x + PANEL_WIDTH, y + PANEL_HEIGHT, BLACK);
-
-        // 标题带
+        graphics.fill(x, y, x + PANEL_WIDTH, y + PANEL_HEIGHT, OUTLINE);
         graphics.fill(x + 1, y + 1, x + PANEL_WIDTH - 1, y + TITLE_H, TITLE_BG);
-        graphics.fill(x + 1, y + 1, x + PANEL_WIDTH - 1, y + 2, TITLE_TOP);
-        graphics.fill(x + 1, y + TITLE_H - 1, x + PANEL_WIDTH - 1, y + TITLE_H, TITLE_LINE);
+        graphics.fill(x + 1, y + TITLE_H, x + PANEL_WIDTH - 1, y + TITLE_H + 1, ACCENT_LINE);
+        graphics.fill(x + 1, y + TITLE_H + 1, x + PANEL_WIDTH - 1, y + INV_END, MAIN_BG);
 
-        // 主区
-        graphics.fill(x + 1, y + TITLE_H, x + PANEL_WIDTH - 1, y + MAIN_END, MAIN_BG);
-        graphics.fill(x + 1, y + TITLE_H, x + PANEL_WIDTH - 1, y + TITLE_H + 1, MAIN_DARK);
+        // 背包区（略深一档，做出分区）
+        graphics.fill(x + 1, y + INV_END, x + PANEL_WIDTH - 1, y + PANEL_HEIGHT - 1, BAG_BG);
 
-        // 木纹背包区
-        graphics.fill(x + 1, y + MAIN_END, x + PANEL_WIDTH - 1, y + INV_END, WOOD_LIGHT);
-        graphics.fill(x + 1, y + MAIN_END, x + PANEL_WIDTH - 1, y + MAIN_END + 1, WOOD_TOP);
-        for (int i = 4; i < PANEL_WIDTH - 4; i += 8) {
-            graphics.fill(x + i, y + MAIN_END + 1, x + i + 3, y + INV_END - 1, WOOD_DARK);
+        drawInset(graphics, x + FUEL_SLOT_X, y + FUEL_SLOT_Y, 16, 16, SLOT_FACE, SLOT_DARK, SLOT_LIGHT);
+
+        // 四个模块槽：燃料 / 装甲 / 信标 / 传输
+        for (int i = 0; i < MODULE_SLOT_COUNT; i++) {
+            drawInset(graphics, x + MODULE_SLOT_X + i * MODULE_SLOT_STEP, y + MODULE_SLOT_Y,
+                    16, 16, SLOT_FACE, SLOT_DARK, SLOT_LIGHT);
         }
 
-        // 快捷栏区
-        graphics.fill(x + 1, y + INV_END, x + PANEL_WIDTH - 1, y + HOTBAR_END, HOTBAR_BG);
-        graphics.fill(x + 1, y + INV_END, x + PANEL_WIDTH - 1, y + INV_END + 1, HOTBAR_LIGHT);
-        graphics.fill(x + 1, y + HOTBAR_END - 1, x + PANEL_WIDTH - 1, y + HOTBAR_END, HOTBAR_DARK);
-
-        // 按钮区
-        graphics.fill(x + 1, y + HOTBAR_END, x + PANEL_WIDTH - 1, y + PANEL_HEIGHT - 1, MAIN_DARK);
-
-        // 燃料槽（主区上的浅灰内凹槽）
-        drawSlot(graphics, x + FUEL_SLOT_X, y + FUEL_SLOT_Y, SLOT_FACE, SLOT_DARK, SLOT_LIGHT);
-
-        // 燃料条（深色内凹 + 填充）
-        drawInset(graphics, x + BAR_X, y + BAR_Y, BAR_WIDTH, BAR_HEIGHT, MAIN_DARK, 0xFF202020, SLOT_LIGHT);
+        drawInset(graphics, x + BAR_X, y + BAR_Y, BAR_WIDTH, BAR_HEIGHT, BAR_BG, BAR_EDGE, SLOT_LIGHT);
         int capacity = Math.max(1, menu.value(CoreMenu.DATA_FUEL_CAPACITY));
         int fuel = menu.value(CoreMenu.DATA_FUEL);
         int filled = (int) Math.round((BAR_WIDTH - 2) * Math.min(1.0D, (double) fuel / capacity));
@@ -136,29 +117,19 @@ public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
                     fuelColor(fuel, capacity));
         }
 
-        // 背包（木纹槽）
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                drawSlot(graphics, x + INVENTORY_X + col * 18, y + INVENTORY_Y + row * 18,
-                        WOOD_DARK, WOOD_EDGE, WOOD_TOP);
+                drawInset(graphics, x + INVENTORY_X + col * 18, y + INVENTORY_Y + row * 18,
+                        16, 16, BAG_FACE, BAG_DARK, BAG_LIGHT);
             }
         }
-        // 快捷栏（亮木槽）
         for (int col = 0; col < 9; col++) {
-            drawSlot(graphics, x + INVENTORY_X + col * 18, y + HOTBAR_Y,
-                    HOTBAR_BG, HOTBAR_DARK, HOTBAR_LIGHT);
+            drawInset(graphics, x + INVENTORY_X + col * 18, y + HOTBAR_Y,
+                    16, 16, BAG_FACE, BAG_DARK, BAG_LIGHT);
         }
     }
 
-    /** Create 风格的槽位：左上一道暗线、右下一道亮线，做出内凹的立体感。 */
-    private static void drawSlot(GuiGraphics graphics, int x, int y, int face, int dark, int light) {
-        graphics.fill(x, y, x + 16, y + 16, face);
-        graphics.fill(x, y, x + 16, y + 1, dark);
-        graphics.fill(x, y, x + 1, y + 16, dark);
-        graphics.fill(x, y + 15, x + 16, y + 16, light);
-        graphics.fill(x + 15, y, x + 16, y + 16, light);
-    }
-
+    /** 内凹槽：左上一道暗线、右下一道亮线。 */
     private static void drawInset(GuiGraphics graphics, int x, int y, int w, int h, int face, int dark, int light) {
         graphics.fill(x, y, x + w, y + h, face);
         graphics.fill(x, y, x + w, y + 1, dark);
@@ -169,47 +140,47 @@ public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
 
     private static int fuelColor(int fuel, int capacity) {
         if (fuel <= 0) {
-            return 0xFF4A4A4A;
+            return 0xFF6B5137;
         }
         double ratio = (double) fuel / capacity;
         if (ratio < 0.15D) {
-            return 0xFFB4453C;
+            return 0xFFA8483A;
         }
         if (ratio < 0.40D) {
-            return 0xFFC98A3C;
+            return 0xFFC08F3A;
         }
-        return 0xFFE8B04B;
+        return 0xFFD7AA5E;
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, "钢铁潮汐 · 安山核心", 12, 5, TEXT_DARK, false);
+        graphics.drawString(font, "钢铁潮汐 · 安山核心", 12, 5, TITLE_TEXT, false);
 
         int health = menu.value(CoreMenu.DATA_HEALTH);
         int healthMax = menu.value(CoreMenu.DATA_HEALTH_MAX);
-        graphics.drawString(font, "生命 " + health + " / " + healthMax, 12, 25, TEXT_HEALTH, false);
+        graphics.drawString(font, "生命 " + health + " / " + healthMax, 12, 26, TEXT_HEALTH, false);
 
         boolean active = menu.value(CoreMenu.DATA_STATE) == CoreState.ACTIVE.ordinal();
-        graphics.drawString(font, active ? "结构 完整（已激活）" : "结构 不完整", 12, 39,
+        graphics.drawString(font, active ? "结构 完整（已激活）" : "结构 不完整", 12, 42,
                 active ? TEXT_OK : TEXT_WARN, false);
         if (active) {
             graphics.drawString(font, "朝向 " + MultiblockDefinition.layoutLabel(menu.value(CoreMenu.DATA_LAYOUT)),
-                    12, 51, TEXT_DIM, false);
+                    12, 56, TEXT_DIM, false);
         } else {
-            graphics.drawString(font, "缺口 " + menu.value(CoreMenu.DATA_MISSING) + " 格", 12, 51, TEXT_DIM, false);
+            graphics.drawString(font, "缺口 " + menu.value(CoreMenu.DATA_MISSING) + " 格", 12, 56, TEXT_DIM, false);
         }
 
         int capacity = Math.max(1, menu.value(CoreMenu.DATA_FUEL_CAPACITY));
         int fuel = menu.value(CoreMenu.DATA_FUEL);
         int percent = (int) Math.round(fuel * 100.0D / capacity);
-        graphics.drawString(font, "燃料 " + fuel + " / " + capacity + "（" + percent + "%）",
-                BAR_X, BAR_Y + BAR_HEIGHT + 5, TEXT_LIGHT, false);
-        graphics.drawString(font, powerText(menu.value(CoreMenu.DATA_POWER_STATUS)),
-                BAR_X, BAR_Y + BAR_HEIGHT + 17, TEXT_DIM, false);
+        graphics.drawString(font, "燃料 " + fuel + " / " + capacity + "（" + percent + "%）· "
+                        + powerText(menu.value(CoreMenu.DATA_POWER_STATUS)),
+                12, 90, TEXT_MAIN, false);
+        graphics.drawString(font, "模块", 108, MODULE_SLOT_Y + 4, TEXT_DIM, false);
 
         boolean fresh = Util.getMillis() < feedbackUntil;
-        graphics.drawString(font, fresh ? feedback : "左边格子放可燃物，会自动烧成燃料",
-                12, 100, fresh ? TEXT_OK : 0xFF909090, false);
+        graphics.drawString(font, fresh ? feedback : "手持可燃物右键核心可投料",
+                12, 120, fresh ? TEXT_OK : 0xFF7A6547, false);
     }
 
     private static String powerText(int ordinal) {

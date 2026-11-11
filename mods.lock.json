@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-05T20:05:00+08:00",
+  "generatedAt": "2026-11-05T21:14:16+08:00",
   "project": "钢铁潮汐",
   "engine": "neoforge 21.1.265",
   "minecraft": "1.21.1",
   "java": "java-runtime-delta",
   "modsDir": "E:\\ioncreating\\mod_l61phe\\.modmind\\minecraft\\mods",
   "count": 15,
-  "totalMB": 156.5,
+  "totalMB": 156.6,
   "mods": [
     {
       "file": "better-advanced-tooltips-2101.1.0-build.5.jar",
@@ -230,9 +230,9 @@
     },
     {
       "file": "modmind-local-irontide.jar",
-      "sizeMB": 0.07,
-      "sha256_16": "f8ce0d03f71f7018",
-      "mtime": "2026-11-05T19:53:35",
+      "sizeMB": 0.09,
+      "sha256_16": "1b0209bac01c5eb4",
+      "mtime": "2026-11-05T21:14:01",
       "modId": "irontide",
       "version": "0.1.0",
       "nameVer": null,

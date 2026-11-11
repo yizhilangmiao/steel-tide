@@ -40,8 +40,7 @@ MC 相关目录共五个，从今天起只有**第一行**是现役；其余是�
 
 ## 当前任务
 
-工作流收敛 P2（2026-11-05）：把 MC 线的治理从 `E:\creatingmc` 搬到现役工程。
-已完成：内核 6 脚本 + env.json + AGENTS.md 就位；技能 selected 清单落地（`create-3d-model`、`bailian-protocol`）；`doctor.ps1` 新增 SKILL 段（校验清单漂移 + 体积）。
+工作流收敛 P2/P3/P4（2026-11-05）：MC 线的治理已从 `E:\creatingmc` 搬到现役工程，工具链四件套全部落地并登记进 env.json —— PCL 直启（`pcl-link-mc.ps1`）、mod 版本矩阵（`mc-mods-lock.ps1`）、ModMind MCP 桥（`modmind-bridge.ps1`）、每周维护（`E:\_ai\scripts\weekly.ps1` 会代跑 doctor 与 mod 锁）。技能 selected 清单：`create-3d-model`、`bailian-protocol`；`doctor.ps1` 带 SKILL 段（清单漂移 + 体积 >50 MB 报警）。
 
 ## 启动方式（2026-11-05 起，实机待验）
 
@@ -54,6 +53,24 @@ pwsh -File E:\_ai\scripts\pcl-link-mc.ps1 -Project E:\ioncreating\mod_l61phe
 它做四件事：补 `D:\mc\versions\1.21.1` 基座与缺的库 → 写 `D:\mc\versions\钢铁潮汐-开发\钢铁潮汐-开发.json`（`inheritsFrom 1.21.1`，mainClass 走 NeoForge）→ 把 `mods / config / defaultconfigs / kubejs / local / resourcepacks / schematics / saves / tacz / tlm_custom_pack` 十个目录 junction 到 `.modmind\minecraft\` → 体检。
 
 日常流程：**DSH 改代码 → ModMind 点构建同步 → 跑一次 mods 锁 → PCL 选版本「钢铁潮汐-开发」启动**。PCL 版本设置里 Java 指到 `C:\Users\25571\AppData\Roaming\modmind\minecraft-runtime\java\java-runtime-delta\bin\java.exe`（21）。模式变了、`mods` 数量不对时跑 `-Check` 看，链接被 PCL 写成真目录时跑 `-Force` 修。
+
+## ModMind MCP 桥（2026-11-05 实测打通）
+> 桥按需开（2026-11-05 老大定）：只有在 DSH 里要驱动 ModMind 时才起桥；平时不开。`pwsh E:\_ai\scripts\scene.ps1 -Start -Scene mc` 会**先起桥、再确认本体**（桥启动时自带 `--mcp-bridge` 把本体拉起来；先单起本体不会开桥）。
+
+外部 agent 走 ModMind 官方通道拿它的 104 个工具（构建、测试会话、截图、modpack、Blockbench、资产）：
+
+```
+pwsh -File E:\_ai\scripts\modmind-bridge.ps1 -Action on       # 开桥（幂等）
+pwsh -File E:\_ai\scripts\modmind-bridge.ps1 -Action status   # 体检：读 bridge.json 探一次 mcp_probe
+pwsh -File E:\_ai\scripts\modmind-bridge.ps1 -Action status -Json
+pwsh -File E:\_ai\scripts\modmind-bridge.ps1 -Action off      # 不加 -Force 只提示（关桥 = 退出 ModMind 本体）
+```
+
+三个必须知道的事实：①**桥不常驻**，ModMind 平时不带 `--mcp-bridge` 启动，进程不监听端口、也不写 `bridge.json`，此时 `modmind-mcp-server.mjs` 第 5 行 `readFileSync` 直接 ENOENT；②**端口每次不同**（存在 `bridge.json` 的 `port`，本次 51038），不许写死，所以台账里这一项用 probe 判活而不是端口；③开桥必须在清掉 `ELECTRON_RUN_AS_NODE` 的环境里起，否则 ModMind 以 node 模式启动并报 `bad option: --mcp-bridge`。
+
+实测：`mcp_probe` → `{"ok":true,"marker":"modmind-mcp-ready-v1"}`；`project_info` → 钢铁潮汐 / neoforge / 1.21.1 / 21.1.265 / java 21 / v1.1.3；MCP stdio `initialize` → `{name:"modmind", version:"1.4.26"}`，`tools/list` → **104 个工具**。被屏蔽的三个：`modmind_inspiration_submit` / `modmind_research` / `modmind_project_setup`。
+
+DSH 侧 `cordis.patch.yml` 的 `mcp-modmind` 已经指向现役工程的 mjs，但 DSH 是在桥之前启动的 → 本次 `list_mcp_resources` 报 `server is disconnected`。**桥先开、DSH 后启**才有工具；重启 DSH 会断当前会话，所以留到下次重启时验。
 
 ## mod 版本矩阵（2026-11-05 起）
 
@@ -76,13 +93,13 @@ pwsh -File E:\_ai\scripts\mc-mods-lock.ps1 -Project E:\ioncreating\mod_l61phe -L
 1. 单机实例装「最小基线 12 + 渲染三件套 + GD656Killicon + 近战手感 10」，跑总方案 §1.1 四步验收（光影重影 / 一刀多杀 / R 键 / 女仆持枪）。
 2. 按总方案 §4 产出服务端白名单，做 2 人联机验收。
 3. ~~建 `mods.lock.json`：mod 版本矩阵（版本 + 依赖 + 冲突）~~ —— 2026-11-05 已完成（`mc-mods-lock.ps1`，基线 14 mod / 152.9 MB）。往后每次构建同步后跑一次。
-4. `ModMind接入DSH方案.md` 落地验证：起一次 MCP、调一个工具，结果记回本节。
+4. ~~`ModMind接入DSH方案.md` 落地验证：起一次 MCP、调一个工具~~ —— 2026-11-05 已完成：桥开、HTTP 200、stdio 104 工具、`modmind_mcp_probe` 返回 ready（详见上节）。剩 DSH 重启后确认 `mcp-modmind` 不再 disconnected。
 
 ## 卡点
 
 - ~~两个整合包并存~~ 已定（2026-11-05 老大）：「霸机动力」= ModMind 旧工程名，与钢铁潮汐是同一个项目。`E:\creatingmc\mod_12rr0lu`（13.4 GB / 61672 文件）已删到回收站，小文档归档在 `E:\creatingmc\_archive\mod_12rr0lu-20261105\`；`E:\mcmc` 是他自己玩的，不属工程范围。
 - MC 线只剩一个写入点 `E:\ioncreating\mod_l61phe`。
-- `env.json` 里 `path:temp / modmindApp / modmindProject` 三项还没确认真实路径，doctor 因此红；按铁律**不为消除漂移去动 ModMind 基础设施**，漂移当已知项。
+- ~~`env.json` 里 `path:temp / modmindApp / modmindProject` 三项让 doctor 红~~ 已重写（2026-11-05 18:00）：那三条指向 `E:\creatingmc` 的旧路径，现在 mod_l61phe 的 env.json 只登记真实存在的 5 条（`pcl_root / pcl_version / modmind_game_dir / modmind_runtime / java_base`），doctor EXIT=0。
 
 ## 铁律（MC 线）
 
@@ -90,3 +107,11 @@ pwsh -File E:\_ai\scripts\mc-mods-lock.ps1 -Project E:\ioncreating\mod_l61phe -L
 - ModMind 应用与安装目录是受保护基础设施，不直接改 / 删 / 移动。
 - 实际安装版本与哈希以 `modmind.modpack.lock.json` 为准，不凭文档断言。
 - en / 中文资源漂移是已知项，不当故障处理。
+
+
+## 2026-11-10 多方块成型材质切换（方案+教程）
+
+- 产出：`docs/design/多方块成型材质切换-方案.md`、`docs/design/多方块成型材质切换-教程.md`、`modules/irontide/tools/gen_shell_textures.py` + 4 张 `shell_*.png`（andesite/brass/steel/copper）
+- 路线：`CasingSpec.formed` 数据驱动换方块；原始状态存 `ShellBlockEntity`，控制器不新增存档字段；否决 BER 整体模型（NeoForge 1.21.1 无 obj loader + 作者不建模）
+- 下一步：按教程 P0~P5 落地。最易漏处＝`StructureValidator` 的 `brassRatio` 统计必须同步接受成型态，否则成型后装甲/血量崩
+- 卡点：无。本轮纯文档 + 资源，未改任何 Java 代码

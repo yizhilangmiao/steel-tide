@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "betterdungeons:skeleton_dungeon/chests/middle"
+    }
+  ],
+  "table": "irontide:dungeon_inject"
+}

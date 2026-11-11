@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "entries": [
+    "irontide:minecraft_chests_simple_dungeon",
+    "irontide:minecraft_chests_abandoned_mineshaft",
+    "irontide:minecraft_chests_stronghold_library",
+    "irontide:minecraft_chests_woodland_mansion",
+    "irontide:minecraft_chests_ancient_city",
+    "irontide:betterdungeons_zombie_dungeon_chests_common",
+    "irontide:betterdungeons_zombie_dungeon_chests_special",
+    "irontide:betterdungeons_skeleton_dungeon_chests_middle",
+    "irontide:betterdungeons_spider_dungeon_chests_egg_room",
+    "irontide:betterdungeons_small_dungeon_chests_loot_piles",
+    "irontide:dungeons_arise_chests_aviary_aviary_normal",
+    "irontide:dungeons_arise_chests_bandit_towers_bandit_towers_barrels",
+    "irontide:dungeons_arise_chests_abandoned_temple_abandoned_temple_top"
+  ]
+}

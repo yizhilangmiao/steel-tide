@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "ISI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "irontide:raid_scrap"
+    }
+  },
+  "result": {
+    "id": "irontide:core_repair_kit",
+    "count": 1
+  }
+}

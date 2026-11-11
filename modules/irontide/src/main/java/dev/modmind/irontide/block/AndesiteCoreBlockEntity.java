@@ -1,8 +1,13 @@
 package dev.modmind.irontide.block;
 
+import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.config.CoreConfig;
+import dev.modmind.irontide.config.ModuleSpec;
+import dev.modmind.irontide.config.ModuleType;
 import dev.modmind.irontide.data.IronTideData;
+import dev.modmind.irontide.item.CoreModuleItem;
 import dev.modmind.irontide.multiblock.MultiblockDefinition;
 import dev.modmind.irontide.multiblock.StructureCheckResult;
 import dev.modmind.irontide.multiblock.StructureValidator;
@@ -18,6 +23,9 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -32,10 +40,34 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class AndesiteCoreBlockEntity extends BlockEntity {
+public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     private static final Set<AndesiteCoreBlockEntity> LOADED = ConcurrentHashMap.newKeySet();
     private static final int TICK_INTERVAL = 20;
     private static final int SAVE_INTERVAL_TICKS = 5;
+
+    /** 满供能输出转速与应力容量；低燃料降到 1/4。数值对应设计 §2.3.1。 */
+    private static final float SPEED_FULL = 64.0F;
+    private static final float SPEED_LOW = 16.0F;
+    private static final float CAPACITY_FULL = 1024.0F;
+    private static final float CAPACITY_LOW = 256.0F;
+
+    /**
+     * 四种布局下核心的外露方向，与 {@code MultiblockDefinition} 的旋转顺序一致。
+     */
+    private static final net.minecraft.core.Direction[] LAYOUT_EXIT = {
+            net.minecraft.core.Direction.NORTH,
+            net.minecraft.core.Direction.EAST,
+            net.minecraft.core.Direction.SOUTH,
+            net.minecraft.core.Direction.WEST
+    };
+
+    // 掉血用原版「僵尸砸铁门」，和 Create 机器的持续嗡嗡声完全分得开；
+    // 摧毁保留 Create 汽笛做停机感，末尾补一记铁砧落地。
+    private static final SoundEvent CREATE_WHISTLE_LOW = variableEvent("create", "whistle_low");
+
+    private static SoundEvent variableEvent(String namespace, String path) {
+        return SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(namespace, path));
+    }
 
     /** 供能状态：结构完整且有燃料才算正常。应力输出尚未接入，目前只影响显示与后续档位。 */
     public enum FuelStatus {
@@ -64,6 +96,22 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
     private FuelStatus powerStatus = FuelStatus.STOPPED;
     private int lastMissing;
     private int lastLayoutIndex;
+    /** 结构本身算出的生命上限（不含装甲模块），healthMax = 这个值 + 装甲加成。 */
+    private int structureHealthMax;
+
+    /** 四个模块槽，顺序与 {@link #slotOf(ModuleType)} 一致：燃料 / 装甲 / 信标 / 传输。 */
+    private final SimpleContainer moduleSlots = new SimpleContainer(4) {
+        @Override
+        public void setChanged() {
+            AndesiteCoreBlockEntity.this.setChanged();
+            AndesiteCoreBlockEntity.this.onModulesChanged();
+        }
+
+        @Override
+        public boolean canPlaceItem(int index, ItemStack stack) {
+            return stack.getItem() instanceof CoreModuleItem module && slotOf(module.moduleType()) == index;
+        }
+    };
 
     public AndesiteCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModMindEntry.ANDESITE_CORE_BE.get(), pos, state);
@@ -78,6 +126,59 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
     }
 
     @Override
+    public void addBehaviours(java.util.List<BlockEntityBehaviour> behaviours) {
+        // 核心不带传送带/机械臂一类行为，保持空实现
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        serverTick();
+    }
+
+    /** 只有结构完整且有燃料才输出旋转；低燃料档降到 16 RPM。 */
+    @Override
+    public float getGeneratedSpeed() {
+        if (state != CoreState.ACTIVE || powerStatus == FuelStatus.STOPPED) {
+            return 0.0F;
+        }
+        return powerStatus == FuelStatus.LOW ? SPEED_LOW : SPEED_FULL;
+    }
+
+    @Override
+    public float calculateAddedStressCapacity() {
+        if (state != CoreState.ACTIVE || powerStatus == FuelStatus.STOPPED) {
+            return 0.0F;
+        }
+        return powerStatus == FuelStatus.LOW ? CAPACITY_LOW : CAPACITY_FULL;
+    }
+
+    /** 转速或朝向变了才推一次动力学网络，避免每秒重建。 */
+    private void refreshRotation() {
+        if (level == null || level.isClientSide) {
+            return;
+        }
+        updateGeneratedRotation();
+    }
+
+    /** 按当前布局把输出轴方向写进方块状态，供 {@code IRotate} 判断哪一面能接轴。 */
+    private void applyExitDirection(int layoutIndex) {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+            return;
+        }
+        int index = Math.max(0, Math.min(LAYOUT_EXIT.length - 1, layoutIndex));
+        net.minecraft.core.Direction want = LAYOUT_EXIT[index];
+        BlockState current = getBlockState();
+        if (!current.hasProperty(AndesiteCoreBlock.FACING) || current.getValue(AndesiteCoreBlock.FACING) == want) {
+            return;
+        }
+        serverLevel.setBlock(worldPosition, current.setValue(AndesiteCoreBlock.FACING, want), 3);
+    }
+
+    @Override
     public void onLoad() {
         super.onLoad();
         if (level instanceof ServerLevel) {
@@ -86,31 +187,47 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void setRemoved() {
+    public void invalidate() {
+        // SmartBlockEntity 把 setRemoved() 定成 final，卸载登记改挂在 invalidate
         LOADED.remove(this);
-        super.setRemoved();
+        super.invalidate();
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        // SmartBlockEntity 把 saveAdditional/loadAdditional 定成 final，只能走 write/read
+        super.write(tag, registries, clientPacket);
+        if (clientPacket) {
+            return;
+        }
         tag.putString("structureId", structureId);
         tag.putString("state", state.name());
         tag.putInt("health", health);
         tag.putInt("healthMax", healthMax);
+        tag.putInt("structureHealthMax", structureHealthMax);
         tag.putInt("fuel", fuel);
         tag.put("fuelSlot", fuelSlot.createTag(registries));
+        tag.put("moduleSlots", moduleSlots.createTag(registries));
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        if (clientPacket) {
+            return;
+        }
         structureId = tag.getString("structureId");
         state = CoreState.byName(tag.getString("state"));
         health = tag.getInt("health");
         healthMax = tag.getInt("healthMax");
+        structureHealthMax = tag.getInt("structureHealthMax");
+        if (structureHealthMax <= 0) {
+            // 老存档没有这个字段：那时 healthMax 就是结构值，补一份，免得装装甲时被当成 0 重算
+            structureHealthMax = Math.max(0, healthMax);
+        }
         fuel = Math.max(0, tag.getInt("fuel"));
         fuelSlot.fromTag(tag.getList("fuelSlot", Tag.TAG_COMPOUND), registries);
+        moduleSlots.fromTag(tag.getList("moduleSlots", Tag.TAG_COMPOUND), registries);
         powerStatus = FuelStatus.STOPPED;
     }
 
@@ -144,7 +261,9 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
 
         CoreConfig config = IronTideData.config();
         if (state == CoreState.ACTIVE && fuel > 0) {
-            int burn = (int) Math.round(Math.max(0.0D, config.burnPerSecond()));
+            // 效率越低烧得越快：容量换效率，是这个模块的核心取舍
+            double efficiency = Math.max(0.1D, getBurnEfficiency());
+            int burn = (int) Math.round(Math.max(0.0D, config.burnPerSecond()) / efficiency);
             if (burn > 0) {
                 fuel = Math.max(0, fuel - burn);
                 if (++dirtyAccumulator >= SAVE_INTERVAL_TICKS) {
@@ -181,6 +300,85 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
 
     public Container getFuelSlot() {
         return fuelSlot;
+    }
+
+    public Container getModuleSlots() {
+        return moduleSlots;
+    }
+
+    /** 模块类型 → 槽位下标。顺序就是面板里从左到右四个槽。 */
+    public static int slotOf(ModuleType type) {
+        return switch (type) {
+            case FUEL -> 0;
+            case ARMOR -> 1;
+            case BEACON -> 2;
+            case TRANSFER -> 3;
+        };
+    }
+
+    /**
+     * 取槽里那枚模块的数值。没装、装错槽、配置没加载都返回 {@link ModuleSpec#EMPTY}，
+     * 调用方只需要判断字段是否为 0，不用处理 null。
+     */
+    public ModuleSpec moduleSpec(ModuleType type) {
+        if (!IronTideData.isLoaded()) {
+            return ModuleSpec.EMPTY;
+        }
+        ItemStack stack = moduleSlots.getItem(slotOf(type));
+        if (stack.getItem() instanceof CoreModuleItem module && module.moduleType() == type) {
+            return IronTideData.config().module(type, module.tier());
+        }
+        return ModuleSpec.EMPTY;
+    }
+
+    /** 装甲模块带来的额外生命上限，没装就是 0。 */
+    public int getArmorBonusHealth() {
+        return Math.max(0, moduleSpec(ModuleType.ARMOR).armorHealth());
+    }
+
+    /** 装甲模块的减伤百分比（0.10 = 10%），与机壳减伤乘算叠加。 */
+    public double getArmorReduction() {
+        return Math.max(0.0D, Math.min(1.0D, moduleSpec(ModuleType.ARMOR).armorReduction()));
+    }
+
+    /** 信标模块的奖励加成（0.10 = +10%），战后结算用。 */
+    public double getBeaconReward() {
+        return Math.max(0.0D, moduleSpec(ModuleType.BEACON).beaconReward());
+    }
+
+    /** 传输模块允许的接轴档位：0 仅水平 / 1 水平+垂直 / 2 任意轴。 */
+    public int getTransferAxes() {
+        return Math.max(0, Math.min(2, moduleSpec(ModuleType.TRANSFER).transferAxes()));
+    }
+
+    /**
+     * 模块变化后重算受影响的派生值：装甲改生命上限（按比例保留当前血量），燃料改容量（超上限就压回去）。
+     * 槽位内容由容器自己存档，这里不写 NBT。
+     */
+    private void onModulesChanged() {
+        if (!IronTideData.isLoaded()) {
+            return;
+        }
+        if (state == CoreState.ACTIVE) {
+            int newMax = baseHealthFor(healthMax, getArmorBonusHealth());
+            if (newMax > 0 && newMax != healthMax) {
+                double ratio = healthMax > 0 ? (double) health / healthMax : 1.0D;
+                healthMax = newMax;
+                health = Math.max(1, Math.min(newMax, (int) Math.round(newMax * ratio)));
+            }
+        }
+        int capacity = getFuelCapacity();
+        if (fuel > capacity) {
+            fuel = capacity;
+        }
+        updatePowerState(true);
+        refreshRotation();
+        setChanged();
+    }
+
+    /** 生命上限 = 结构算出来的基础值 + 装甲模块加成。 */
+    private static int baseHealthFor(int structureMax, int armorBonus) {
+        return Math.max(1, structureMax + armorBonus);
     }
 
     /**
@@ -259,6 +457,8 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
                 ModMindEntry.LOGGER.info("[IronTide] {} fuel status {} -> {} (fuel={}/{}, threshold={})",
                         worldPosition, previous, next, fuel, capacity, format(config.lowFuelRatio()));
             }
+            // 供能档位决定输出转速，档位一变就得重推动力学网络
+            refreshRotation();
         }
     }
 
@@ -270,7 +470,21 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
         if (!IronTideData.isLoaded()) {
             return 12000;
         }
-        return Math.max(1, IronTideData.config().fuelCapacity());
+        CoreConfig config = IronTideData.config();
+        ModuleSpec fuelModule = moduleSpec(ModuleType.FUEL);
+        if (fuelModule.fuelCapacity() > 0) {
+            return fuelModule.fuelCapacity();
+        }
+        return Math.max(1, config.noFuelModuleCapacity());
+    }
+
+    /** 燃烧效率：装了燃料模块用模块值，没装走应急档（更高效率、更小容量）。 */
+    public double getBurnEfficiency() {
+        ModuleSpec fuelModule = moduleSpec(ModuleType.FUEL);
+        if (fuelModule.fuelEfficiency() > 0.0D) {
+            return fuelModule.fuelEfficiency();
+        }
+        return IronTideData.isLoaded() ? IronTideData.config().noFuelModuleEfficiency() : 1.5D;
     }
 
     /** 供面板「清空燃料」按钮使用：立刻归零并重算供能状态。 */
@@ -322,11 +536,14 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
         lastMissing = result.missingCount();
         lastLayoutIndex = result.layoutIndex();
         if (result.complete()) {
-            if (state != CoreState.ACTIVE) {
+            if (state == CoreState.DESTROYED) {
+                // 已摧毁：结构修好也不会自动复活，等维修系统（后续切片）
+            } else if (state != CoreState.ACTIVE) {
                 int max = (int) Math.round(config.healthBase() * result.healthMul());
+                structureHealthMax = max;
                 state = CoreState.ACTIVE;
-                healthMax = max;
-                health = max;
+                healthMax = baseHealthFor(max, getArmorBonusHealth());
+                health = healthMax;
                 setChanged();
                 ModMindEntry.LOGGER.info(
                         "[IronTide] {} at {} activated: layout={} health={}/{} healthMul={} armor={} shell={} brass={}",
@@ -334,7 +551,9 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
                         format(result.healthMul()), format(result.armor()),
                         result.shellCells(), result.brassCells());
             } else if (healthMax <= 0) {
-                healthMax = (int) Math.round(config.healthBase() * result.healthMul());
+                int max = (int) Math.round(config.healthBase() * result.healthMul());
+                structureHealthMax = max;
+                healthMax = baseHealthFor(max, getArmorBonusHealth());
                 health = healthMax;
                 setChanged();
             }
@@ -343,7 +562,11 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
             setChanged();
             logIncomplete(definition, result);
         }
+        if (result.complete()) {
+            applyExitDirection(result.layoutIndex());
+        }
         updatePowerState(false);
+        refreshRotation();
         return result;
     }
 
@@ -363,6 +586,114 @@ public class AndesiteCoreBlockEntity extends BlockEntity {
                 "[IronTide] {} at {} incomplete: layout={} missing {}/{} [{}] examples: [{}]",
                 definition.id(), worldPosition, result.layoutLabel(), result.missingCount(),
                 result.totalCells(), summary, examples);
+    }
+
+    /**
+     * 用维修套件修被摧毁的核心。结构不完整会失败且不扣套件 —— 免得玩家花了东西还修不好。
+     *
+     * @return true 表示修好了（调用方据此消耗交互结果）
+     */
+    public boolean repairFromKit(Player player, ItemStack kit) {
+        if (state != CoreState.DESTROYED) {
+            player.displayClientMessage(Component.literal("§7核心仍在运转，不需要维修。"), true);
+            return false;
+        }
+        if (!(level instanceof ServerLevel)) {
+            return false;
+        }
+        // 先临时解除 DESTROYED 才能走正常校验流程，校验不过再按回去
+        state = CoreState.INCOMPLETE;
+        StructureCheckResult result = validateNow();
+        if (state != CoreState.ACTIVE) {
+            state = CoreState.DESTROYED;
+            setChanged();
+            player.displayClientMessage(Component.literal(
+                    "§c维修失败：结构不完整（缺口 " + result.missingCount() + " 格）。"), true);
+            return false;
+        }
+
+        kit.shrink(1);
+        setChanged();
+        player.displayClientMessage(Component.literal(
+                "§a核心已修复，生命 " + health + " / " + healthMax + "。"), true);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.playSound(null, worldPosition, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.2F, 0.9F);
+        }
+        ModMindEntry.LOGGER.info("[IronTide] core at {} repaired by {} (health={}/{})",
+                worldPosition, player.getName().getString(), health, healthMax);
+        return true;
+    }
+
+    /** 怪潮攻核伤害。只在 ACTIVE 时生效；打到 0 停机并广播。 */
+    public void applyRaidDamage(int amount) {
+        if (amount <= 0 || state != CoreState.ACTIVE || health <= 0) {
+            return;
+        }
+        // 装甲模块减伤，向上取整保证至少掉 1 点
+        double reduction = getArmorReduction();
+        int actual = (int) Math.max(1.0D, Math.round(amount * (1.0D - reduction)));
+        health = Math.max(0, health - actual);
+        setChanged();
+        if (health > 0) {
+            playHurtSound(actual);
+            return;
+        }
+        state = CoreState.DESTROYED;
+        ModMindEntry.LOGGER.info("[IronTide] core at {} destroyed by raid", worldPosition);
+        if (level instanceof ServerLevel serverLevel) {
+            serverLevel.getServer().getPlayerList().broadcastSystemMessage(
+                    Component.literal("§4[钢铁潮汐] §c安山核心被摧毁！坐标 "
+                            + worldPosition.getX() + ", " + worldPosition.getY() + ", " + worldPosition.getZ()),
+                    false);
+        }
+        playDestroySound();
+        updatePowerState(true);
+        refreshRotation();
+    }
+
+    /**
+     * 掉血音效：原版「僵尸砸铁门」的闷响。怪潮时机器一直在响，蒸汽声会被糊掉，
+     * 金属被砸的短促低频反而能一下听出来。
+     *
+     * <p>伤害越大叠的层数越多：单次 ≤11 一层、12~29 两层、≥30 三层，
+     * 每层延后 2 tick、音调抬高、音量衰减，听起来像连着砸了好几记。</p>
+     */
+    private void playHurtSound(int actualDamage) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        double ratio = healthMax > 0 ? (double) health / healthMax : 1.0D;
+        ratio = Math.max(0.0D, Math.min(1.0D, ratio));
+        float basePitch = (float) (0.85D + 0.25D * ratio);
+        float baseVolume = (float) (0.95D + 0.35D * (1.0D - ratio));
+        int layers = actualDamage >= 30 ? 3 : actualDamage >= 12 ? 2 : 1;
+
+        for (int i = 0; i < layers; i++) {
+            float pitch = basePitch + i * 0.07F;
+            float volume = baseVolume * (1.0F - i * 0.18F);
+            int delay = i * 2;
+            if (delay == 0) {
+                serverLevel.playSound(null, worldPosition, SoundEvents.ZOMBIE_ATTACK_IRON_DOOR,
+                        SoundSource.BLOCKS, volume, pitch);
+            } else {
+                serverLevel.getServer().tell(new net.minecraft.server.TickTask(
+                        serverLevel.getServer().getTickCount() + delay,
+                        () -> serverLevel.playSound(null, worldPosition, SoundEvents.ZOMBIE_ATTACK_IRON_DOOR,
+                                SoundSource.BLOCKS, volume, pitch)));
+            }
+        }
+    }
+
+    /** 摧毁音效：Create 汽笛停机 + 10 tick 后一记铁砧砸地收尾。 */
+    private void playDestroySound() {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        serverLevel.playSound(null, worldPosition, CREATE_WHISTLE_LOW, SoundSource.BLOCKS, 1.6F, 0.75F);
+        serverLevel.getServer().tell(new net.minecraft.server.TickTask(
+                serverLevel.getServer().getTickCount() + 10,
+                () -> serverLevel.playSound(null, worldPosition, SoundEvents.ANVIL_LAND,
+                        SoundSource.BLOCKS, 1.4F, 0.55F)));
     }
 
     public void reportStatus(Player player) {

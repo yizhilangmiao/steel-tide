@@ -1,8 +1,11 @@
 package dev.modmind.irontide.block;
 
 import com.mojang.serialization.MapCodec;
+import com.simibubi.create.content.kinetics.base.IRotate;
+import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.menu.CoreMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -14,18 +17,35 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class AndesiteCoreBlock extends BaseEntityBlock {
+/**
+ * 安山核心方块。实现 {@link IRotate} 当应力出口用：核心是多方块控制器，
+ * 外露的那一面就是输出轴，玩家把 Create 的传动轴直接插在这一面上就能取力。
+ */
+public class AndesiteCoreBlock extends BaseEntityBlock implements IRotate {
+    /** 核心外露方向 = 输出轴方向，由结构校验结果按布局写回。 */
+    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
     public AndesiteCoreBlock(Properties properties) {
         super(properties);
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+        builder.add(FACING);
     }
 
     @Override
@@ -46,20 +66,45 @@ public class AndesiteCoreBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                            BlockEntityType<T> type) {
-        if (level.isClientSide) {
-            return null;
-        }
+        // 客户端也要 tick：Create 的动力学渲染靠 BE 的 tick 状态推进
         return (tickLevel, pos, tickState, blockEntity) -> {
             if (blockEntity instanceof AndesiteCoreBlockEntity core) {
-                core.serverTick();
+                core.tick();
             }
         };
     }
 
-    /** 手持可燃物右键 = 投燃料；普通右键投整组，潜行右键投 1 个。 */
+    // ---- IRotate ----
+
+    @Override
+    public boolean hasShaftTowards(LevelReader level, BlockPos pos, BlockState state, Direction side) {
+        // 沿自身轴线两端都能接头：外露面给玩家接传动轴，内侧面接结构里那台正对的十字齿轮箱
+        return side.getAxis() == state.getValue(FACING).getAxis();
+    }
+
+    @Override
+    public Direction.Axis getRotationAxis(BlockState state) {
+        return state.getValue(FACING).getAxis();
+    }
+
+    // ---- 交互 ----
+
+    /** 手持可燃物右键 = 投燃料；手持维修套件右键 = 修被摧毁的核心。 */
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.is(ModMindEntry.CORE_REPAIR_KIT.get())) {
+            if (level.isClientSide) {
+                return ItemInteractionResult.SUCCESS;
+            }
+            if (level.getBlockEntity(pos) instanceof AndesiteCoreBlockEntity core) {
+                return core.repairFromKit(player, stack)
+                        ? ItemInteractionResult.SUCCESS
+                        : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            }
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+
         boolean looksLikeFuel = stack.getBurnTime(RecipeType.SMELTING) > 0;
         if (!looksLikeFuel) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

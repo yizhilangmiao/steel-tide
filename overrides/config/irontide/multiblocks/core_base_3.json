@@ -5,25 +5,36 @@
   "edge": 3,
   "anchor": "irontide:andesite_core",
   "allowRotation": true,
-
   "legend": {
     "#": "create:andesite_casing",
     "B": "create:brass_casing",
     "G": "create:gearbox",
     "C": "irontide:andesite_core"
   },
-
   "layers": {
-    "-1": ["###", "###", "###"],
-    "0": ["#C#", "G#G", "#G#"],
-    "1": ["###", "###", "###"]
+    "-1": [
+      "###",
+      "###",
+      "###"
+    ],
+    "0": [
+      "#C#",
+      "GGG",
+      "###"
+    ],
+    "1": [
+      "###",
+      "###",
+      "###"
+    ]
   },
-
   "markers": {
     "controller": "C",
     "stressOutput": "G",
-    "shellSwap": ["#", "B"]
+    "shellSwap": [
+      "#",
+      "B"
+    ]
   },
-
-  "notes": "中层：核心占据北侧边中格（朝外面，玩家可直接右键），原中心改为安山机壳，其余三个方位是十字齿轮箱（应力出口）；allowRotation=true 后四个朝向等价——核心贴任意一条边的中点，另三向齿轮箱、中心机壳，四种搭法都能激活；控制器坐标永不改变，升档只向外长"
+  "notes": "中层：核心占据北侧边中格（朝外面，玩家可直接右键），正对核心南面的是中间那台十字齿轮箱，三台齿轮箱连成一排——核心沿自身轴线在南北两端出轴，中间那台与核心直接相邻接上动力，再横向传给左右两台；allowRotation=true 后四个朝向等价，四种搭法都能激活；控制器坐标永不改变，升档只向外长"
 }

@@ -1,4 +1,20 @@
 {
   "itemGroup.irontide": "IronTide",
-  "block.irontide.andesite_core": "Andesite Core"
+  "block.irontide.andesite_core": "Andesite Core",
+  "item.irontide.fuel_module_1": "Fuel Module I",
+  "item.irontide.fuel_module_2": "Fuel Module II",
+  "item.irontide.fuel_module_3": "Fuel Module III",
+  "item.irontide.armor_module_1": "Armor Module I",
+  "item.irontide.armor_module_2": "Armor Module II",
+  "item.irontide.armor_module_3": "Armor Module III",
+  "item.irontide.beacon_module_1": "Beacon Module I",
+  "item.irontide.beacon_module_2": "Beacon Module II",
+  "item.irontide.beacon_module_3": "Beacon Module III",
+  "item.irontide.transfer_module_1": "Transfer Module I",
+  "item.irontide.transfer_module_2": "Transfer Module II",
+  "item.irontide.transfer_module_3": "Transfer Module III",
+  "item.irontide.raid_scrap": "Raid Scrap",
+  "item.irontide.core_repair_kit": "Core Repair Kit",
+  "item.irontide.bullet_casing": "Bullet Casing",
+  "item.irontide.propellant": "Propellant"
 }

@@ -1,0 +1,53 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "irontide:raid_scrap",
+          "weight": 400,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irontide:core_repair_kit",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irontide:fuel_module_1",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irontide:armor_module_1",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irontide:beacon_module_1",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irontide:transfer_module_1",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 490
+        }
+      ]
+    }
+  ]
+}

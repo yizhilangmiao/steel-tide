@@ -1,0 +1,43 @@
+{
+  "cycleDays": 10,
+  "warnDay": 8,
+  "scoutDay": 9,
+  "attackDay": 10,
+  "headMulPerPlayer": 0.35,
+  "gearMulMax": 0.25,
+  "spawn": {
+    "radiusMin": 26,
+    "radiusMax": 40,
+    "perBurst": 2,
+    "intervalTicks": 20,
+    "airHeight": 18
+  },
+  "safeZone": {
+    "enabled": true,
+    "radius": 25,
+    "halfHeight": 25,
+    "lightLevel": 7,
+    "lightUp": true,
+    "beacons": 4,
+    "particleIntervalTicks": 20
+  },
+  "attack": {
+    "range": 3.5,
+    "damagePerSecond": 6
+  },
+  "groundRaiders": [
+    "minecraft:zombie",
+    "minecraft:skeleton"
+  ],
+  "airRaiders": [],
+  "waves": [
+    { "index": 1, "base": 14, "affixes": 1, "maxAffixLevel": 1 },
+    { "index": 2, "base": 20, "affixes": 1, "maxAffixLevel": 1 },
+    { "index": 3, "base": 26, "affixes": 2, "maxAffixLevel": 1 },
+    { "index": 4, "base": 32, "affixes": 2, "maxAffixLevel": 2 },
+    { "index": 5, "base": 38, "affixes": 2, "maxAffixLevel": 2 },
+    { "index": 6, "base": 44, "affixes": 3, "maxAffixLevel": 2 },
+    { "index": 7, "base": 50, "affixes": 3, "maxAffixLevel": 3 },
+    { "index": 8, "base": 56, "affixes": 3, "maxAffixLevel": 3 }
+  ]
+}

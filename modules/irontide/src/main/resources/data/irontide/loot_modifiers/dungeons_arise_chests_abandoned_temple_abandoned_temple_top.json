@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "dungeons_arise:chests/abandoned_temple/abandoned_temple_top"
+    }
+  ],
+  "table": "irontide:dungeon_inject"
+}

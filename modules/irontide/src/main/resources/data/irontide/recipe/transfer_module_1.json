@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "irontide:raid_scrap",
+      "count": 4
+    },
+    {
+      "item": "create:andesite_casing"
+    },
+    {
+      "item": "create:andesite_casing"
+    },
+    {
+      "item": "create:andesite_casing"
+    }
+  ],
+  "result": {
+    "id": "irontide:transfer_module_1",
+    "count": 1
+  }
+}

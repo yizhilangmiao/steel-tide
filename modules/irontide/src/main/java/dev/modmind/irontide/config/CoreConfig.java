@@ -29,9 +29,28 @@ public record CoreConfig(
         List<TierSpec> tiers,
         JsonObject stress,
         JsonObject build,
-        JsonObject modules
+        JsonObject modules,
+        List<ModuleSpec> fuelModules,
+        List<ModuleSpec> armorModules,
+        List<ModuleSpec> beaconModules,
+        List<ModuleSpec> transferModules
 ) {
     public static final String DEFAULT_RESOURCE = "/data/irontide/config_defaults/core.json";
+
+    /** 取某类模块第 {@code tier} 级的数值（tier 从 1 开始，越界自动夹到有效范围）。 */
+    public ModuleSpec module(ModuleType type, int tier) {
+        List<ModuleSpec> list = switch (type) {
+            case FUEL -> fuelModules;
+            case ARMOR -> armorModules;
+            case BEACON -> beaconModules;
+            case TRANSFER -> transferModules;
+        };
+        if (list.isEmpty()) {
+            return ModuleSpec.EMPTY;
+        }
+        int index = Math.max(0, Math.min(list.size() - 1, tier - 1));
+        return list.get(index);
+    }
 
     public double healthMulFor(double brassRatio) {
         return andesiteCasing.healthMul()
@@ -42,6 +61,46 @@ public record CoreConfig(
         double value = andesiteCasing.armor()
                 + brassRatio * (brassCasing.armor() - andesiteCasing.armor());
         return Math.min(armorCap, value);
+    }
+
+    /**
+     * 模块数值表。四类模块共用一套 record，各读各的字段——缺字段按 0 处理，
+     * 所以老配置少写一项不会加载失败，只是那一项不生效。
+     */
+    private static List<ModuleSpec> parseModuleList(JsonObject modules, String key) {
+        if (modules == null) {
+            return List.of();
+        }
+        JsonElement element = modules.get(key);
+        if (element == null || !element.isJsonArray()) {
+            return List.of();
+        }
+        JsonArray array = element.getAsJsonArray();
+        List<ModuleSpec> out = new ArrayList<>(array.size());
+        for (JsonElement entry : array) {
+            if (!entry.isJsonObject()) {
+                continue;
+            }
+            JsonObject object = entry.getAsJsonObject();
+            out.add(new ModuleSpec(
+                    optInt(object, "capacity"),
+                    optDouble(object, "efficiency"),
+                    optInt(object, "health"),
+                    optDouble(object, "reduction"),
+                    optDouble(object, "reward"),
+                    optInt(object, "axes")));
+        }
+        return List.copyOf(out);
+    }
+
+    private static int optInt(JsonObject object, String key) {
+        JsonElement element = object.get(key);
+        return element == null || element.isJsonNull() ? 0 : element.getAsInt();
+    }
+
+    private static double optDouble(JsonObject object, String key) {
+        JsonElement element = object.get(key);
+        return element == null || element.isJsonNull() ? 0.0D : element.getAsDouble();
     }
 
     public static CoreConfig load(Path file) {
@@ -144,7 +203,11 @@ public record CoreConfig(
 
         return new CoreConfig(healthBase, minRatioOnUpgrade, carryRatioOnUpgrade,
                 fuelCapacity, burnPerSecond, lowFuelRatio, noFuelModuleCapacity, noFuelModuleEfficiency,
-                andesite, brass, armorCap, List.copyOf(tiers), stress, build, modules);
+                andesite, brass, armorCap, List.copyOf(tiers), stress, build, modules,
+                parseModuleList(modules, "fuel"),
+                parseModuleList(modules, "armor"),
+                parseModuleList(modules, "beacon"),
+                parseModuleList(modules, "transfer"));
     }
 
     private static CasingSpec parseCasing(JsonObject casing, String path) {

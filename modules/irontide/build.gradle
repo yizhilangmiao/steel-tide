@@ -50,3 +50,14 @@ tasks.configureEach {
         dependsOn 'processResources', 'classes'
     }
 }
+
+// Create 6.0.10 的动力学 API（编译期只需 jar，运行时由整合包提供）
+dependencies {
+    // Create 6 把 ponder/flywheel/registrate 以 jar-in-jar 打包，编译期一并挂上
+    compileOnly files(
+            "libs/create-1.21.1-6.0.10.jar",
+            "libs/ponder-neoforge-1.0.82+mc1.21.1.jar",
+            "libs/flywheel-neoforge-1.21.1-1.0.6.jar",
+            "libs/Registrate-MC1.21-1.3.0+67.jar"
+    )
+}

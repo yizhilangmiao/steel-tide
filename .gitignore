@@ -45,3 +45,10 @@ research-tmp/
 # 内核脚本的临时备份
 .agents/*.bak-*
 *.bak-*
+
+# worktree 隔离目录（wt.ps1 建）
+.wt/
+
+# 模块编译用的第三方 jar（Create / Flywheel / Ponder / Registrate，共约 20MB）
+# 靠 build.gradle 里的坐标重下，不入库
+modules/*/libs/*.jar

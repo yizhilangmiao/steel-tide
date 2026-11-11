@@ -2,8 +2,23 @@
   "version": 1,
   "minecraftVersion": "1.21.1",
   "loader": "neoforge",
-  "generatedAt": "2026-11-11T15:02:58.943Z",
+  "generatedAt": "2026-11-11T15:35:55.963Z",
   "mods": [
+    {
+      "provider": "curseforge",
+      "projectId": "248787",
+      "versionId": "7854442",
+      "versionName": "appleskin-neoforge-mc1.21-3.0.9.jar",
+      "fileName": "appleskin-neoforge-mc1.21-3.0.9.jar",
+      "sha256": "38b48dd6231341c9f964ce6e42c57ec866c6cc8f72bec938390a59bafb3922df",
+      "size": 75804,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/7854/442/appleskin-neoforge-mc1.21-3.0.9.jar"
+      ],
+      "installedAt": "2026-11-11T15:26:03.953Z",
+      "aliases": []
+    },
     {
       "provider": "curseforge",
       "projectId": "419699",
@@ -35,6 +50,43 @@
       "aliases": []
     },
     {
+      "provider": "curseforge",
+      "projectId": "272515",
+      "versionId": "5850587",
+      "versionName": "BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar",
+      "fileName": "BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar",
+      "sha256": "60b548bef04a2f0e1da686ee9035c2e3d4ed0459a17d7a4836fc26af6de6b60e",
+      "size": 98641,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/5850/587/BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar"
+      ],
+      "installedAt": "2026-11-11T15:35:55.072Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "250398",
+      "versionId": "6368976",
+      "versionName": "Controlling-neoforge-1.21.1-19.0.5.jar",
+      "fileName": "Controlling-neoforge-1.21.1-19.0.5.jar",
+      "sha256": "cc525fb6b030d9e4d33176983f278919e17b33935e2ca568929bdfa98f2b44a0",
+      "size": 77555,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/6368/976/Controlling-neoforge-1.21.1-19.0.5.jar"
+      ],
+      "installedAt": "2026-11-11T15:27:20.497Z",
+      "dependencies": [
+        {
+          "kind": "required",
+          "projectId": "858542",
+          "provider": "curseforge"
+        }
+      ],
+      "aliases": []
+    },
+    {
       "provider": "modrinth",
       "projectId": "LNytGWDc",
       "versionId": "UjX6dr61",
@@ -62,6 +114,21 @@
         "https://cdn.modrinth.com/data/oWaK0Q19/versions/44pLdPGg/create-aeronautics-bundled-1.21.1-1.3.2.jar"
       ],
       "installedAt": "2026-11-04T04:39:24.092Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "491794",
+      "versionId": "7892943",
+      "versionName": "ExplorersCompass-1.21.1-3.4.0-neoforge.jar",
+      "fileName": "ExplorersCompass-1.21.1-3.4.0-neoforge.jar",
+      "sha256": "71e7b47bd88c9c210d7c06fe5276736fc2e225e869778216537d584e6d1faf24",
+      "size": 174668,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/7892/943/ExplorersCompass-1.21.1-3.4.0-neoforge.jar"
+      ],
+      "installedAt": "2026-11-11T15:28:39.405Z",
       "aliases": []
     },
     {
@@ -110,6 +177,21 @@
       "aliases": []
     },
     {
+      "provider": "curseforge",
+      "projectId": "240633",
+      "versionId": "7188660",
+      "versionName": "inventorysorter 24.0.24",
+      "fileName": "inventorysorter-1.21.1-24.0.24.jar",
+      "sha256": "6fde143f12b608aec80f590f16ff91787043796dee6642f46f82e4df029c6544",
+      "size": 53363,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/7188/660/inventorysorter-1.21.1-24.0.24.jar"
+      ],
+      "installedAt": "2026-11-11T15:35:55.941Z",
+      "aliases": []
+    },
+    {
       "provider": "modrinth",
       "projectId": "nvQzSEkH",
       "versionId": "eYz2YBGT",
@@ -119,9 +201,46 @@
       "size": 726853,
       "side": "both",
       "sources": [
-        "https://cdn.modrinth.com/data/nvQzSEkH/versions/eYz2YBGT/Jade-1.21.1-NeoForge-15.10.6.jar"
+        "https://cdn.modrinth.com/data/nvQzSEkH/versions/eYz2YBGT/Jade-1.21.1-NeoForge-15.10.6.jar",
+        "https://edge.forgecdn.net/files/8591/319/Jade-1.21.1-NeoForge-15.10.6.jar"
       ],
       "installedAt": "2026-11-04T04:47:43.448Z",
+      "aliases": [
+        {
+          "provider": "curseforge",
+          "projectId": "324717",
+          "versionId": "8591319",
+          "versionName": "[NeoForge 1.21.1] 15.10.6"
+        }
+      ],
+      "dependencies": [
+        {
+          "kind": "optional",
+          "projectId": "238222",
+          "provider": "curseforge"
+        }
+      ]
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "583345",
+      "versionId": "9056575",
+      "versionName": "[NeoForge 1.21.1] 6.1.2",
+      "fileName": "JadeAddons-1.21.1-NeoForge-6.1.2.jar",
+      "sha256": "1e7ce561f66c90446797e57f836c4459bb0dbc408b6bd551e5e18038774641ae",
+      "size": 82315,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/9056/575/JadeAddons-1.21.1-NeoForge-6.1.2.jar"
+      ],
+      "installedAt": "2026-11-11T15:27:22.217Z",
+      "dependencies": [
+        {
+          "kind": "required",
+          "projectId": "324717",
+          "provider": "curseforge"
+        }
+      ],
       "aliases": []
     },
     {
@@ -167,6 +286,80 @@
         "https://cdn.modrinth.com/data/umyGl7zF/versions/GDXCpKlp/kubejs-neoforge-2101.7.2-build.381.jar"
       ],
       "installedAt": "2026-11-04T04:47:02.061Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "60089",
+      "versionId": "5637846",
+      "versionName": "[1.21+ NeoForge] Mouse Tweaks 2.26.1",
+      "fileName": "MouseTweaks-neoforge-mc1.21-2.26.1.jar",
+      "sha256": "68e6f4201c5de97b77929a7215c9552495696ca6a3bf3ae4eacc34e135f6cc8b",
+      "size": 73938,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/5637/846/MouseTweaks-neoforge-mc1.21-2.26.1.jar"
+      ],
+      "installedAt": "2026-11-11T15:26:03.171Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "252848",
+      "versionId": "7892954",
+      "versionName": "NaturesCompass-1.21.1-3.4.0-neoforge.jar",
+      "fileName": "NaturesCompass-1.21.1-3.4.0-neoforge.jar",
+      "sha256": "0e249ac11b2f916c5570d9679e188da652fa5664ba9cdb7be5dc9ff69497539c",
+      "size": 224657,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/7892/954/NaturesCompass-1.21.1-3.4.0-neoforge.jar"
+      ],
+      "installedAt": "2026-11-11T15:28:36.585Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "482378",
+      "versionId": "9415760",
+      "versionName": "1.21.1-4.0.2.0",
+      "fileName": "ParCool-1.21.1-4.0.2.0.jar",
+      "sha256": "82363025dff28359d740c19457b37ce80fd142a1ebc75df96cd85e2dc12c05ef",
+      "size": 1265497,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/9415/760/ParCool-1.21.1-4.0.2.0.jar"
+      ],
+      "installedAt": "2026-11-11T15:27:35.080Z",
+      "dependencies": [
+        {
+          "kind": "optional",
+          "projectId": "1132901",
+          "provider": "curseforge"
+        }
+      ],
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "1501234",
+      "versionId": "8824743",
+      "versionName": "ParCool-CompatibilityAddon-1.21.1-3.4.3.3-1.2.1.jar",
+      "fileName": "ParCool-CompatibilityAddon-1.21.1-3.4.3.3-1.2.1.jar",
+      "sha256": "4cdc7a02d07d3e389aacb3ecc527066321c3d0539f32c1f0277beb9589858ff9",
+      "size": 52105,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/8824/743/ParCool-CompatibilityAddon-1.21.1-3.4.3.3-1.2.1.jar"
+      ],
+      "installedAt": "2026-11-11T15:27:18.335Z",
+      "dependencies": [
+        {
+          "kind": "required",
+          "projectId": "482378",
+          "provider": "curseforge"
+        }
+      ],
       "aliases": []
     },
     {
@@ -230,6 +423,21 @@
       "aliases": []
     },
     {
+      "provider": "curseforge",
+      "projectId": "858542",
+      "versionId": "5831692",
+      "versionName": "Searchables-neoforge-1.21.1-1.0.2.jar",
+      "fileName": "Searchables-neoforge-1.21.1-1.0.2.jar",
+      "sha256": "ca193f0c69033d8f709f9e073a7c1ef4ea46714e5c2f94eb23ace12781c6aa68",
+      "size": 77326,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/5831/692/Searchables-neoforge-1.21.1-1.0.2.jar"
+      ],
+      "installedAt": "2026-11-11T15:27:37.985Z",
+      "aliases": []
+    },
+    {
       "provider": "modrinth",
       "projectId": "AANobbMI",
       "versionId": "S3DUMfBo",
@@ -242,6 +450,105 @@
         "https://cdn.modrinth.com/data/AANobbMI/versions/S3DUMfBo/sodium-neoforge-0.8.12%2Bmc1.21.1.jar"
       ],
       "installedAt": "2026-11-10T05:53:12.206Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "TyCTlI4b",
+      "versionId": "tJnK2DE1",
+      "versionName": "1.21.1-3.26.21.2249",
+      "fileName": "sophisticatedbackpacks-1.21.1-3.26.21.2249.jar",
+      "sha256": "8abc4b23b1feec31d11b98807ccb2961d46060f30b858f22dfeb1cb28009136d",
+      "size": 1265683,
+      "side": "unknown",
+      "sources": [
+        "https://cdn.modrinth.com/data/TyCTlI4b/versions/tJnK2DE1/sophisticatedbackpacks-1.21.1-3.26.21.2249.jar"
+      ],
+      "installedAt": "2026-11-11T15:32:10.404Z",
+      "dependencies": [
+        {
+          "kind": "optional",
+          "projectId": "vvuO3ImH",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "u6dRKJwZ",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "DMu0oBKf",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "BAscRYKm",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "vRYk0bv7",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "WRaRZdTd",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "required",
+          "projectId": "nmoqTijg",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "b1fMg6sH",
+          "provider": "modrinth"
+        }
+      ],
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "nmoqTijg",
+      "versionId": "9DxpMDZv",
+      "versionName": "1.21.1-1.5.33.2470",
+      "fileName": "sophisticatedcore-1.21.1-1.5.33.2470.jar",
+      "sha256": "c67df4b2fc325de1a59d6845c8205225a48b6e0db8271b12673f04f8a336fd77",
+      "size": 1845993,
+      "side": "unknown",
+      "sources": [
+        "https://cdn.modrinth.com/data/nmoqTijg/versions/9DxpMDZv/sophisticatedcore-1.21.1-1.5.33.2470.jar"
+      ],
+      "installedAt": "2026-11-11T15:35:26.381Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "535489",
+      "versionId": "9279974",
+      "versionName": "[NEOFORGE][1.21.1] Sound Physics Remastered 1.21.1-1.5.2",
+      "fileName": "sound-physics-remastered-neoforge-1.21.1-1.5.2.jar",
+      "sha256": "108cac1fe49d0dc210183d69787db5a359cdc03c5b580eb8ab0208be7f072982",
+      "size": 204230,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/9279/974/sound-physics-remastered-neoforge-1.21.1-1.5.2.jar"
+      ],
+      "installedAt": "2026-11-11T15:26:43.465Z",
+      "dependencies": [
+        {
+          "provider": "curseforge",
+          "projectId": "348521",
+          "kind": "optional"
+        },
+        {
+          "provider": "curseforge",
+          "projectId": "416089",
+          "kind": "optional"
+        }
+      ],
       "aliases": []
     },
     {
@@ -302,6 +609,43 @@
         "https://cdn.modrinth.com/data/R0bDWFAW/versions/tXG1TkGx/touhoulittlemaid-1.5.3-neoforge%2Bmc1.21.1.jar"
       ],
       "installedAt": "2026-11-04T04:40:55.071Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "JtifUr64",
+      "versionId": "2y01mBUy",
+      "versionName": "1.21.1-NeoForge-5.1.3",
+      "fileName": "TravelersTitles-1.21.1-NeoForge-5.1.3.jar",
+      "sha256": "f7d6811b58a432e4d7f0e80bfcc48210f7a8da251d1c3e528a73c26d0f2a56ed",
+      "size": 235345,
+      "side": "client",
+      "sources": [
+        "https://cdn.modrinth.com/data/JtifUr64/versions/2y01mBUy/TravelersTitles-1.21.1-NeoForge-5.1.3.jar"
+      ],
+      "installedAt": "2026-11-11T15:28:30.972Z",
+      "dependencies": [
+        {
+          "kind": "required",
+          "projectId": "Ua7DFN59",
+          "provider": "modrinth"
+        }
+      ],
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "Ua7DFN59",
+      "versionId": "2prKITKh",
+      "versionName": "1.21.1-NeoForge-5.1.9",
+      "fileName": "YungsApi-1.21.1-NeoForge-5.1.9.jar",
+      "sha256": "375e0b2f988ab4f5bde182166c0f0b102377adc8f823660c24ade08b0b3cde56",
+      "size": 413763,
+      "side": "unknown",
+      "sources": [
+        "https://cdn.modrinth.com/data/Ua7DFN59/versions/2prKITKh/YungsApi-1.21.1-NeoForge-5.1.9.jar"
+      ],
+      "installedAt": "2026-11-11T15:29:33.225Z",
       "aliases": []
     }
   ]

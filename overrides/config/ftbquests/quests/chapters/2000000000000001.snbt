@@ -1,0 +1,115 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: ""
+	group: ""
+	icon: {
+		id: "irontide:raid_scrap"
+	}
+	id: "2000000000000001"
+	images: [ ]
+	order_index: 0
+	quest_links: [ ]
+	quests: [
+		{
+			can_repeat: true
+			id: "1000000000000010"
+			rewards: [{
+				id: "1000000000000012"
+				item: {
+					count: 1
+					id: "irontide:fuel_module_1"
+				}
+				type: "item"
+			}]
+			tasks: [{
+				consume_items: true
+				id: "1000000000000011"
+				item: { count: 1, id: "irontide:raid_scrap" }
+				type: "item"
+			}]
+			x: 0.0d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			id: "1000000000000020"
+			rewards: [{
+				id: "1000000000000022"
+				item: {
+					count: 1
+					id: "irontide:armor_module_1"
+				}
+				type: "item"
+			}]
+			tasks: [{
+				consume_items: true
+				id: "1000000000000021"
+				item: { count: 1, id: "irontide:raid_scrap" }
+				type: "item"
+			}]
+			x: 1.5d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			id: "1000000000000030"
+			rewards: [{
+				id: "1000000000000032"
+				item: {
+					count: 1
+					id: "irontide:beacon_module_1"
+				}
+				type: "item"
+			}]
+			tasks: [{
+				consume_items: true
+				id: "1000000000000031"
+				item: { count: 1, id: "irontide:raid_scrap" }
+				type: "item"
+			}]
+			x: 3.0d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			id: "1000000000000040"
+			rewards: [{
+				id: "1000000000000042"
+				item: {
+					count: 1
+					id: "irontide:transfer_module_1"
+				}
+				type: "item"
+			}]
+			tasks: [{
+				consume_items: true
+				id: "1000000000000041"
+				item: { count: 1, id: "irontide:raid_scrap" }
+				type: "item"
+			}]
+			x: 4.5d
+			y: 0.0d
+		}
+		{
+			can_repeat: true
+			id: "1000000000000050"
+			rewards: [{
+				id: "1000000000000052"
+				item: {
+					count: 1
+					id: "irontide:core_repair_kit"
+				}
+				type: "item"
+			}]
+			tasks: [{
+				consume_items: true
+				id: "1000000000000051"
+				item: { count: 1, id: "irontide:raid_scrap" }
+				type: "item"
+			}]
+			x: 6.0d
+			y: 0.0d
+		}
+	]
+}

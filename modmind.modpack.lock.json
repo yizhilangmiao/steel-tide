@@ -2,7 +2,7 @@
   "version": 1,
   "minecraftVersion": "1.21.1",
   "loader": "neoforge",
-  "generatedAt": "2026-11-11T15:35:55.963Z",
+  "generatedAt": "2026-11-11T16:19:17.174Z",
   "mods": [
     {
       "provider": "curseforge",
@@ -114,6 +114,34 @@
         "https://cdn.modrinth.com/data/oWaK0Q19/versions/44pLdPGg/create-aeronautics-bundled-1.21.1-1.3.2.jar"
       ],
       "installedAt": "2026-11-04T04:39:24.092Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "GWp4jCJj",
+      "versionId": "bOiDu0LS",
+      "versionName": "5.11.7",
+      "fileName": "createbigcannons-5.11.7+mc.1.21.1.jar",
+      "sha256": "ea017ab94637032d039899d88404838d173fa0e6286657cae6a6c3af459e87ca",
+      "size": 3771506,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/GWp4jCJj/versions/bOiDu0LS/createbigcannons-5.11.7%2Bmc.1.21.1.jar"
+      ],
+      "installedAt": "2026-11-11T16:19:04.543Z",
+      "dependencies": [
+        {
+          "provider": "modrinth",
+          "projectId": "B3pb093D",
+          "kind": "required"
+        },
+        {
+          "provider": "modrinth",
+          "projectId": "LNytGWDc",
+          "kind": "required"
+        }
+      ],
+      "publishedAt": "2026-06-22T22:26:12.060170Z",
       "aliases": []
     },
     {
@@ -405,6 +433,22 @@
         "https://cdn.modrinth.com/data/sk9knFPE/versions/SqkDvOLG/rhino-2101.2.8-build.91.jar"
       ],
       "installedAt": "2026-11-04T04:47:58.073Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "B3pb093D",
+      "versionId": "hZ6B2Z0x",
+      "versionName": "2.1.2",
+      "fileName": "ritchiesprojectilelib-2.1.2+mc.1.21.1-neoforge.jar",
+      "sha256": "cc509060833736fb650aa4c36b1ce33a7eeeb9ca6e9f8e80a7c951c9e7487b24",
+      "size": 76369,
+      "side": "unknown",
+      "sources": [
+        "https://cdn.modrinth.com/data/B3pb093D/versions/hZ6B2Z0x/ritchiesprojectilelib-2.1.2%2Bmc.1.21.1-neoforge.jar"
+      ],
+      "installedAt": "2026-11-11T16:19:16.632Z",
+      "publishedAt": "2026-02-07T08:42:23.436249Z",
       "aliases": []
     },
     {

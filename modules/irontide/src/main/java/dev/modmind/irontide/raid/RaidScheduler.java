@@ -293,8 +293,12 @@ public final class RaidScheduler {
                 continue;
             }
             if (entity.distanceToSqr(center) <= rangeSq) {
-                damage += Math.max(1, config.attackDamagePerSecond() / config.spawnPerBurst() * config.spawnPerBurst());
+                // 每只围核的怪每秒贡献一份 attackDamagePerSecond，累加后由全程上限封顶
+                damage += config.attackDamagePerSecond();
             }
+        }
+        if (config.attackDpsCap() > 0) {
+            damage = Math.min(damage, config.attackDpsCap());
         }
         if (damage > 0) {
             core.applyRaidDamage(damage);

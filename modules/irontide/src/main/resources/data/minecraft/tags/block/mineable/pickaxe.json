@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "irontide:andesite_core"
+    "irontide:andesite_core",
+    "irontide:shell"
   ]
 }

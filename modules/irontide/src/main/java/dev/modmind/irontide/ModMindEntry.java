@@ -3,6 +3,8 @@ package dev.modmind.irontide;
 import com.mojang.logging.LogUtils;
 import dev.modmind.irontide.block.AndesiteCoreBlock;
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
+import dev.modmind.irontide.block.ShellBlock;
+import dev.modmind.irontide.block.ShellBlockEntity;
 import dev.modmind.irontide.config.ModuleType;
 import dev.modmind.irontide.event.IronTideEvents;
 import dev.modmind.irontide.item.CoreModuleItem;
@@ -51,6 +53,17 @@ public final class ModMindEntry {
     public static final DeferredItem<BlockItem> ANDESITE_CORE_ITEM = ITEMS.register("andesite_core",
             () -> new BlockItem(ANDESITE_CORE.get(), new Item.Properties()));
 
+    /** 结构外壳：成型后盖在外部方块上的皮肤，纯展示、不接任何能力/网络。 */
+    public static final DeferredBlock<ShellBlock> SHELL = BLOCKS.register("shell",
+            () -> new ShellBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(3.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.NETHERITE_BLOCK)));
+
+    public static final DeferredItem<BlockItem> SHELL_ITEM = ITEMS.register("shell",
+            () -> new BlockItem(SHELL.get(), new Item.Properties()));
+
     // 四类模块 × 三级 = 12 个物品
     public static final DeferredItem<CoreModuleItem> FUEL_MODULE_I = module(ModuleType.FUEL, 1);
     public static final DeferredItem<CoreModuleItem> FUEL_MODULE_II = module(ModuleType.FUEL, 2);
@@ -91,12 +104,17 @@ public final class ModMindEntry {
             BLOCK_ENTITIES.register("andesite_core",
                     () -> BlockEntityType.Builder.of(AndesiteCoreBlockEntity::new, ANDESITE_CORE.get()).build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ShellBlockEntity>> SHELL_BE =
+            BLOCK_ENTITIES.register("shell",
+                    () -> BlockEntityType.Builder.of(ShellBlockEntity::new, SHELL.get()).build(null));
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ITEM_GROUP = CREATIVE_TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.irontide"))
                     .icon(() -> new ItemStack(ANDESITE_CORE.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ANDESITE_CORE.get());
+                        output.accept(SHELL.get());
                         output.accept(FUEL_MODULE_I.get());
                         output.accept(FUEL_MODULE_II.get());
                         output.accept(FUEL_MODULE_III.get());

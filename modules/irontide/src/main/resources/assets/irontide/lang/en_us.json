@@ -1,6 +1,7 @@
 {
   "itemGroup.irontide": "IronTide",
   "block.irontide.andesite_core": "Andesite Core",
+  "block.irontide.shell": "Structural Shell",
   "item.irontide.fuel_module_1": "Fuel Module I",
   "item.irontide.fuel_module_2": "Fuel Module II",
   "item.irontide.fuel_module_3": "Fuel Module III",

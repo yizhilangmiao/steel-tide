@@ -23,7 +23,8 @@
   },
   "attack": {
     "range": 3.5,
-    "damagePerSecond": 6
+    "damagePerSecond": 6,
+    "dpsCap": 0
   },
   "groundRaiders": [
     "minecraft:zombie",

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "type=andesite": { "model": "irontide:block/shell_andesite" },
+    "type=brass": { "model": "irontide:block/shell_brass" },
+    "type=steel": { "model": "irontide:block/shell_steel" },
+    "type=copper": { "model": "irontide:block/shell_copper" }
+  }
+}

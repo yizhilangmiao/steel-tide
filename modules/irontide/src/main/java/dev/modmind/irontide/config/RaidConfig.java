@@ -31,6 +31,8 @@ public record RaidConfig(
         int spawnIntervalTicks,
         double attackRange,
         int attackDamagePerSecond,
+        /** 攻核全程 DPS 上限；{@code 0} = 不限（老配置缺少该字段时也是 0）。 */
+        int attackDpsCap,
         int airHeight,
         List<String> groundRaiders,
         List<String> airRaiders,
@@ -109,6 +111,10 @@ public record RaidConfig(
         JsonObject attack = JsonSupport.object(root, "attack", "attack");
         double attackRange = JsonSupport.number(attack, "range", "attack.range");
         int attackDamagePerSecond = JsonSupport.integer(attack, "damagePerSecond", "attack.damagePerSecond");
+        // 缺省 0 = 不限，让老存档的 raids.json 不改也能继续加载
+        int attackDpsCap = attack.has("dpsCap")
+                ? JsonSupport.integer(attack, "dpsCap", "attack.dpsCap")
+                : 0;
 
         JsonArray waveArray = JsonSupport.array(root, "waves", "waves");
         List<Wave> waves = new ArrayList<>();
@@ -152,10 +158,13 @@ public record RaidConfig(
         if (attackRange <= 0) {
             throw JsonSupport.invalid("attack.range", "must be > 0, was " + attackRange);
         }
+        if (attackDpsCap < 0) {
+            throw JsonSupport.invalid("attack.dpsCap", "must be >= 0 (0 = unlimited), was " + attackDpsCap);
+        }
 
         return new RaidConfig(cycleDays, warnDay, scoutDay, attackDay, List.copyOf(waves),
                 headMulPerPlayer, gearMulMax, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
-                spawnIntervalTicks, attackRange, attackDamagePerSecond, airHeight,
+                spawnIntervalTicks, attackRange, attackDamagePerSecond, attackDpsCap, airHeight,
                 List.copyOf(groundRaiders), List.copyOf(airRaiders), safeZone);
     }
 

@@ -12,4 +12,4 @@
 
 **构建**：`cd modules/irontide && GRADLE_USER_HOME="C:/Users/25571/AppData/Roaming/modmind/gradle-runtime/cache" ./gradlew build --offline`（默认 gradle home 缺 neoform-runtime，且 maven.neoforged.net 本机不可达）。
 
-**改完同步三处**：`mods/modmind-local-irontide.jar`、`.modmind/minecraft/mods/modmind-local-irontide.jar`、`D:\mc\versions\钢铁潮汐-开发\mods/modmind-local-irontide.jar`。
+**同步路径（只此一条）**：`mods/` 与 `overrides/` → `modmind_build_project`（或面板同步）→ `.modmind/minecraft/{mods,config,kubejs}`；`D:\mc\versions\钢铁潮汐-开发\{mods,config,kubejs,...}` 是指向 `.modmind/minecraft/*` 的 **junction**，所以 PCL 实例自动就是最新状态，**不用再手工复制 jar 到 D 盘**。反向不成立：游戏里改的东西落在 `.modmind/minecraft/config`，不会回流 `overrides/`，下次同步被覆盖 —— 要长期保留就改工程里的 `overrides/`。

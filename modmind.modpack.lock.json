@@ -2,7 +2,7 @@
   "version": 1,
   "minecraftVersion": "1.21.1",
   "loader": "neoforge",
-  "generatedAt": "2026-11-11T12:08:19.753Z",
+  "generatedAt": "2026-11-11T15:02:58.943Z",
   "mods": [
     {
       "provider": "curseforge",
@@ -92,6 +92,21 @@
         "https://edge.forgecdn.net/files/8231/400/ftb-ultimine-neoforge-2101.1.15.jar"
       ],
       "installedAt": "2026-11-11T12:08:11.595Z",
+      "aliases": []
+    },
+    {
+      "provider": "curseforge",
+      "projectId": "889915",
+      "versionId": "9344504",
+      "versionName": "[NEOFORGE][1.21.1] FTB XMod Compat 21.1.14",
+      "fileName": "ftb-xmod-compat-neoforge-21.1.14.jar",
+      "sha256": "143c79710af4e17dbff7bb933f2e17c667091353e188e5d53fdaab4220a5ff64",
+      "size": 149952,
+      "side": "both",
+      "sources": [
+        "https://edge.forgecdn.net/files/9344/504/ftb-xmod-compat-neoforge-21.1.14.jar"
+      ],
+      "installedAt": "2026-11-11T15:02:58.905Z",
       "aliases": []
     },
     {

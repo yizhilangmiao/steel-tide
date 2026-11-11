@@ -10,7 +10,9 @@
 
 **2026-11-11 深夜（键位返修）**：overrides/options.txt 改了但游戏里没生效 —— 玩家实际实例 D:\mc\versions\钢铁潮汐-开发 里只有 mods/config/kubejs/local/saves/... 是 junction，options.txt 是普通文件，同步不会覆盖它；该文件里一直是 key_iris.keybind.reload:key.keyboard.r。已直接改玩家实例的 options.txt 为 key.keyboard.unknown。以后键位类改动必须同时落到那个文件。
 
-**下一步**：① 卓越前线实机跑一轮（研究台出蓝图 → 锻造成枪 → 打一发）；② 进世界打开 FTB 任务书第 4 章「军械手册」确认排版与连线（章节 SNBT 只在世界加载时解析）；③ 试一次连锁采集默认键（反引号）；④ 打 tag m1。
+**2026-11-11 深夜（任务书查配方返修）**：任务书里对着物品按 R 查不到配方 —— FTB Quests 本体不含 JEI 集成，任务书界面的 JEI 注册在 FTB XMod Compat 里（`FTBQuestsJEIIntegration`），包里缺它。已托管安装 FTB XMod Compat 21.1.14（CurseForge 889915），53 Mod，锁文件与实例已同步。rendered 启动日志确认 ftbxmodcompat 与 ftblibrary/ftbquests 一同加载、无报错；但该次客户端在 mixin 阶段即结束、帧纯红，**JEI 插件注册与实机按 R 效果仍未验证**。
+
+**下一步**：⓪ 重启客户端后在任务书里对着钢管按 R 验证配方页（需要新 mod 冷启动才生效）；① 卓越前线实机跑一轮（研究台出蓝图 → 锻造成枪 → 打一发）；② 进世界打开 FTB 任务书第 4 章「军械手册」确认排版与连线（章节 SNBT 只在世界加载时解析）；③ 试一次连锁采集默认键（反引号）；④ 打 tag m1。
 
 **卡点**（已解）：ModMind 清单元数据已按磁盘重建（2026-11-11）——`modmind.pack.json` 47 条（逐条 sha256，排除模块产物与 `.disabled`）、`modmind.modpack.lock.json` 13 条全部核验通过（sodium→`S3DUMfBo`、tacz 1.2.0→`SzzJttH8/O2Pfsh6w`）。托管构建/同步已通（48 Mod + 7 override）。顺手修了同步器的坑：纯数据 jar 若 `neoforge.mods.toml` 写 `javafml` 又没 class 会被拒，用 `脚本/patch_datapack_modloader.ps1` 改成 `lowcodefml`（已对 DnT、malfu 执行）。无头验证在本包不可用：Sodium 拒 HeadlessMC 的 LWJGL 3.3.3，只能走 rendered。另有一条定论：KubeJS `shapeless` 结果只支持单个 ItemStack，多发必须走 Create 的 `results` 数组。
 

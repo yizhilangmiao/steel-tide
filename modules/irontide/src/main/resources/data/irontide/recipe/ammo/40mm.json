@@ -1,0 +1,37 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "irontide:bullet_casing"
+    },
+    {
+      "item": "irontide:propellant"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    }
+  ],
+  "results": [
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:40mm"
+        }
+      }
+    },
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:40mm"
+        }
+      }
+    }
+  ]
+}

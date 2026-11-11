@@ -1,0 +1,55 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "irontide:bullet_casing"
+    },
+    {
+      "item": "irontide:propellant"
+    },
+    {
+      "item": "minecraft:iron_nugget"
+    },
+    {
+      "item": "minecraft:iron_nugget"
+    }
+  ],
+  "results": [
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:556x45"
+        }
+      }
+    },
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:556x45"
+        }
+      }
+    },
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:556x45"
+        }
+      }
+    },
+    {
+      "id": "tacz:ammo",
+      "count": 1,
+      "components": {
+        "minecraft:custom_data": {
+          "AmmoId": "tacz:556x45"
+        }
+      }
+    }
+  ]
+}

@@ -29,7 +29,10 @@ MC 相关目录共五个，从今天起只有**第一行**是现役；其余是�
 | `mods\` | 第三方模组 jar（不入库，靠 `modmind.pack.json` 清单重下） |
 | `modules\` | 项目自身模块 |
 | `overrides\` | 整合包覆盖文件（进包时替换） |
-| `docs\` | 文档；`last-ai-change.json` / `last-ai-response.txt` 是 ModMind 自动生成 |
+| `docs\` | 只放 ModMind 每轮自动生成的 `last-ai-change.json` / `last-ai-response.txt`，人写的文档不要放这里 |
+| `文件\` | 人写文档：`设计\` / `教程\` / `交接\` / `历史\` |
+| `脚本\` | 工程脚本：`gen_shell_textures.py`（贴图生成）、`rotcheck.py`（结构旋转校验） |
+| `素材\` | 图片与原件备份：`素材\设计图\` |
 | `modmind.project.json` | 工程元数据（name / pack / loader 版本） |
 | `modmind.pack.json` | 打包清单 |
 | `modmind.modpack.lock.json` | 托管锁记录 —— **版本与哈希以它为准，不凭文档断言** |
@@ -111,7 +114,7 @@ pwsh -File E:\_ai\scripts\mc-mods-lock.ps1 -Project E:\ioncreating\mod_l61phe -L
 
 ## 2026-11-10 多方块成型材质切换（方案+教程）
 
-- 产出：`docs/design/多方块成型材质切换-方案.md`、`docs/design/多方块成型材质切换-教程.md`、`modules/irontide/tools/gen_shell_textures.py` + 4 张 `shell_*.png`（andesite/brass/steel/copper）
+- 产出：`文件/设计/多方块成型材质切换-方案.md`、`文件/设计/多方块成型材质切换-教程.md`、`脚本/gen_shell_textures.py` + 4 张 `shell_*.png`（andesite/brass/steel/copper）
 - 路线：`CasingSpec.formed` 数据驱动换方块；原始状态存 `ShellBlockEntity`，控制器不新增存档字段；否决 BER 整体模型（NeoForge 1.21.1 无 obj loader + 作者不建模）
 - 下一步：按教程 P0~P5 落地。最易漏处＝`StructureValidator` 的 `brassRatio` 统计必须同步接受成型态，否则成型后装甲/血量崩
 - 卡点：无。本轮纯文档 + 资源，未改任何 Java 代码

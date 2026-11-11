@@ -51,7 +51,7 @@
 ## §2 核心方块 `irontide:andesite_core`（16×16，cube_all）
 
 定稿贴图：`src/main/resources/assets/irontide/textures/block/andesite_core.png`
-原件备份：`docs/design/art/andesite_core.before.png`
+原件备份：`素材/设计图/andesite_core.before.png`
 
 ### 结构（从外到内）
 
@@ -83,7 +83,7 @@
 - **整块黄铜（土豪金）**：核心被 22 格安山机壳包围，整块金会跳得太狠，像贴纸。
 
 最终判断依据：把核心放进 3×3 机壳里看，**能不能一眼分出来，又不像外来的**。
-见 `irontide-core-3x3.png`——安山壳里跳得出来，黄铜壳里靠「圆盘 vs 横条」的形差辨认。
+见 `素材/设计图/irontide-core-3x3.png`——安山壳里跳得出来，黄铜壳里靠「圆盘 vs 横条」的形差辨认。
 
 ---
 
@@ -124,7 +124,7 @@
 
 > 不用「绿=正常」。Create 的界面里没有绿色状态灯，状态靠文字说，颜色只用来标「坏了」。
 
-预览：`irontide-core-gui.png`。
+预览：`素材/设计图/irontide-core-gui.png`。
 
 **已知未做**：两个按钮还是原版灰色（`Button.builder` 不给自定义贴图），在纸上显得脏。
 要贴合得自己管鼠标事件重画，属于后续项，不阻塞。

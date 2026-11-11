@@ -1,5 +1,7 @@
 # 交接 · 2026-11-11（晚）
 
+**目录已重整**（2026-11-11）：文档进 `文件/`（`设计/` `教程/` `交接/` `历史/`），脚本进 `脚本/`，图片进 `素材/设计图/`；`docs/` 只留 ModMind 自动生成的 AI 记录。冗余已清：`libs/modmind`、`.wt`、`modules/irontide/research-tmp`、`modules/irontide/tools`、kubejs 的 `.bak-glm`、`.agents` 的 doctor 备份。
+
 **进度**：M1 约 85%。弹药组装已换实现：KubeJS 探针作废并删除，改为 Create 搅拌机多产物配方（10 口径，`modules/irontide/src/main/resources/data/irontide/recipe/ammo/*.json`），一次出 4 发（40mm 出 2 发）。jar `150188 B` sha256 `40c6a5f2…`，已同步 `mods/`、`.modmind/minecraft/mods/`、`D:\mc\versions\钢铁潮汐-开发\mods/` 三处。
 
 **下一步**：① 启动一次，查 `logs/latest.log` 有无 `create:mixing` 解析报错，JEI 查 762x39 = 「1 弹壳 + 1 发射药 + 2 铁粒 → 4 发」；② 遗迹战利品实机验（`/loot give @s loot irontide:dungeon_inject`）；③ FTB 任务书三章实机验；④ 打 tag `m1`。

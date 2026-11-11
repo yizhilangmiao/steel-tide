@@ -304,5 +304,5 @@ Create 的界面是**纸**：`#FFFAEE` 工程纸 + `#4C3426` 木框 + 齿轮小�
 
 ## 附：实测样张
 
-- `docs/design/art/create-palette-grid.png` —— 12 张代表贴图放大对比（机壳 / 传动 / 金属 / 氧化）
-- `docs/design/art/create-steam-ui-aero.png` —— 蒸汽粒子 3 帧 + GUI 4 张 + 航空学 4 张
+- `素材/设计图/create-palette-grid.png` —— 12 张代表贴图放大对比（机壳 / 传动 / 金属 / 氧化）
+- `素材/设计图/create-steam-ui-aero.png` —— 蒸汽粒子 3 帧 + GUI 4 张 + 航空学 4 张

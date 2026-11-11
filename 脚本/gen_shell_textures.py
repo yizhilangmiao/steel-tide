@@ -7,8 +7,10 @@ from pathlib import Path
 
 from PIL import Image
 
+# 脚本放在工程根目录的「脚本/」下，模组资源在 modules/irontide/src/main/resources 下
 OUT = (Path(__file__).resolve().parents[1]
-       / "src" / "main" / "resources" / "assets" / "irontide" / "textures" / "block")
+       / "modules" / "irontide" / "src" / "main" / "resources"
+       / "assets" / "irontide" / "textures" / "block")
 OUT.mkdir(parents=True, exist_ok=True)
 
 # 每种材质的基色（对齐 Create 的调色板）

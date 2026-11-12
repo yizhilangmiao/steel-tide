@@ -144,6 +144,28 @@ public class AndesiteCoreBlock extends BaseEntityBlock implements IRotate {
         return InteractionResult.PASS;
     }
 
+    /** 玩家拆控制器：在方块真正移除前同步还原外壳，避免留下孤儿壳。 */
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof AndesiteCoreBlockEntity core) {
+            core.unformImmediately();
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
+    /**
+     * 控制器被拆/被替换时先把外壳还原，再走正常掉落与方块移除流程，避免留下孤儿壳。
+     * 这里必须同步还原：控制器 BE 一旦移除，分批队列就没有地方继续运行了。
+     */
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!level.isClientSide() && !state.is(newState.getBlock())
+                && level.getBlockEntity(pos) instanceof AndesiteCoreBlockEntity core) {
+            core.unformImmediately();
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);

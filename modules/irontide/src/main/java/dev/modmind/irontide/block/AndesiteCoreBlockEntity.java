@@ -28,10 +28,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +46,10 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     private static final Set<AndesiteCoreBlockEntity> LOADED = ConcurrentHashMap.newKeySet();
     private static final int TICK_INTERVAL = 20;
     private static final int SAVE_INTERVAL_TICKS = 5;
+    /** 成型/还原每 tick 最多改这么多格，T4 的 729 格分 12 tick 完成。 */
+    private static final int MATERIAL_SWAP_BATCH = 64;
+    /** 只发客户端更新与形状更新，绝不触发邻居更新，避免校验递归。 */
+    private static final int MATERIAL_SWAP_FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 
     /** 满供能输出转速与应力容量；低燃料降到 1/4。数值对应设计 §2.3.1。 */
     private static final float SPEED_FULL = 64.0F;
@@ -98,6 +104,19 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     private int lastLayoutIndex;
     /** 结构本身算出的生命上限（不含装甲模块），healthMax = 这个值 + 装甲加成。 */
     private int structureHealthMax;
+
+    /** 正在分批换壳；不写存档，重启后由状态跃迁重新驱动。 */
+    private boolean forming;
+    private boolean unforming;
+    private final ArrayDeque<FormStep> formQueue = new ArrayDeque<>();
+    private final ArrayDeque<UnformStep> unformQueue = new ArrayDeque<>();
+    private int swapChanged;
+
+    private record FormStep(BlockPos pos, BlockState target, BlockState original) {
+    }
+
+    private record UnformStep(BlockPos pos, BlockState fallback) {
+    }
 
     /** 四个模块槽，顺序与 {@link #slotOf(ModuleType)} 一致：燃料 / 装甲 / 信标 / 传输。 */
     private final SimpleContainer moduleSlots = new SimpleContainer(4) {
@@ -251,6 +270,9 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     public void serverTick() {
         if (!IronTideData.isLoaded()) {
             return;
+        }
+        if (level instanceof ServerLevel serverLevel) {
+            processMaterialSwap(serverLevel);
         }
         if (++tickAccumulator < TICK_INTERVAL) {
             return;
@@ -515,11 +537,15 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     /**
-     * Re-reads the multiblock structure around this controller and updates the minimal
-     * state machine. Never edits blocks; an incomplete structure only changes the state.
+     * Re-reads the multiblock structure around this controller and updates the minimal state
+     * machine. 校验本身不改方块；只有 complete 与 INCOMPLETE 之间的状态跃迁会驱动外壳
+     * 材质切换，且切换受 {@link #forming} 守卫与 materialSwap.enabled 总开关约束。
      */
     public @Nullable StructureCheckResult validateNow() {
         if (!(level instanceof ServerLevel serverLevel) || !IronTideData.isLoaded()) {
+            return null;
+        }
+        if (forming) {
             return null;
         }
         CoreConfig config = IronTideData.config();
@@ -535,6 +561,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         StructureCheckResult result = StructureValidator.check(serverLevel, worldPosition, definition, config);
         lastMissing = result.missingCount();
         lastLayoutIndex = result.layoutIndex();
+        boolean activatedNow = false;
         if (result.complete()) {
             if (state == CoreState.DESTROYED) {
                 // 已摧毁：结构修好也不会自动复活，等维修系统（后续切片）
@@ -544,6 +571,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                 state = CoreState.ACTIVE;
                 healthMax = baseHealthFor(max, getArmorBonusHealth());
                 health = healthMax;
+                activatedNow = true;
                 setChanged();
                 ModMindEntry.LOGGER.info(
                         "[IronTide] {} at {} activated: layout={} health={}/{} healthMul={} armor={} shell={} brass={}",
@@ -557,17 +585,253 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                 health = healthMax;
                 setChanged();
             }
-        } else if (state != CoreState.INCOMPLETE) {
-            state = CoreState.INCOMPLETE;
-            setChanged();
-            logIncomplete(definition, result);
+        } else {
+            // 先启动还原，再把状态置为 INCOMPLETE；还原队列在 serverTick 分批执行。
+            unformStructure(serverLevel, definition, result.layoutIndex());
+            if (state != CoreState.INCOMPLETE) {
+                state = CoreState.INCOMPLETE;
+                setChanged();
+                logIncomplete(definition, result);
+            }
         }
         if (result.complete()) {
             applyExitDirection(result.layoutIndex());
+            if (activatedNow) {
+                formStructure(serverLevel, definition, result);
+            }
         }
         updatePowerState(false);
         refreshRotation();
         return result;
+    }
+
+    public boolean isForming() {
+        return forming;
+    }
+
+    /**
+     * 从 ACTIVE 跃迁时启动换壳队列。只处理 expected 为安山/黄铜机壳的格，并按当前世界
+     * 方块决定壳类型；已经是壳的格跳过，绝不把壳本身记成“原方块”。
+     */
+    private void formStructure(ServerLevel level, MultiblockDefinition definition,
+                               StructureCheckResult result) {
+        CoreConfig config = IronTideData.config();
+        if (forming || !config.materialSwapEnabled() || !config.hasFormedCasing()) {
+            return;
+        }
+        List<MultiblockDefinition.Cell> layout = definition.layouts().get(result.layoutIndex());
+        if (layout == null) {
+            return;
+        }
+
+        formQueue.clear();
+        unformQueue.clear();
+        for (MultiblockDefinition.Cell cell : layout) {
+            if (!isShellCell(cell, config)) {
+                continue;
+            }
+            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
+            BlockState current = level.getBlockState(pos);
+            if (current.getBlock() instanceof ShellBlock) {
+                continue;
+            }
+            BlockState target = config.formedFor(current.getBlock());
+            if (target == null) {
+                continue;
+            }
+            formQueue.add(new FormStep(pos, target, current));
+        }
+        if (formQueue.isEmpty()) {
+            return;
+        }
+        unforming = false;
+        swapChanged = 0;
+        forming = true;
+    }
+
+    /**
+     * 结构不完整时启动还原队列。壳的原状态优先从壳自己的 BE 读；BE 缺失或原状态是空气时
+     * 按该格 expected 方块兜底。已经变成空气/别的方块的格不会被还原，玩家刚挖掉的格保持空气。
+     */
+    private void unformStructure(ServerLevel level, MultiblockDefinition definition, int layoutIndex) {
+        CoreConfig config = IronTideData.config();
+        if (forming || !config.materialSwapEnabled() || !config.hasFormedCasing()) {
+            return;
+        }
+        formQueue.clear();
+        unformQueue.clear();
+        fillUnformQueue(level, definition, layoutIndex, config);
+        if (unformQueue.isEmpty()) {
+            return;
+        }
+        unforming = true;
+        swapChanged = 0;
+        forming = true;
+    }
+
+    /** 控制器被拆时使用：同步还原所有壳，保证 BE 消失前不再有孤儿壳。 */
+    public void unformImmediately() {
+        if (!(level instanceof ServerLevel serverLevel) || !IronTideData.isLoaded()) {
+            return;
+        }
+        CoreConfig config = IronTideData.config();
+        if (!config.materialSwapEnabled() || !config.hasFormedCasing()) {
+            return;
+        }
+        MultiblockDefinition definition = IronTideData.definitions().get(structureId);
+        if (definition == null) {
+            definition = IronTideData.definitions().primary();
+        }
+        if (definition == null) {
+            return;
+        }
+
+        formQueue.clear();
+        unformQueue.clear();
+        forming = true;
+        unforming = true;
+        swapChanged = 0;
+        try {
+            fillUnformQueue(serverLevel, definition, lastLayoutIndex, config);
+            while (!unformQueue.isEmpty()) {
+                applyUnformStep(serverLevel, unformQueue.poll());
+            }
+        } finally {
+            forming = false;
+            unforming = false;
+            int changed = swapChanged;
+            swapChanged = 0;
+            if (changed > 0) {
+                ModMindEntry.LOGGER.info("[IronTide] unformed {} cells at {}", changed, worldPosition);
+            }
+        }
+    }
+
+    private void processMaterialSwap(ServerLevel level) {
+        if (!forming) {
+            return;
+        }
+        int processed = 0;
+        try {
+            while (processed < MATERIAL_SWAP_BATCH && !formQueue.isEmpty()) {
+                applyFormStep(level, formQueue.poll());
+                processed++;
+            }
+            while (processed < MATERIAL_SWAP_BATCH && !unformQueue.isEmpty()) {
+                applyUnformStep(level, unformQueue.poll());
+                processed++;
+            }
+        } finally {
+            if (formQueue.isEmpty() && unformQueue.isEmpty()) {
+                forming = false;
+                boolean wasUnforming = unforming;
+                unforming = false;
+                int changed = swapChanged;
+                swapChanged = 0;
+                if (changed > 0) {
+                    if (wasUnforming) {
+                        ModMindEntry.LOGGER.info("[IronTide] unformed {} cells at {}", changed, worldPosition);
+                    } else {
+                        ModMindEntry.LOGGER.info("[IronTide] formed {} cells at {}", changed, worldPosition);
+                    }
+                }
+            }
+        }
+    }
+
+    private void applyFormStep(ServerLevel level, FormStep step) {
+        if (!level.isLoaded(step.pos())) {
+            return;
+        }
+        BlockState current = level.getBlockState(step.pos());
+        if (!current.equals(step.original())) {
+            return;
+        }
+        if (!level.setBlock(step.pos(), step.target(), MATERIAL_SWAP_FLAGS)) {
+            return;
+        }
+        if (level.getBlockEntity(step.pos()) instanceof ShellBlockEntity shell) {
+            shell.bind(worldPosition, step.original());
+        }
+        swapChanged++;
+    }
+
+    private void applyUnformStep(ServerLevel level, UnformStep step) {
+        if (!level.isLoaded(step.pos())) {
+            return;
+        }
+        BlockState current = level.getBlockState(step.pos());
+        if (!(current.getBlock() instanceof ShellBlock)) {
+            return;
+        }
+        BlockState restore = step.fallback();
+        if (level.getBlockEntity(step.pos()) instanceof ShellBlockEntity shell) {
+            BlockState original = shell.releaseOriginalState();
+            if (!original.isAir()) {
+                restore = original;
+            }
+        }
+        if (restore.isAir()) {
+            return;
+        }
+        if (level.setBlock(step.pos(), restore, MATERIAL_SWAP_FLAGS)) {
+            swapChanged++;
+        }
+    }
+
+    private void fillUnformQueue(ServerLevel level, MultiblockDefinition definition,
+                                 int layoutIndex, CoreConfig config) {
+        List<List<MultiblockDefinition.Cell>> layouts = definition.layouts();
+        int safeIndex = Math.max(0, Math.min(layouts.size() - 1, layoutIndex));
+        List<MultiblockDefinition.Cell> fallbackLayout = layouts.get(safeIndex);
+        Map<BlockPos, BlockState> fallback = new LinkedHashMap<>();
+        for (MultiblockDefinition.Cell cell : fallbackLayout) {
+            if (!isShellCell(cell, config)) {
+                continue;
+            }
+            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
+            BlockState expectedState = expectedShellState(cell, config);
+            if (!expectedState.isAir()) {
+                fallback.putIfAbsent(pos, expectedState);
+            }
+        }
+
+        // 用所有旋转布局的并集找壳：结构已经缺格时最近布局不一定是成型时的布局，
+        // 只扫当前布局会漏掉其它朝向的壳。壳不可能长在骨架范围外。
+        for (MultiblockDefinition.Cell cell : definition.layoutCells()) {
+            if (!isShellCell(cell, config)) {
+                continue;
+            }
+            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
+            if (!level.isLoaded(pos) || !(level.getBlockState(pos).getBlock() instanceof ShellBlock)) {
+                continue;
+            }
+            BlockState expectedState = fallback.get(pos);
+            if (expectedState == null) {
+                expectedState = expectedShellState(cell, config);
+            }
+            if (!expectedState.isAir()) {
+                unformQueue.add(new UnformStep(pos, expectedState));
+            }
+        }
+    }
+
+    private static boolean isShellCell(MultiblockDefinition.Cell cell, CoreConfig config) {
+        return cell.expected().equals(config.andesiteCasing().id())
+                || cell.expected().equals(config.brassCasing().id());
+    }
+
+    private static BlockState expectedShellState(MultiblockDefinition.Cell cell, CoreConfig config) {
+        if (cell.expected().equals(config.andesiteCasing().id())) {
+            return config.andesiteCasing().block().defaultBlockState();
+        }
+        if (cell.expected().equals(config.brassCasing().id())) {
+            return config.brassCasing().block().defaultBlockState();
+        }
+        return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
     }
 
     private void logIncomplete(MultiblockDefinition definition, StructureCheckResult result) {
@@ -604,6 +868,13 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         // 先临时解除 DESTROYED 才能走正常校验流程，校验不过再按回去
         state = CoreState.INCOMPLETE;
         StructureCheckResult result = validateNow();
+        if (result == null) {
+            // 换壳队列正在推进时校验会被守卫挡住，返回 null；这不算结构坏，别把核心按成 DESTROYED。
+            state = CoreState.DESTROYED;
+            setChanged();
+            player.displayClientMessage(Component.literal("§c维修失败：换壳流程正忙，请稍后再试。"), true);
+            return false;
+        }
         if (state != CoreState.ACTIVE) {
             state = CoreState.DESTROYED;
             setChanged();

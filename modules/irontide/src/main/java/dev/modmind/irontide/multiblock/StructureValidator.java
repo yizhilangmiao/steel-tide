@@ -1,12 +1,15 @@
 package dev.modmind.irontide.multiblock;
 
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
+import dev.modmind.irontide.block.ShellBlock;
+import dev.modmind.irontide.block.ShellType;
 import dev.modmind.irontide.config.CoreConfig;
 import dev.modmind.irontide.data.IronTideData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
@@ -61,10 +64,16 @@ public final class StructureValidator {
             }
 
             BlockState state = level.getBlockState(pos);
-            ResourceLocation actual = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+            Block actualBlock = state.getBlock();
+            ResourceLocation actual = BuiltInRegistries.BLOCK.getKey(actualBlock);
             boolean accepted = actual.equals(cell.expected());
             if (!accepted && definition.shellFrom() != null && cell.symbol() == definition.shellFrom()
                     && shellToId != null && actual.equals(shellToId)) {
+                accepted = true;
+            }
+            // 成型外观也算匹配：壳的 type 不要求和 expected 一一对应，因为原来
+            // 的安山格也可能被玩家放成黄铜，成型时按当前方块决定壳类型。
+            if (!accepted && shellCell && actualBlock instanceof ShellBlock && config.hasFormedCasing()) {
                 accepted = true;
             }
 
@@ -75,7 +84,14 @@ public final class StructureValidator {
             }
 
             if (shellCell) {
-                if (actual.equals(andesiteId)) {
+                if (actualBlock instanceof ShellBlock) {
+                    ShellType type = state.getValue(ShellBlock.TYPE);
+                    if (type == ShellType.ANDESITE) {
+                        andesiteCells++;
+                    } else if (type == ShellType.BRASS) {
+                        brassCells++;
+                    }
+                } else if (actual.equals(andesiteId)) {
                     andesiteCells++;
                 } else if (actual.equals(brassId)) {
                     brassCells++;
@@ -105,7 +121,8 @@ public final class StructureValidator {
                 if (!level.isLoaded(anchor)) {
                     continue;
                 }
-                if (level.getBlockEntity(anchor) instanceof AndesiteCoreBlockEntity core) {
+                if (level.getBlockEntity(anchor) instanceof AndesiteCoreBlockEntity core
+                        && !core.isForming()) {
                     core.validateNow();
                 }
             }

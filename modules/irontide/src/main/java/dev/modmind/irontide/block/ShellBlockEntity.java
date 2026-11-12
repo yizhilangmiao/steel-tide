@@ -46,6 +46,17 @@ public class ShellBlockEntity extends BlockEntity {
         return originalState;
     }
 
+    /**
+     * 取出原方块状态并清空记录。掉落与还原共用它，保证同一格的原方块只被处理一次；
+     * 清空后再 setBlock / removeBlock 时，ShellBlock.onRemove 不会重复掉落。
+     */
+    public BlockState releaseOriginalState() {
+        BlockState original = originalState;
+        originalState = Blocks.AIR.defaultBlockState();
+        setChanged();
+        return original;
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
@@ -86,9 +97,8 @@ public class ShellBlockEntity extends BlockEntity {
 
     /** 还原成原方块。先清空记录，免得 {@link ShellBlock#onRemove} 又掉一份原方块。 */
     private void restore(Level level) {
-        BlockState restore = originalState;
-        originalState = Blocks.AIR.defaultBlockState();
-        setChanged();
-        level.setBlock(worldPosition, restore, Block.UPDATE_ALL);
+        BlockState restore = releaseOriginalState();
+        level.setBlock(worldPosition, restore,
+                Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
     }
 }

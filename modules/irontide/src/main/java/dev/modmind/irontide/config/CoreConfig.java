@@ -5,7 +5,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.modmind.irontide.ModMindEntry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +38,8 @@ public record CoreConfig(
         List<ModuleSpec> fuelModules,
         List<ModuleSpec> armorModules,
         List<ModuleSpec> beaconModules,
-        List<ModuleSpec> transferModules
+        List<ModuleSpec> transferModules,
+        boolean materialSwapEnabled
 ) {
     public static final String DEFAULT_RESOURCE = "/data/irontide/config_defaults/core.json";
 
@@ -61,6 +67,33 @@ public record CoreConfig(
         double value = andesiteCasing.armor()
                 + brassRatio * (brassCasing.armor() - andesiteCasing.armor());
         return Math.min(armorCap, value);
+    }
+
+    /** 只要任一种机壳配置了成型外观，校验器才需要接受 irontide:shell。 */
+    public boolean hasFormedCasing() {
+        return andesiteCasing.formed() != null || brassCasing.formed() != null;
+    }
+
+    /** 校验用：期望方块 -> 它的成型态。 */
+    public @Nullable BlockState formedFor(ResourceLocation expected) {
+        if (expected.equals(andesiteCasing.id())) {
+            return andesiteCasing.formed();
+        }
+        if (expected.equals(brassCasing.id())) {
+            return brassCasing.formed();
+        }
+        return null;
+    }
+
+    /** 成型用：按当前世界方块决定该换成哪种壳；未配置的材质返回 null。 */
+    public @Nullable BlockState formedFor(Block actualBlock) {
+        if (actualBlock == andesiteCasing.block()) {
+            return andesiteCasing.formed();
+        }
+        if (actualBlock == brassCasing.block()) {
+            return brassCasing.formed();
+        }
+        return null;
     }
 
     /**
@@ -201,13 +234,24 @@ public record CoreConfig(
             throw JsonSupport.invalid("armorCap", "must be within [0, 1], was " + armorCap);
         }
 
+        boolean materialSwapEnabled = true;
+        JsonElement materialSwapElement = root.get("materialSwap");
+        if (materialSwapElement != null && !materialSwapElement.isJsonNull()) {
+            if (!materialSwapElement.isJsonObject()) {
+                throw JsonSupport.invalid("materialSwap", "must be an object");
+            }
+            materialSwapEnabled = JsonSupport.bool(materialSwapElement.getAsJsonObject(),
+                    "enabled", "materialSwap.enabled");
+        }
+
         return new CoreConfig(healthBase, minRatioOnUpgrade, carryRatioOnUpgrade,
                 fuelCapacity, burnPerSecond, lowFuelRatio, noFuelModuleCapacity, noFuelModuleEfficiency,
                 andesite, brass, armorCap, List.copyOf(tiers), stress, build, modules,
                 parseModuleList(modules, "fuel"),
                 parseModuleList(modules, "armor"),
                 parseModuleList(modules, "beacon"),
-                parseModuleList(modules, "transfer"));
+                parseModuleList(modules, "transfer"),
+                materialSwapEnabled);
     }
 
     private static CasingSpec parseCasing(JsonObject casing, String path) {
@@ -216,6 +260,16 @@ public record CoreConfig(
         if (id == null) {
             throw JsonSupport.invalid(path + ".id", "invalid resource location '" + idText + "'");
         }
+
+        BlockState formed = null;
+        JsonElement formedElement = casing.get("formed");
+        if (formedElement != null && !formedElement.isJsonNull()) {
+            if (!formedElement.isJsonPrimitive() || !formedElement.getAsJsonPrimitive().isString()) {
+                throw JsonSupport.invalid(path + ".formed", "must be a block state string");
+            }
+            formed = parseFormedState(formedElement.getAsString(), path + ".formed");
+        }
+
         double armor = JsonSupport.number(casing, "armor", path + ".armor");
         double healthMul = JsonSupport.number(casing, "healthMul", path + ".healthMul");
         double fuelEfficiency = JsonSupport.number(casing, "fuelEfficiency", path + ".fuelEfficiency");
@@ -228,6 +282,54 @@ public record CoreConfig(
         if (fuelEfficiency < 0) {
             throw JsonSupport.invalid(path + ".fuelEfficiency", "must be >= 0, was " + fuelEfficiency);
         }
-        return new CasingSpec(id, armor, healthMul, fuelEfficiency);
+        return new CasingSpec(id, formed, armor, healthMul, fuelEfficiency);
+    }
+
+    /** 解析 "irontide:shell[type=brass]" 这种带属性的方块状态。 */
+    private static BlockState parseFormedState(String raw, String where) {
+        String text = raw.trim();
+        if (text.isEmpty()) {
+            throw JsonSupport.invalid(where, "must not be empty");
+        }
+        int bracket = text.indexOf('[');
+        String idPart = bracket < 0 ? text : text.substring(0, bracket).trim();
+        ResourceLocation location = ResourceLocation.tryParse(idPart);
+        if (location == null || !BuiltInRegistries.BLOCK.containsKey(location)) {
+            throw JsonSupport.invalid(where, "unknown block: " + idPart);
+        }
+        Block block = BuiltInRegistries.BLOCK.get(location);
+        BlockState state = block.defaultBlockState();
+        if (bracket < 0) {
+            return state;
+        }
+        int close = text.lastIndexOf(']');
+        if (close < bracket) {
+            throw JsonSupport.invalid(where, "missing ']' in: " + raw);
+        }
+        String propertiesText = text.substring(bracket + 1, close).trim();
+        if (!propertiesText.isEmpty()) {
+            for (String pair : propertiesText.split(",")) {
+                String[] parts = pair.split("=", 2);
+                if (parts.length != 2) {
+                    throw JsonSupport.invalid(where, "bad property: " + pair.trim());
+                }
+                state = applyProperty(state, block, parts[0].trim(), parts[1].trim(), where);
+            }
+        }
+        return state;
+    }
+
+    private static <T extends Comparable<T>> BlockState applyProperty(
+            BlockState state, Block block, String name, String value, String where) {
+        Property<?> rawProperty = block.getStateDefinition().getProperty(name);
+        if (rawProperty == null) {
+            throw JsonSupport.invalid(where, "unknown property: " + name);
+        }
+        @SuppressWarnings("unchecked")
+        Property<T> property = (Property<T>) rawProperty;
+        return property.getValue(value)
+                .map(candidate -> state.setValue(property, candidate))
+                .orElseThrow(() -> JsonSupport.invalid(where,
+                        "bad value '" + value + "' for property " + name));
     }
 }

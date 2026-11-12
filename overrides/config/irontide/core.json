@@ -26,17 +26,21 @@
   "casing": {
     "andesite": {
       "id": "create:andesite_casing",
+      "formed": "irontide:shell[type=andesite]",
       "armor": 0.0,
       "healthMul": 1.0,
       "fuelEfficiency": 1.0
     },
     "brass": {
       "id": "create:brass_casing",
+      "formed": "irontide:shell[type=brass]",
       "armor": 0.05,
       "healthMul": 1.6,
       "fuelEfficiency": 1.15
     }
   },
+
+  "materialSwap": { "enabled": true },
 
   "armorCap": 0.85,
 

@@ -423,8 +423,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         if (burnTime <= 0) {
             return false;
         }
-        CoreConfig config = IronTideData.config();
-        int capacity = Math.max(1, config.fuelCapacity());
+        int capacity = Math.max(1, getFuelCapacity());
         String name = stack.getHoverName().getString();
 
         int room = capacity - fuel;
@@ -466,7 +465,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
             return;
         }
         CoreConfig config = IronTideData.config();
-        int capacity = Math.max(1, config.fuelCapacity());
+        int capacity = Math.max(1, getFuelCapacity());
         if (fuel > capacity) {
             fuel = capacity;
         }
@@ -1016,7 +1015,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
             }
         }
 
-        int capacity = Math.max(1, config.fuelCapacity());
+        int capacity = Math.max(1, getFuelCapacity());
         int percent = (int) Math.round(fuel * 100.0D / capacity);
         player.sendSystemMessage(Component.literal(
                 "[钢铁潮汐] 燃料：" + fuel + " / " + capacity + "（" + percent + "%）｜" + powerStatusText()));

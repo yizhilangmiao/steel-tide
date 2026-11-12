@@ -8,6 +8,18 @@
 | `raids.json` | 怪潮：周期、波次表、刷怪、安全区、攻核、怪物来源 | IronTide 怪潮调度器，载入时校验 |
 | `multiblocks/core_base_3.json` | T1（3×3×3）内置结构 | IronTide 结构校验器 |
 
+## 燃料容量与模块
+
+| 情况 | 容量 | 燃烧效率 | 每秒消耗 |
+| --- | --- | --- | --- |
+| 不装燃料模块（应急） | `fuel.noFuelModuleCapacity` = 12000 | `fuel.noFuelModuleEfficiency` = 1.5 | `burnPerSecond / 1.5` ≈ 3.3 |
+| 燃料模块 I | `modules.fuel[0].capacity` = 60000 | 1.00 | 5 |
+| 燃料模块 II | `modules.fuel[1].capacity` = 120000 | 0.80 | 6.25 |
+| 燃料模块 III | `modules.fuel[2].capacity` = 240000 | 0.60 | 8.3 |
+
+- **面板/聊天里的上限、百分比、低燃料阈值全部按「当前装的模块容量」算**（`AndesiteCoreBlockEntity#getFuelCapacity()`）。
+- `fuel.capacity`（12000）是旧版遗留字段，仅为兼容老配置保留，**不再参与计算**。
+- 效率越低烧得越快：容量换效率是燃料模块的核心取舍；模块数值在 `core.json → modules.fuel[]` 里调。
 ## 约定
 
 1. **只读一次**：服务器启动时载入并做范围校验，非法值直接报错停止，**不允许静默回退默认值**

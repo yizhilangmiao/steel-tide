@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.modmind.irontide.ModMindEntry;
+import dev.modmind.irontide.block.ShellType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public record CoreConfig(
         double healthBase,
@@ -28,8 +30,7 @@ public record CoreConfig(
         double lowFuelRatio,
         int noFuelModuleCapacity,
         double noFuelModuleEfficiency,
-        CasingSpec andesiteCasing,
-        CasingSpec brassCasing,
+        List<CasingSpec> casings,
         double armorCap,
         List<TierSpec> tiers,
         JsonObject stress,
@@ -58,40 +59,111 @@ public record CoreConfig(
         return list.get(index);
     }
 
-    public double healthMulFor(double brassRatio) {
-        return andesiteCasing.healthMul()
-                + brassRatio * (brassCasing.healthMul() - andesiteCasing.healthMul());
+    /** 列表里第一种材质：任何需要「默认材质」的地方都用它（例如全是不认识的方块）。 */
+    public CasingSpec primaryCasing() {
+        return casings.isEmpty() ? new CasingSpec(
+                ResourceLocation.fromNamespaceAndPath("minecraft", "air"), null, 0.0D, 1.0D, 1.0D, 1) : casings.get(0);
     }
 
-    public double armorFor(double brassRatio) {
-        double value = andesiteCasing.armor()
-                + brassRatio * (brassCasing.armor() - andesiteCasing.armor());
-        return Math.min(armorCap, value);
-    }
-
-    /** 只要任一种机壳配置了成型外观，校验器才需要接受 irontide:shell。 */
-    public boolean hasFormedCasing() {
-        return andesiteCasing.formed() != null || brassCasing.formed() != null;
-    }
-
-    /** 校验用：期望方块 -> 它的成型态。 */
-    public @Nullable BlockState formedFor(ResourceLocation expected) {
-        if (expected.equals(andesiteCasing.id())) {
-            return andesiteCasing.formed();
+    /**
+     * 核心档位序号（T1=1、T2=2 …）。结构定义里的 tier 字符串不在表里时按 1 处理，
+     * 宁可放行也不要因为一处笔误整个结构变砖。
+     */
+    public int tierLevel(String tierId) {
+        for (int i = 0; i < tiers.size(); i++) {
+            if (tiers.get(i).id().equalsIgnoreCase(tierId)) {
+                return i + 1;
+            }
         }
-        if (expected.equals(brassCasing.id())) {
-            return brassCasing.formed();
+        return 1;
+    }
+
+    /**
+     * 加权平均：生命倍率与护甲都按各材质占的格数算，而不是「黄铜占比二点插值」。
+     * 三种以上材质混搭时，每种材质按自己的格数贡献，安山铺得多就把整体拉回安山。
+     */
+    public double healthMulFor(Map<CasingSpec, Integer> counts) {
+        double total = 0.0D;
+        double sum = 0.0D;
+        for (Map.Entry<CasingSpec, Integer> entry : counts.entrySet()) {
+            int cells = Math.max(0, entry.getValue());
+            if (cells == 0) {
+                continue;
+            }
+            total += cells;
+            sum += cells * entry.getKey().healthMul();
+        }
+        if (total <= 0.0D) {
+            return primaryCasing().healthMul();
+        }
+        return sum / total;
+    }
+
+    public double armorFor(Map<CasingSpec, Integer> counts) {
+        double total = 0.0D;
+        double sum = 0.0D;
+        for (Map.Entry<CasingSpec, Integer> entry : counts.entrySet()) {
+            int cells = Math.max(0, entry.getValue());
+            if (cells == 0) {
+                continue;
+            }
+            total += cells;
+            sum += cells * entry.getKey().armor();
+        }
+        double value = total <= 0.0D ? primaryCasing().armor() : sum / total;
+        return Math.min(armorCap, Math.max(0.0D, value));
+    }
+
+    /** 某一格的期望方块是不是机壳格（安山 / 黄铜 / 钢 / 铜任意一种）。 */
+    public boolean isCasingCell(ResourceLocation expected) {
+        for (CasingSpec casing : casings) {
+            if (casing.id().equals(expected)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public @Nullable CasingSpec casingById(ResourceLocation id) {
+        for (CasingSpec casing : casings) {
+            if (casing.id().equals(id)) {
+                return casing;
+            }
         }
         return null;
     }
 
+    public @Nullable CasingSpec casingForShellType(ShellType type) {
+        for (CasingSpec casing : casings) {
+            if (casing.shellType() == type) {
+                return casing;
+            }
+        }
+        return null;
+    }
+
+    /** 只要任一种机壳配置了成型外观，校验器才需要接受 irontide:shell。 */
+    public boolean hasFormedCasing() {
+        for (CasingSpec casing : casings) {
+            if (casing.formed() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 校验用：期望方块 -> 它的成型态。 */
+    public @Nullable BlockState formedFor(ResourceLocation expected) {
+        CasingSpec casing = casingById(expected);
+        return casing == null ? null : casing.formed();
+    }
+
     /** 成型用：按当前世界方块决定该换成哪种壳；未配置的材质返回 null。 */
     public @Nullable BlockState formedFor(Block actualBlock) {
-        if (actualBlock == andesiteCasing.block()) {
-            return andesiteCasing.formed();
-        }
-        if (actualBlock == brassCasing.block()) {
-            return brassCasing.formed();
+        for (CasingSpec casing : casings) {
+            if (casing.block() == actualBlock) {
+                return casing.formed();
+            }
         }
         return null;
     }
@@ -184,9 +256,7 @@ public record CoreConfig(
         JsonObject build = JsonSupport.object(root, "build", "build");
         JsonObject modules = JsonSupport.object(root, "modules", "modules");
 
-        JsonObject casing = JsonSupport.object(root, "casing", "casing");
-        CasingSpec andesite = parseCasing(JsonSupport.object(casing, "andesite", "casing.andesite"), "casing.andesite");
-        CasingSpec brass = parseCasing(JsonSupport.object(casing, "brass", "casing.brass"), "casing.brass");
+        List<CasingSpec> casings = parseCasings(root);
         double armorCap = JsonSupport.number(root, "armorCap", "armorCap");
 
         JsonArray tierArray = JsonSupport.array(root, "tiers", "tiers");
@@ -246,12 +316,54 @@ public record CoreConfig(
 
         return new CoreConfig(healthBase, minRatioOnUpgrade, carryRatioOnUpgrade,
                 fuelCapacity, burnPerSecond, lowFuelRatio, noFuelModuleCapacity, noFuelModuleEfficiency,
-                andesite, brass, armorCap, List.copyOf(tiers), stress, build, modules,
+                casings, armorCap, List.copyOf(tiers), stress, build, modules,
                 parseModuleList(modules, "fuel"),
                 parseModuleList(modules, "armor"),
                 parseModuleList(modules, "beacon"),
                 parseModuleList(modules, "transfer"),
                 materialSwapEnabled);
+    }
+
+    /**
+     * 解析 casing：新格式是数组（材质数量不限），老格式是 {@code {andesite:{...}, brass:{...}}} 对象。
+     * 对象按字段顺序读，保证第一种仍是主材质，老配置不用改就能加载。
+     */
+    private static List<CasingSpec> parseCasings(JsonObject root) {
+        JsonElement element = root.get("casing");
+        if (element == null || element.isJsonNull()) {
+            throw JsonSupport.invalid("casing", "must be an array or an object");
+        }
+        List<CasingSpec> out = new ArrayList<>();
+        if (element.isJsonArray()) {
+            JsonArray array = element.getAsJsonArray();
+            for (int i = 0; i < array.size(); i++) {
+                JsonElement entry = array.get(i);
+                if (!entry.isJsonObject()) {
+                    throw JsonSupport.invalid("casing[" + i + "]", "must be an object");
+                }
+                out.add(parseCasing(entry.getAsJsonObject(), "casing[" + i + "]"));
+            }
+        } else if (element.isJsonObject()) {
+            for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
+                if (!entry.getValue().isJsonObject()) {
+                    throw JsonSupport.invalid("casing." + entry.getKey(), "must be an object");
+                }
+                out.add(parseCasing(entry.getValue().getAsJsonObject(), "casing." + entry.getKey()));
+            }
+        } else {
+            throw JsonSupport.invalid("casing", "must be an array or an object");
+        }
+        if (out.isEmpty()) {
+            throw JsonSupport.invalid("casing", "must contain at least one casing");
+        }
+        for (int i = 0; i < out.size(); i++) {
+            for (int j = i + 1; j < out.size(); j++) {
+                if (out.get(i).id().equals(out.get(j).id())) {
+                    throw JsonSupport.invalid("casing", "duplicate casing id: " + out.get(i).id());
+                }
+            }
+        }
+        return List.copyOf(out);
     }
 
     private static CasingSpec parseCasing(JsonObject casing, String path) {
@@ -282,7 +394,15 @@ public record CoreConfig(
         if (fuelEfficiency < 0) {
             throw JsonSupport.invalid(path + ".fuelEfficiency", "must be >= 0, was " + fuelEfficiency);
         }
-        return new CasingSpec(id, formed, armor, healthMul, fuelEfficiency);
+        int minTier = 1;
+        JsonElement minTierElement = casing.get("minTier");
+        if (minTierElement != null && !minTierElement.isJsonNull()) {
+            minTier = JsonSupport.integer(casing, "minTier", path + ".minTier");
+        }
+        if (minTier < 1) {
+            throw JsonSupport.invalid(path + ".minTier", "must be >= 1, was " + minTier);
+        }
+        return new CasingSpec(id, formed, armor, healthMul, fuelEfficiency, minTier);
     }
 
     /** 解析 "irontide:shell[type=brass]" 这种带属性的方块状态。 */

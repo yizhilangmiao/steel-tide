@@ -10,18 +10,25 @@ import org.jetbrains.annotations.Nullable;
  * 一张贴图 + 一条 blockstate，别处不用改。
  */
 public enum ShellType implements StringRepresentable {
-    ANDESITE("andesite"),
-    BRASS("brass"),
-    STEEL("steel"),
-    COPPER("copper");
+    ANDESITE("andesite", "安山"),
+    BRASS("brass", "黄铜"),
+    STEEL("steel", "钢"),
+    COPPER("copper", "铜");
 
     public static final StringRepresentable.EnumCodec<ShellType> CODEC =
             StringRepresentable.fromEnum(ShellType::values);
 
     private final String name;
+    private final String displayName;
 
-    ShellType(String name) {
+    ShellType(String name, String displayName) {
         this.name = name;
+        this.displayName = displayName;
+    }
+
+    /** 面板/日志里的中文名。 */
+    public String displayName() {
+        return displayName;
     }
 
     @Override

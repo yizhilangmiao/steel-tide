@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -118,6 +119,10 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
 
     private record UnformStep(BlockPos pos, BlockState fallback) {
     }
+
+    /** 客户端缓存的模块状态：服务端在模块变动时通过方块更新同步，供 hasShaftTowards 判断可接轴域。 */
+    private final EnumSet<ModuleType> clientModules = EnumSet.noneOf(ModuleType.class);
+    private int clientTransferAxes;
 
     /** 四个模块槽，顺序与 {@link #slotOf(ModuleType)} 一致：燃料 / 装甲 / 信标 / 传输。 */
     private final SimpleContainer moduleSlots = new SimpleContainer(4) {
@@ -218,6 +223,11 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         // SmartBlockEntity 把 saveAdditional/loadAdditional 定成 final，只能走 write/read
         super.write(tag, registries, clientPacket);
         if (clientPacket) {
+            // 方块更新只带「装了哪些模块 + 传输档位」，槽里的物品仍属于服务端数据
+            for (ModuleType type : ModuleType.values()) {
+                tag.putBoolean("client:" + type.name(), hasModuleInSlots(type));
+            }
+            tag.putInt("client:transferAxes", transferAxesInSlots());
             return;
         }
         tag.putString("structureId", structureId);
@@ -234,6 +244,13 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         if (clientPacket) {
+            clientModules.clear();
+            for (ModuleType type : ModuleType.values()) {
+                if (tag.getBoolean("client:" + type.name())) {
+                    clientModules.add(type);
+                }
+            }
+            clientTransferAxes = Math.max(0, Math.min(2, tag.getInt("client:transferAxes")));
             return;
         }
         structureId = tag.getString("structureId");
@@ -377,16 +394,39 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
 
     /** 传输模块允许的接轴档位：0 仅水平 / 1 水平+垂直 / 2 任意轴。 */
     public int getTransferAxes() {
-        return Math.max(0, Math.min(2, moduleSpec(ModuleType.TRANSFER).transferAxes()));
+        if (level != null && level.isClientSide) {
+            return clientTransferAxes;
+        }
+        return transferAxesInSlots();
     }
 
-    /** 槽里是否装着指定类型的模块（装错槽/未载入配置都算没装）。 */
+    /** 槽里是否装着指定类型的模块（装错槽/未载入配置都算没装）。客户端读同步过来的缓存。 */
     public boolean hasModule(ModuleType type) {
+        if (level != null && level.isClientSide) {
+            return clientModules.contains(type);
+        }
+        return hasModuleInSlots(type);
+    }
+
+    private boolean hasModuleInSlots(ModuleType type) {
         if (!IronTideData.isLoaded()) {
             return false;
         }
         ItemStack stack = moduleSlots.getItem(slotOf(type));
         return stack.getItem() instanceof CoreModuleItem module && module.moduleType() == type;
+    }
+
+    private int transferAxesInSlots() {
+        return Math.max(0, Math.min(2, moduleSpec(ModuleType.TRANSFER).transferAxes()));
+    }
+
+    /**
+     * 模块变动后把「装了哪些模块」推给客户端。
+     * Create 的 SyncedBlockEntity 已经实现了 getUpdateTag/getUpdatePacket，走它的通道即可，
+     * 数据在 write/read 的 clientPacket 分支里打包。
+     */
+    private void syncClientState() {
+        sendData();
     }
 
     /**
@@ -412,6 +452,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         updatePowerState(true);
         refreshRotation();
         setChanged();
+        syncClientState();
     }
 
     /** 生命上限 = 结构算出来的基础值 + 装甲模块加成。 */
@@ -589,10 +630,10 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                 activatedNow = true;
                 setChanged();
                 ModMindEntry.LOGGER.info(
-                        "[IronTide] {} at {} activated: layout={} health={}/{} healthMul={} armor={} shell={} brass={}",
+                        "[IronTide] {} at {} activated: layout={} health={}/{} healthMul={} armor={} shell={} casing={}",
                         definition.id(), worldPosition, result.layoutLabel(), health, healthMax,
                         format(result.healthMul()), format(result.armor()),
-                        result.shellCells(), result.brassCells());
+                        result.shellCells(), result.casingSummary());
             } else if (healthMax <= 0) {
                 int max = (int) Math.round(config.healthBase() * result.healthMul());
                 structureHealthMax = max;
@@ -839,8 +880,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
     }
 
     private static boolean isShellCell(MultiblockDefinition.Cell cell, CoreConfig config) {
-        return cell.expected().equals(config.andesiteCasing().id())
-                || cell.expected().equals(config.brassCasing().id());
+        return config.isCasingCell(cell.expected());
     }
 
 
@@ -997,7 +1037,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                             + "（基础 " + formatWhole(config.healthBase())
                             + " × 机壳倍率 " + format(result.healthMul()) + "）"));
             player.sendSystemMessage(Component.literal(
-                    "[钢铁潮汐] 机壳：安山 " + result.andesiteCells() + " / 黄铜 " + result.brassCells()
+                    "[钢铁潮汐] 机壳：" + result.casingSummary()
                             + "（共 " + result.shellCells() + " 格），护甲 " + format(result.armor())
                             + "（slice 1 仅显示，未接入伤害减免）"));
         } else {

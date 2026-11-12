@@ -14,13 +14,12 @@ public record StructureCheckResult(
         int totalCells,
         int matchedCells,
         int shellCells,
-        int andesiteCells,
-        int brassCells,
         List<Missing> missing,
-        double brassRatio,
         double healthMul,
         double armor,
-        int layoutIndex
+        int layoutIndex,
+        /** 机壳构成摘要，例如 "安山 12 / 钢 6"；没有机壳格时是 "无"。 */
+        String casingSummary
 ) {
     public int missingCount() {
         return missing.size();

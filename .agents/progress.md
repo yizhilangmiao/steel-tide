@@ -1,5 +1,5 @@
 # 进度 · 钢铁潮汐（mod_l61phe）
-  更新时间：2026-11-12 16:10 · 会话 codex（W2 单向怪潮）
+  更新时间：2026-11-12 16:40 · 会话 codex（退出卡死排查 + 诊断探针）
   工程：`E:\ioncreating\mod_l61phe` · ModMind 整合包「钢铁潮汐」· MC 1.21.1 / NeoForge 21.1.265 / JDK 21 · 69 Mod
   > 本文件覆盖写，**MC 线的进度真源就是这里**。稳定知识（目录地图/启动方式/MCP 桥/mod 版本矩阵/铁律）→ `文件\设计\项目手册.md`。
 
@@ -21,6 +21,7 @@
     5. 重写 `overrides/config/irontide/README.md` 配置契约；新增 `文件\测试\怪潮与状态-测试用例.md`（S1~S10）。
   - `ac1b55a` **W2 数值返修**：波次基数 14→**32 起步**（32/38/44/50/56/62/68/74），新增 `minWaveSize`（默认 32，兜底保证「一波不少于 32」）；新增 `spawn.glowWhenAliveBelow`（默认 10，`0`=关）——当前存活来袭怪少于阈值时每只挂发光，方便收尾找漏怪。测试用例补 S11~S14。
   - `dd16cdb` **W2 单向怪潮**：新增 `spawn.arcDegrees`（默认 60，0=一条线 / 360=四周随机）——每波开打抽一次主攻方位，整波落在该方位 ±一半张角的扇面里；出生即面朝核心；开战播报追加「来自 东/南/西/北 侧」。README 字段表与测试用例（新增 S15）同步。
+  - 退出世界卡「保存世界中」排查：见 文件/诊断/退出卡死-排查.md。已证实世界存盘完整，卡点在 MinecraftServer.stopServer() 尾部（level close / resources close / storage close）；新增 client/StuckShutdownWatchdog 自动抓 Server thread 堆栈（20 秒触发，最多 3 次）。**尚未定位到具体 mod**。
 
 ## 下一步
   1. **用户自测 W2**：`文件\测试\怪潮与状态-测试用例.md`，重点 S1~S6（四态）、S7/S8（maxAlive / chaseRadius）、S11~S13（波次 32 起步 / 收尾发光）、**S15（同向来袭）**。
@@ -28,6 +29,7 @@
   3. W3 前哨核心 + 主核无血；W4 破坏白名单/MSPT 实测；W5 手册与任务书同步 + 打 tag。
 
 ## 卡点
+  - **退出世界偶发卡在「保存世界中」（5 次里 2 次）**：世界已存盘，卡在集成服务器 stopServer() 尾部（level close / resources close / storage close），要等下一次复现的线程堆栈才能定位到具体 mod；卡住时强杀进程安全。
   - W2 只做到构建通过，**未实机验证**（用户自测）。
   - 玩家实例内存务必 ≥4G（资源重载阶段会 OOM）。
   - `createbigcannons.mixins.json:compat.frameblocked` 类缺失告警为噪声（包内无 FramedBlocks）。

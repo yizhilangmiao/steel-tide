@@ -380,6 +380,15 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         return Math.max(0, Math.min(2, moduleSpec(ModuleType.TRANSFER).transferAxes()));
     }
 
+    /** 槽里是否装着指定类型的模块（装错槽/未载入配置都算没装）。 */
+    public boolean hasModule(ModuleType type) {
+        if (!IronTideData.isLoaded()) {
+            return false;
+        }
+        ItemStack stack = moduleSlots.getItem(slotOf(type));
+        return stack.getItem() instanceof CoreModuleItem module && module.moduleType() == type;
+    }
+
     /**
      * 模块变化后重算受影响的派生值：装甲改生命上限（按比例保留当前血量），燃料改容量（超上限就压回去）。
      * 槽位内容由容器自己存档，这里不写 NBT。

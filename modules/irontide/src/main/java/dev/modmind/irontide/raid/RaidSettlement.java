@@ -59,15 +59,17 @@ public final class RaidSettlement {
             grade = "勉强守住";
         }
 
-        int scrap = (int) Math.round((wave * 2 + 2) * performance);
+        // 信标模块的奖励加成：没装 / 核心已毁时按 0 处理，纯乘算、不改变 performance 分档。
+        double beaconBonus = core != null ? core.getBeaconReward() : 0.0D;
+        int scrap = (int) Math.round((wave * 2 + 2) * performance * (1.0D + beaconBonus));
         if (scrap > 0) {
             grant(server, scrap);
         }
 
-        announceSummary(server, wave, total, remaining, reason, alive, health, max, ratio, grade, scrap);
+        announceSummary(server, wave, total, remaining, reason, alive, health, max, ratio, grade, scrap, beaconBonus);
         ModMindEntry.LOGGER.info(
-                "[IronTide] raid settled wave={} total={} remaining={} reason='{}' alive={} health={}/{} performance={} scrap={}",
-                wave, total, remaining, reason, alive, health, max, performance, scrap);
+                "[IronTide] raid settled wave={} total={} remaining={} reason='{}' alive={} health={}/{} performance={} scrap={} beacon={}",
+                wave, total, remaining, reason, alive, health, max, performance, scrap, beaconBonus);
     }
 
     private static void grant(MinecraftServer server, int amount) {
@@ -83,7 +85,7 @@ public final class RaidSettlement {
 
     private static void announceSummary(MinecraftServer server, int wave, int total, int remaining,
                                         String reason, boolean alive, int health, int max,
-                                        double ratio, String grade, int scrap) {
+                                        double ratio, String grade, int scrap, double beaconBonus) {
         StringBuilder out = new StringBuilder();
         out.append("§6[钢铁潮汐] §f第 ").append(wave).append(" 波结算 §7—— ").append(reason).append('\n');
         out.append("§7- 来袭 §f").append(total).append(" §7只，撤退时剩 §f").append(remaining).append(" §7只\n");
@@ -93,7 +95,11 @@ public final class RaidSettlement {
                     .append(" §7（§f").append(Math.round(ratio * 100)).append("%§7）· ")
                     .append(ratio >= PERFECT_RATIO ? "§a" : ratio >= STEADY_RATIO ? "§e" : "§c")
                     .append(grade).append('\n');
-            out.append("§7- 战利品：§6怪潮残骸 ×").append(scrap).append(" §7（已放入背包）");
+            out.append("§7- 战利品：§6怪潮残骸 ×").append(scrap);
+            if (beaconBonus > 0.0D) {
+                out.append(" §7· 信标 §a+").append(Math.round(beaconBonus * 100)).append('%');
+            }
+            out.append(" §7（已放入背包）");
         } else {
             out.append("§c- 核心被摧毁，本波无奖励。持「核心维修套件」右键核心可修复。");
         }

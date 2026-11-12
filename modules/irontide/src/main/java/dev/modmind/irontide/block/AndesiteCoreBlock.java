@@ -3,6 +3,7 @@ package dev.modmind.irontide.block;
 import com.mojang.serialization.MapCodec;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import dev.modmind.irontide.ModMindEntry;
+import dev.modmind.irontide.config.ModuleType;
 import dev.modmind.irontide.menu.CoreMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,8 +79,17 @@ public class AndesiteCoreBlock extends BaseEntityBlock implements IRotate {
 
     @Override
     public boolean hasShaftTowards(LevelReader level, BlockPos pos, BlockState state, Direction side) {
-        // 沿自身轴线两端都能接头：外露面给玩家接传动轴，内侧面接结构里那台正对的十字齿轮箱
-        return side.getAxis() == state.getValue(FACING).getAxis();
+        // 沿自身轴线两端始终能接头：外露面给玩家接传动轴，内侧面接结构里那台正对的十字齿轮箱
+        if (side.getAxis() == state.getValue(FACING).getAxis()) {
+            return true;
+        }
+        // 其余方向由传输模块决定：没装模块一律不放行，和加模块前完全一致
+        if (!(level.getBlockEntity(pos) instanceof AndesiteCoreBlockEntity core)
+                || !core.hasModule(ModuleType.TRANSFER)) {
+            return false;
+        }
+        // I 级只放行水平方向；II 级起水平+垂直全放行
+        return core.getTransferAxes() >= 1 || side.getAxis().isHorizontal();
     }
 
     @Override

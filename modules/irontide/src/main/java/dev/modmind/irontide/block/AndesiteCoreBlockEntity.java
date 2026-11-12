@@ -281,7 +281,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
 
         // 每秒自检一次：/setblock、蓝图、活塞这类非玩家放置不会触发 BlockEvent，
         // 没有这条自检，结构搭满了也要等玩家右键核心才有反应。
-        if (state == CoreState.INCOMPLETE && !forming) {
+        if (state != CoreState.DESTROYED && !forming) {
             validateNow();
         }
 
@@ -593,7 +593,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
             }
         } else {
             // 先启动还原，再把状态置为 INCOMPLETE；还原队列在 serverTick 分批执行。
-            unformStructure(serverLevel, definition, result.layoutIndex());
+            unformStructure(serverLevel, definition);
             if (state != CoreState.INCOMPLETE) {
                 state = CoreState.INCOMPLETE;
                 setChanged();
@@ -662,14 +662,14 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
      * 结构不完整时启动还原队列。壳的原状态优先从壳自己的 BE 读；BE 缺失或原状态是空气时
      * 按该格 expected 方块兜底。已经变成空气/别的方块的格不会被还原，玩家刚挖掉的格保持空气。
      */
-    private void unformStructure(ServerLevel level, MultiblockDefinition definition, int layoutIndex) {
+    private void unformStructure(ServerLevel level, MultiblockDefinition definition) {
         CoreConfig config = IronTideData.config();
         if (forming || !config.materialSwapEnabled() || !config.hasFormedCasing()) {
             return;
         }
         formQueue.clear();
         unformQueue.clear();
-        fillUnformQueue(level, definition, layoutIndex, config);
+        fillUnformQueue(level, definition);
         if (unformQueue.isEmpty()) {
             return;
         }
@@ -701,7 +701,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         unforming = true;
         swapChanged = 0;
         try {
-            fillUnformQueue(serverLevel, definition, lastLayoutIndex, config);
+            fillUnformQueue(serverLevel, definition);
             while (!unformQueue.isEmpty()) {
                 applyUnformStep(serverLevel, unformQueue.poll());
             }
@@ -788,40 +788,44 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         }
     }
 
-    private void fillUnformQueue(ServerLevel level, MultiblockDefinition definition,
-                                 int layoutIndex, CoreConfig config) {
-        List<List<MultiblockDefinition.Cell>> layouts = definition.layouts();
-        int safeIndex = Math.max(0, Math.min(layouts.size() - 1, layoutIndex));
-        List<MultiblockDefinition.Cell> fallbackLayout = layouts.get(safeIndex);
-        Map<BlockPos, BlockState> fallback = new LinkedHashMap<>();
-        for (MultiblockDefinition.Cell cell : fallbackLayout) {
-            if (!isShellCell(cell, config)) {
-                continue;
-            }
-            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
-            BlockState expectedState = expectedShellState(cell, config);
-            if (!expectedState.isAir()) {
-                fallback.putIfAbsent(pos, expectedState);
-            }
-        }
-
-        // 用所有旋转布局的并集找壳：结构已经缺格时最近布局不一定是成型时的布局，
-        // 只扫当前布局会漏掉其它朝向的壳。壳不可能长在骨架范围外。
+    private void fillUnformQueue(ServerLevel level, MultiblockDefinition definition) {
+        // 找壳不能靠「布局里的字符类型」：结构不对称（控制器贴在一条边上），成型用的朝向
+        // 不一定等于当前最近的朝向，用 rot0 的字符表去套会漏格——实测 rot90 成型时漏掉 8 格，
+        // 那些壳永远不还原。改为扫所有候选布局的包围盒，凡是「归属本控制器」的壳一律还原。
+        BlockPos min = null;
+        BlockPos max = null;
         for (MultiblockDefinition.Cell cell : definition.layoutCells()) {
-            if (!isShellCell(cell, config)) {
+            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
+            if (min == null) {
+                min = pos;
+                max = pos;
                 continue;
             }
-            BlockPos pos = worldPosition.offset(cell.dx(), cell.dy(), cell.dz());
+            min = new BlockPos(Math.min(min.getX(), pos.getX()), Math.min(min.getY(), pos.getY()),
+                    Math.min(min.getZ(), pos.getZ()));
+            max = new BlockPos(Math.max(max.getX(), pos.getX()), Math.max(max.getY(), pos.getY()),
+                    Math.max(max.getZ(), pos.getZ()));
+        }
+        if (min == null || max == null) {
+            return;
+        }
+        for (BlockPos cursor : BlockPos.betweenClosed(min, max)) {
+            BlockPos pos = cursor.immutable();
             if (!level.isLoaded(pos) || !(level.getBlockState(pos).getBlock() instanceof ShellBlock)) {
                 continue;
             }
-            BlockState expectedState = fallback.get(pos);
-            if (expectedState == null) {
-                expectedState = expectedShellState(cell, config);
+            if (!(level.getBlockEntity(pos) instanceof ShellBlockEntity shell)) {
+                continue;
             }
-            if (!expectedState.isAir()) {
-                unformQueue.add(new UnformStep(pos, expectedState));
+            // 只还原属于自己这一台核心的壳；别的控制器的壳一概不碰。
+            if (!shell.controllerPos().equals(worldPosition)) {
+                continue;
             }
+            BlockState original = shell.originalState();
+            if (original.isAir()) {
+                continue;
+            }
+            unformQueue.add(new UnformStep(pos, original));
         }
     }
 
@@ -830,15 +834,6 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                 || cell.expected().equals(config.brassCasing().id());
     }
 
-    private static BlockState expectedShellState(MultiblockDefinition.Cell cell, CoreConfig config) {
-        if (cell.expected().equals(config.andesiteCasing().id())) {
-            return config.andesiteCasing().block().defaultBlockState();
-        }
-        if (cell.expected().equals(config.brassCasing().id())) {
-            return config.brassCasing().block().defaultBlockState();
-        }
-        return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
-    }
 
     private void logIncomplete(MultiblockDefinition definition, StructureCheckResult result) {
         String examples = result.missing().stream()

@@ -1,5 +1,5 @@
 # 进度 · 钢铁潮汐（mod_l61phe）
-  更新时间：2026-11-12 17:05 · 会话 codex（W2.5 信标 + W2.6 传输接线）
+  更新时间：2026-11-12 17:35 · 会话 codex（W2.7 多材质机壳 + D2 模块同步）
   工程：`E:\ioncreating\mod_l61phe` · ModMind 整合包「钢铁潮汐」· MC 1.21.1 / NeoForge 21.1.265 / JDK 21 · 69 Mod
   > 本文件覆盖写，**MC 线的进度真源就是这里**。稳定知识（目录地图/启动方式/MCP 桥/mod 版本矩阵/铁律）→ `文件\设计\项目手册.md`。
 
@@ -25,11 +25,12 @@
   - 93d449c 燃料模块上限返修：updatePowerState 夹取/低燃料阈值、feedFuel 容量与余量、reportStatus 百分比三处都由 config.fuelCapacity()(12000) 改为 getFuelCapacity()(模块容量)。装 FUEL I 时原先燃料被钉在 12000 = 20% 且煤一直被吃；README 补燃料/模块对照表，用例补 S16。
   - **W2.5 信标接线**：`RaidSettlement` 读 `core.getBeaconReward()`，残骸 = round((波次×2+2)×performance×(1+reward))，结算播报附「信标 +N%」，日志加 `beacon=`。
   - **W2.6 传输接线**：`AndesiteCoreBlock#hasShaftTowards` 改为 自身轴线恒通 → 未装 TRANSFER 一律 false → I 级仅水平 / II 级以上全方向；BE 新增 `hasModule(ModuleType)`。两处均通过托管构建并同步实例（**未实机验证**）。
+  - **W2.7 多材质机壳**：`core.json → casing` 改为数组（安山/黄铜/铜/钢，铜 `create:copper_casing`、钢 `create:industrial_iron_block`），每项带 `minTier` 门槛；`CoreConfig` 新增 `tierLevel/isCasingCell/casingById/casingForShellType/healthMulFor(Map)/armorFor(Map)`，生命与护甲按格数加权；`StructureValidator` 按材质累计并做档位拦截；`StructureCheckResult` 用 `casingSummary` 取代 andesite/brass 计数。
+  - **D2 模块状态同步**：`AndesiteCoreBlockEntity.write/read` 的 clientPacket 分支打包「装了哪些模块 + 传输档位」，`onModulesChanged` 调 Create 的 `sendData()`；客户端 `hasModule/getTransferAxes` 读缓存。
 
 ## 下一步（完整排期见 `文件\设计\排期表.md`）
-  1. 用户自测：`文件\测试\怪潮与状态-测试用例.md`（重点 S15 同向来袭、S16 燃料模块、S17 信标、S18 传输）。
-  2. W2 收尾遗留 D2：核心 BE 缺 `getUpdateTag`/`getUpdatePacket`，模块槽不同步到客户端（服务端传动正常）。
-  3. W2.7 tier→壳材质；W3 前哨核心；W4 白名单/MSPT；W5 手册任务书 + tag。
+  1. 用户自测：`文件\测试\怪潮与状态-测试用例.md`（S15 同向来袭、S16 燃料、S17 信标、S18 传输、**S19 铜壳门槛、S20 钢壳加权、S21 模块同步**）。
+  2. W3 前哨核心（分体血量 + 结算分摊）；W4 白名单/MSPT；W5 手册任务书 + tag。
 ## 卡点
   - **退出世界偶发卡在「保存世界中」（5 次里 2 次）**：世界已存盘，卡在集成服务器 stopServer() 尾部（level close / resources close / storage close），要等下一次复现的线程堆栈才能定位到具体 mod；卡住时强杀进程安全。
   - W2 只做到构建通过，**未实机验证**（用户自测）。

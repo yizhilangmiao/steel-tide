@@ -46,3 +46,10 @@
 3. 排期表 `文件/设计/排期表.md` 建表（W0~W5 + D1/D2），W2.5/W2.6 标 ✅；用例补 **S17 信标奖励加成**（不装=6，装 BEACON I 完美防守=7）、**S18 传输可接轴域**（未装仅轴线 / I 仅水平 / II 水平+垂直 / III 同 II）。
 - 托管构建通过并已同步实例（`modmind-local-irontide.jar` 174,169 B，69 Mod + 39 override）。**未实机验证**（用户自测）。
 - **遗留 D2（已进缺陷池）**：`AndesiteCoreBlockEntity` 未重写 `getUpdateTag`/`getUpdatePacket`，模块槽变更不广播到客户端 → 客户端视角 `hasShaftTowards` 仍只见轴线方向，影响 Create 侧渲染/放置预测一致性；服务端传动判定正确。排 W3 前处理。
+**2026-11-12（W2.7 多材质机壳 + D2 模块同步，未实机验证）**：
+1. **机壳改多材质数组**：`core.json → casing` 现在是数组，顺序即默认优先级，每项 `{id, formed, armor, healthMul, fuelEfficiency, minTier}`。当前四种：安山（`create:andesite_casing`，1.00/0.00）、黄铜（`create:brass_casing`，1.60/0.05）、铜（`create:copper_casing`，1.45/0.06，`minTier` 2）、钢（`create:industrial_iron_block`，2.20/0.12，`minTier` 3）。老的对象格式 `{andesite:{}, brass:{}}` 仍然能加载（按字段顺序读成数组），老存档配置不用改。
+2. **加权计算**：`healthMulFor(Map)` / `armorFor(Map)` 按各材质占的格数加权，不再是「黄铜占比二点插值」；`StructureValidator` 逐格判定材质并累计，`StructureCheckResult` 用 `casingSummary`（如「安山 12 / 钢 6」）取代原来的 andesite/brass 计数与 `brassRatio`。
+3. **档位门槛**：`minTier` 高于当前结构档位（`config.tierLevel(definition.tier())`，T1=1 … T4=4）时，该格判为缺失并触发还原——T1/T2 铺钢壳不会成型。
+4. **D2 模块同步**：`AndesiteCoreBlockEntity` 的 `write/read` 增加 clientPacket 分支，打包「装了哪些模块 + 传输档位」；模块变动后调 Create `SyncedBlockEntity#sendData()`；客户端 `hasModule/getTransferAxes` 读缓存。之前客户端看到的是空槽，`hasShaftTowards` 在客户端永远只放行轴线。
+- 托管构建通过并已同步实例（`modmind-local-irontide.jar` 177,658 B，69 Mod + 39 override）。**未实机验证**（用户自测）。
+- 测试用例补 **S19 铜壳与档位门槛**（T2 全铜 = 500×1.45 = 725，T1 铺铜判不完整，混搭加权）、**S20 钢壳与加权**（T3 全钢 = 1100，T2 钢壳判不完整）、**S21 模块状态同步到客户端**（装/拆 TRANSFER II 客户端立刻变化，重进世界一致）。

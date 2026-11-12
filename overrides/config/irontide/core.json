@@ -23,22 +23,41 @@
     "lowFuel": { "rpm": 16, "capacity": 256 }
   },
 
-  "casing": {
-    "andesite": {
+  "_casingNote": "数组格式：顺序即默认优先级；minTier 是核心档位门槛（T1=1 … T4=4），低于门槛的材质会让结构判为不完整。老的对象格式 {andesite:{},brass:{}} 仍然兼容。",
+  "casing": [
+    {
       "id": "create:andesite_casing",
       "formed": "irontide:shell[type=andesite]",
       "armor": 0.0,
       "healthMul": 1.0,
-      "fuelEfficiency": 1.0
+      "fuelEfficiency": 1.0,
+      "minTier": 1
     },
-    "brass": {
+    {
       "id": "create:brass_casing",
       "formed": "irontide:shell[type=brass]",
       "armor": 0.05,
       "healthMul": 1.6,
-      "fuelEfficiency": 1.15
+      "fuelEfficiency": 1.15,
+      "minTier": 1
+    },
+    {
+      "id": "create:copper_casing",
+      "formed": "irontide:shell[type=copper]",
+      "armor": 0.06,
+      "healthMul": 1.45,
+      "fuelEfficiency": 1.45,
+      "minTier": 2
+    },
+    {
+      "id": "create:industrial_iron_block",
+      "formed": "irontide:shell[type=steel]",
+      "armor": 0.12,
+      "healthMul": 2.2,
+      "fuelEfficiency": 1.0,
+      "minTier": 3
     }
-  },
+  ],
 
   "materialSwap": { "enabled": true },
 

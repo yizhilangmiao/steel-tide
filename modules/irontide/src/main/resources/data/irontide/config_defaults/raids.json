@@ -31,6 +31,24 @@
     "damagePerSecond": 6,
     "dpsCap": 0
   },
+  "break": {
+    "enabled": true,
+    "intervalTicks": 40,
+    "maxPerTick": 2,
+    "range": 24,
+    "whitelist": [
+      "#minecraft:planks",
+      "#minecraft:logs",
+      "#minecraft:wooden_stairs",
+      "#minecraft:wooden_slabs",
+      "#minecraft:wooden_fences",
+      "#minecraft:fence_gates",
+      "#minecraft:wooden_doors",
+      "#minecraft:wooden_trapdoors",
+      "minecraft:glass",
+      "minecraft:glass_pane"
+    ]
+  },
   "groundRaiders": [
     "minecraft:zombie",
     "minecraft:skeleton"

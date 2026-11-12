@@ -32,6 +32,12 @@ public record CoreConfig(
         double noFuelModuleEfficiency,
         List<CasingSpec> casings,
         double armorCap,
+        /** 核心网络半径：同维度内距离不超过它的 ACTIVE 核心互相视为「主核 + 前哨」。 */
+        int networkRadius,
+        /** 前哨分担承伤：攻击伤害在存活核心之间均摊，主核不再是单点。 */
+        boolean shareDamage,
+        /** 结算分摊：残骸按存活核心数拆份，每份给离该核心最近的玩家。 */
+        boolean settlementSplit,
         List<TierSpec> tiers,
         JsonObject stress,
         JsonObject build,
@@ -259,6 +265,19 @@ public record CoreConfig(
         List<CasingSpec> casings = parseCasings(root);
         double armorCap = JsonSupport.number(root, "armorCap", "armorCap");
 
+        // 核心网络（前哨）：缺省半径 96、默认开启分摊；老配置没有这一段也能加载
+        JsonObject network = root.has("network") && root.get("network").isJsonObject()
+                ? root.getAsJsonObject("network") : new JsonObject();
+        int networkRadius = network.has("radius")
+                ? JsonSupport.integer(network, "radius", "network.radius") : 96;
+        boolean shareDamage = !network.has("shareDamage")
+                || JsonSupport.bool(network, "shareDamage", "network.shareDamage");
+        boolean settlementSplit = !network.has("settlementSplit")
+                || JsonSupport.bool(network, "settlementSplit", "network.settlementSplit");
+        if (networkRadius < 8 || networkRadius > 256) {
+            throw JsonSupport.invalid("network.radius", "must be within [8, 256], was " + networkRadius);
+        }
+
         JsonArray tierArray = JsonSupport.array(root, "tiers", "tiers");
         List<TierSpec> tiers = new ArrayList<>();
         for (int i = 0; i < tierArray.size(); i++) {
@@ -316,7 +335,8 @@ public record CoreConfig(
 
         return new CoreConfig(healthBase, minRatioOnUpgrade, carryRatioOnUpgrade,
                 fuelCapacity, burnPerSecond, lowFuelRatio, noFuelModuleCapacity, noFuelModuleEfficiency,
-                casings, armorCap, List.copyOf(tiers), stress, build, modules,
+                casings, armorCap, networkRadius, shareDamage, settlementSplit,
+                List.copyOf(tiers), stress, build, modules,
                 parseModuleList(modules, "fuel"),
                 parseModuleList(modules, "armor"),
                 parseModuleList(modules, "beacon"),

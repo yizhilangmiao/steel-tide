@@ -43,6 +43,8 @@ public record RaidConfig(
         int attackDamagePerSecond,
         /** 攻核全程 DPS 上限；{@code 0} = 不限（老配置缺少该字段时也是 0）。 */
         int attackDpsCap,
+        /** 攻核怪拆墙规则（白名单）。缺省关闭，老配置行为不变。 */
+        Breaker breaker,
         int airHeight,
         List<String> groundRaiders,
         List<String> airRaiders,
@@ -50,6 +52,17 @@ public record RaidConfig(
 ) {
     /** 单波次定义。 */
     public record Wave(int index, int base, int affixes, int maxAffixLevel) {
+    }
+
+    /**
+     * 攻核怪拆墙：只拆白名单里的方块。设计口径是「木墙会被拆，铁墙不会」，
+     * 所以默认白名单只放木板/木制品/玻璃这类可替换防线，绝不含矿石与金属块。
+     * <p>
+     * {@code whitelist} 支持方块 id 和 {@code #命名空间:标签} 两种写法。
+     */
+    public record Breaker(boolean enabled, int intervalTicks, int maxPerTick, double range,
+                          List<String> whitelist) {
+        public static final Breaker DISABLED = new Breaker(false, 40, 2, 24.0D, List.of());
     }
 
     /**
@@ -134,6 +147,9 @@ public record RaidConfig(
                 ? JsonSupport.integer(attack, "dpsCap", "attack.dpsCap")
                 : 0;
 
+        // 拆墙：缺省关闭，老 raids.json 不改也能加载，行为与改动前一致
+        Breaker breaker = parseBreaker(root);
+
         JsonArray waveArray = JsonSupport.array(root, "waves", "waves");
         List<Wave> waves = new ArrayList<>();
         for (int i = 0; i < waveArray.size(); i++) {
@@ -199,8 +215,41 @@ public record RaidConfig(
         return new RaidConfig(cycleDays, warnDay, scoutDay, attackDay, List.copyOf(waves),
                 headMulPerPlayer, gearMulMax, minWaveSize, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
                 spawnIntervalTicks, spawnMaxAlive, chaseRadius, glowWhenAliveBelow, spawnArcDegrees,
-                attackRange, attackDamagePerSecond, attackDpsCap, airHeight,
+                attackRange, attackDamagePerSecond, attackDpsCap, breaker, airHeight,
                 List.copyOf(groundRaiders), List.copyOf(airRaiders), safeZone);
+    }
+
+    /** 缺省时返回 {@link Breaker#DISABLED}，不让老配置因为少了这一段而加载失败。 */
+    private static Breaker parseBreaker(JsonObject root) {
+        JsonElement element = root.get("break");
+        if (element == null || !element.isJsonObject()) {
+            return Breaker.DISABLED;
+        }
+        JsonObject object = element.getAsJsonObject();
+        boolean enabled = !object.has("enabled")
+                || JsonSupport.bool(object, "enabled", "break.enabled");
+        int intervalTicks = object.has("intervalTicks")
+                ? JsonSupport.integer(object, "intervalTicks", "break.intervalTicks") : 40;
+        int maxPerTick = object.has("maxPerTick")
+                ? JsonSupport.integer(object, "maxPerTick", "break.maxPerTick") : 2;
+        double range = object.has("range")
+                ? JsonSupport.number(object, "range", "break.range") : 24.0D;
+        List<String> whitelist = object.has("whitelist")
+                ? stringList(object, "whitelist", "break.whitelist") : List.of();
+
+        if (intervalTicks < 5) {
+            throw JsonSupport.invalid("break.intervalTicks", "must be >= 5, was " + intervalTicks);
+        }
+        if (maxPerTick < 0) {
+            throw JsonSupport.invalid("break.maxPerTick", "must be >= 0 (0 = disabled), was " + maxPerTick);
+        }
+        if (range < 4.0D || range > 64.0D) {
+            throw JsonSupport.invalid("break.range", "must be within [4, 64], was " + range);
+        }
+        if (enabled && whitelist.isEmpty()) {
+            throw JsonSupport.invalid("break.whitelist", "must not be empty when break.enabled is true");
+        }
+        return new Breaker(enabled, intervalTicks, maxPerTick, range, List.copyOf(whitelist));
     }
 
     /** 缺省或关闭时返回 {@link SafeZone#DISABLED}，不让老配置因为少了这一段而加载失败。 */

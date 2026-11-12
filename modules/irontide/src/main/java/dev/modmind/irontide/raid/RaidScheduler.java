@@ -62,6 +62,8 @@ public final class RaidScheduler {
     private static BlockPos corePos;
     private static ServerLevel coreLevel;
     private static int coreDimId = Integer.MIN_VALUE;
+    /** 本 tick 的核心网络（主核 + 前哨），承伤/寻路/拆墙都看这张表。 */
+    private static List<AndesiteCoreBlockEntity> network = List.of();
 
     private RaidScheduler() {
     }
@@ -98,6 +100,8 @@ public final class RaidScheduler {
         corePos = null;
         coreLevel = null;
         coreDimId = Integer.MIN_VALUE;
+        network = List.of();
+        RaidPerf.reset();
     }
 
     public static void tick(MinecraftServer server) {
@@ -136,7 +140,10 @@ public final class RaidScheduler {
         int health = 0;
         int maxHealth = 0;
         if (active) {
-            AndesiteCoreBlockEntity core = pickCore();
+            AndesiteCoreBlockEntity core = resolveRaidCore();
+            if (core == null) {
+                core = pickCore();
+            }
             if (core != null) {
                 health = core.getHealth();
                 maxHealth = core.getHealthMax();
@@ -202,6 +209,8 @@ public final class RaidScheduler {
         coreLevel = level;
         coreDimId = level.dimension().location().hashCode();
         active = true;
+        network = CoreNetwork.members(core, coreConfig.networkRadius());
+        RaidPerf.begin(server);
         // 每波抽一个主攻方向：整波怪都压在同一侧，玩家能把防线摆对地方
         spawnAngle = level.random.nextDouble() * Math.PI * 2.0D;
 
@@ -211,19 +220,22 @@ public final class RaidScheduler {
                     zone.lightUp() ? zone.lightLevel() : 0, zone.beacons(), zone.particleIntervalTicks());
         }
 
+        String outposts = network.size() > 1 ? ("§7（含前哨 §f" + (network.size() - 1) + "§7 座，承伤分摊）") : "";
         announce(server, "§4[钢铁潮汐] §c怪潮第 " + waveIndex + " 波开始！§7目标：安山核心（"
-                + targetCount + " 个来袭），来自§e " + directionLabel(spawnAngle) + "§7 侧。守住它直到天亮。");
+                + targetCount + " 个来袭），来自§e " + directionLabel(spawnAngle) + "§7 侧。" + outposts
+                + "守住它直到天亮。");
     }
 
     private static void tickActive(MinecraftServer server, RaidConfig config, boolean night) {
-        AndesiteCoreBlockEntity core = pickCore();
-        if (core == null) {
-            endRaid(server, "核心已不存在，怪潮散去。");
-            return;
-        }
-        if (core.getState() != CoreState.ACTIVE) {
-            endRaid(server, "核心停机，怪潮失去目标。");
-            return;
+        AndesiteCoreBlockEntity core = resolveRaidCore();
+        if (core == null || core.getState() != CoreState.ACTIVE) {
+            // 主核被毁/停机时，让网络里还活着的核心接替锚点，怪潮继续；全没了才收场。
+            AndesiteCoreBlockEntity successor = successorCore(network, core);
+            if (successor == null) {
+                endRaid(server, core == null ? "核心已不存在，怪潮散去。" : "核心停机，怪潮失去目标。");
+                return;
+            }
+            core = promoteCore(server, successor);
         }
         if (!(core.getLevel() instanceof ServerLevel level)) {
             endRaid(server, "核心所在维度不可用，怪潮散去。");
@@ -235,8 +247,11 @@ public final class RaidScheduler {
             return entity == null || !entity.isAlive();
         });
 
+        network = CoreNetwork.members(core, IronTideData.config().networkRadius());
         steerRaiders(level);
         highlightLeftovers(level, config);
+        RaidBreaker.tick(level, config.breaker(), raiders, network);
+        RaidPerf.sample(server, raiders.size());
 
         if (spawnedCount >= targetCount && raiders.isEmpty()) {
             endRaid(server, "§a怪潮被清空。");
@@ -269,6 +284,43 @@ public final class RaidScheduler {
         }
     }
 
+    /** 怪潮锚定的核心：只认开战时那个坐标上的核心，避免跨网络跳到别处的核心。 */
+    private static AndesiteCoreBlockEntity resolveRaidCore() {
+        if (coreLevel == null || corePos == null) {
+            return null;
+        }
+        return coreLevel.getBlockEntity(corePos) instanceof AndesiteCoreBlockEntity core ? core : null;
+    }
+
+    /** 网络里还活着、且不是当前锚点的核心；主核失守后由它接替。 */
+    private static AndesiteCoreBlockEntity successorCore(List<AndesiteCoreBlockEntity> members,
+                                                         AndesiteCoreBlockEntity current) {
+        for (AndesiteCoreBlockEntity member : members) {
+            if (member == null || member == current) {
+                continue;
+            }
+            if (member.getLevel() != coreLevel) {
+                continue;
+            }
+            if (member.getState() != CoreState.ACTIVE || member.getHealth() <= 0) {
+                continue;
+            }
+            return member;
+        }
+        return null;
+    }
+
+    /** 把锚点切到接替的前哨：刷怪、承伤、结算都跟着新核心走。 */
+    private static AndesiteCoreBlockEntity promoteCore(MinecraftServer server, AndesiteCoreBlockEntity successor) {
+        corePos = successor.getBlockPos();
+        if (successor.getLevel() instanceof ServerLevel level) {
+            coreLevel = level;
+        }
+        announce(server, "§6[钢铁潮汐] §e主核失守，前哨接替 —— 坐标 "
+                + corePos.getX() + ", " + corePos.getY() + ", " + corePos.getZ() + "。");
+        return successor;
+    }
+
     /**
      * 攻核寻路（设计 §2.4：先朝核心走，路上遇到玩家就转火玩家）。
      * <p>
@@ -276,12 +328,9 @@ public final class RaidScheduler {
      * 否则每 10 tick 把导航目标打向核心，压过原版的游荡行为。到达后由 {@link #harvestCoreDamage} 扣血。
      */
     private static void steerRaiders(ServerLevel level) {
-        if (corePos == null) {
+        if (network.isEmpty()) {
             return;
         }
-        double coreX = corePos.getX() + 0.5D;
-        double coreY = corePos.getY();
-        double coreZ = corePos.getZ() + 0.5D;
 
         RaidConfig config = IronTideData.raidConfig();
         double chaseSq = (double) config.chaseRadius() * (double) config.chaseRadius();
@@ -297,6 +346,14 @@ public final class RaidScheduler {
             if (level.getNearestPlayer(mob, 16.0D) != null) {
                 continue;
             }
+            // 前哨分流：每只怪打离自己最近的那座核心，而不是永远扑主核
+            AndesiteCoreBlockEntity target = CoreNetwork.nearest(network, mob.getX(), mob.getY(), mob.getZ());
+            if (target == null) {
+                continue;
+            }
+            double coreX = target.getBlockPos().getX() + 0.5D;
+            double coreY = target.getBlockPos().getY();
+            double coreZ = target.getBlockPos().getZ() + 0.5D;
             double distSq = mob.distanceToSqr(coreX, coreY, coreZ);
             if (distSq > chaseSq) {
                 // 远怪：平时只给移动控制一个直线目标，不做 A* 寻路——几十只怪同时寻路是这里最贵的一块；
@@ -330,25 +387,61 @@ public final class RaidScheduler {
         }
     }
 
+    /**
+     * 攻核扣血（W3 前哨分摊）。
+     * <p>
+     * 每只怪只打离自己最近的那座核心；先按核心累计，再受全局 {@code attack.dpsCap} 封顶。
+     * 开了 {@code network.shareDamage} 且网络里有多座核心时，总量在存活核心之间均摊
+     * （每座至少 1 点），主核不再是单点承伤。
+     */
     private static void harvestCoreDamage(ServerLevel level, RaidConfig config, AndesiteCoreBlockEntity core) {
-        Vec3 center = Vec3.atCenterOf(core.getBlockPos());
+        List<AndesiteCoreBlockEntity> cores = network.isEmpty() ? List.of(core) : network;
         double rangeSq = config.attackRange() * config.attackRange();
-        int damage = 0;
+        int[] perCore = new int[cores.size()];
+        int total = 0;
         for (UUID uuid : raiders) {
             Entity entity = level.getEntity(uuid);
             if (entity == null || !entity.isAlive()) {
                 continue;
             }
-            if (entity.distanceToSqr(center) <= rangeSq) {
-                // 每只围核的怪每秒贡献一份 attackDamagePerSecond，累加后由全程上限封顶
-                damage += config.attackDamagePerSecond();
+            int best = -1;
+            double bestSq = Double.MAX_VALUE;
+            for (int i = 0; i < cores.size(); i++) {
+                double distSq = entity.distanceToSqr(Vec3.atCenterOf(cores.get(i).getBlockPos()));
+                if (distSq < bestSq) {
+                    bestSq = distSq;
+                    best = i;
+                }
+            }
+            if (best >= 0 && bestSq <= rangeSq) {
+                perCore[best] += config.attackDamagePerSecond();
+                total += config.attackDamagePerSecond();
             }
         }
-        if (config.attackDpsCap() > 0) {
-            damage = Math.min(damage, config.attackDpsCap());
+        if (total <= 0) {
+            return;
         }
-        if (damage > 0) {
-            core.applyRaidDamage(damage);
+        if (config.attackDpsCap() > 0 && total > config.attackDpsCap()) {
+            double scale = (double) config.attackDpsCap() / (double) total;
+            int capped = 0;
+            for (int i = 0; i < perCore.length; i++) {
+                perCore[i] = (int) Math.floor(perCore[i] * scale);
+                capped += perCore[i];
+            }
+            total = Math.min(config.attackDpsCap(), capped);
+        }
+        CoreConfig coreConfig = IronTideData.config();
+        if (coreConfig.shareDamage() && cores.size() > 1) {
+            int share = Math.max(1, (int) Math.round((double) total / (double) cores.size()));
+            for (AndesiteCoreBlockEntity member : cores) {
+                member.applyRaidDamage(share);
+            }
+        } else {
+            for (int i = 0; i < cores.size(); i++) {
+                if (perCore[i] > 0) {
+                    cores.get(i).applyRaidDamage(perCore[i]);
+                }
+            }
         }
     }
 
@@ -439,7 +532,8 @@ public final class RaidScheduler {
                 settledCore = found;
             }
         }
-        RaidSettlement.settle(server, coreLevel, corePos, settledCore, waveIndex, targetCount, raiders.size(), reason);
+        RaidSettlement.settle(server, coreLevel, corePos, settledCore, network,
+                waveIndex, targetCount, raiders.size(), reason);
 
         announce(server, "§6[钢铁潮汐] §7第 " + waveIndex + " 波结束 —— " + reason
                 + " 来袭 " + targetCount + "，剩余 " + raiders.size() + "。");
@@ -457,6 +551,7 @@ public final class RaidScheduler {
         corePos = null;
         coreLevel = null;
         coreDimId = Integer.MIN_VALUE;
+        network = List.of();
     }
 
     private static void announce(MinecraftServer server, String message) {

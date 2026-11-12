@@ -279,6 +279,12 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         }
         tickAccumulator = 0;
 
+        // 每秒自检一次：/setblock、蓝图、活塞这类非玩家放置不会触发 BlockEvent，
+        // 没有这条自检，结构搭满了也要等玩家右键核心才有反应。
+        if (state == CoreState.INCOMPLETE && !forming) {
+            validateNow();
+        }
+
         pullFromSlot();
 
         CoreConfig config = IronTideData.config();

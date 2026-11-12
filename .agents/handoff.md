@@ -27,3 +27,11 @@
 **2026-11-12（W0+W1 落地，未做实机验收）**：W0（`17ada82`）结构外壳方块 + 攻核 DPS 上限；W1（`d2a2b87`）+ `4f4154a` 成型整体换壳。render 侧我只验证到「irontide:shell 物品存在、创造栏 tooltip 正常（截图 .modmind/player-tests/e316df61-.../screenshots/frame-118171-*.png）、日志无缺模型告警」；**换壳的实机画面没验成**——测试会话在 300,300 高原区把渲染线程拖到十几秒一帧、输入通道报「游戏渲染尚未就绪」，不愿再烧时间。已改为交用户自测：用例在 `文件/测试/成型材质切换-测试用例.md`（T1~T10 + 日志判定 + 已知限制）。新增要点：结构 INCOMPLETE 时每 1 秒自检一次，所以 `/setblock`/蓝图搭满后 1 秒内自动成型，不必右键核心。
 
 **2026-11-12（W1 还原漏格返修，用户 TNT 实测暴露）**：用户 TNT 炸壳后 5 秒还原，但「核心方块左边那一格」一直是壳。日志证据（玩家实例 `logs/latest.log`）：`activated: layout=rot90 ... shell=23` → `incomplete: missing 1~9/27` → `unformed 13/15 cells`，**还原数恒少于成型数 8 格**。根因：`fillUnformQueue` 用 `definition.layoutCells()`（所有旋转的并集）取字符，再按 `isShellCell(cell)`（`Cell.expected` 是 rot0 字符对应方块）判断；结构不对称（控制器贴边），实际成型朝向是 rot90，rot0 同坐标字符可能是齿轮箱 `G` → 判定不是壳 → 不入还原队列，永久卡住。修复（`deefca2`）：改为按 `layoutCells()` 算包围盒逐格扫，只认 `ShellBlock` 且 `ShellBlockEntity.controllerPos()==worldPosition` 的壳，原状态直接取 `shell.originalState()`；`serverTick` 自检条件由 `state==INCOMPLETE` 放宽为 `state!=DESTROYED`（否则外壳被炸、核心仍被判 ACTIVE 时永远不清残余壳）。`unformStructure`/`fillUnformQueue` 已去掉不再使用的 `layoutIndex`/`config` 形参。托管构建通过并已同步 `.modmind/minecraft/mods`（166,983 B），**用户重启客户端即生效；本轮未实机验证（用户自测）**。测试用例补 **T11 TNT 炸壳** 与「rot90 成型后挖非 rot0 朝向的壳」回归点。
+
+**2026-11-12（W1 用户验收通过 → W2 落地，未实机验证）**：用户实测 TNT 炸壳后全部还原正常，W1 收敛。本轮做 W2（提交 `dfd7e37`）：
+1. **怪潮规模按档位**：`RaidScheduler.startRaid` 原来写死 `scaledSize(waveIndex, online, 1, 1)`，GearMul 恒为 1.00；改为取核心实际档位（新增 `AndesiteCoreBlockEntity.tierIndex()`，按 `definition.tier()` 在 `core.json.tiers` 里的序号）与最大档位。
+2. **`raids.json` 新增 `spawn.maxAlive`（默认 16，0=不限）**：到顶暂停刷怪，清掉再补，避免波次峰值几十只同屏；总数不变。
+3. **`raids.json` 新增 `spawn.chaseRadius`（默认 48）**：`steerRaiders` 距离分层——半径内走原版 A*（`navigation().isDone()` 才重算），半径外只 `moveControl().setWantedPosition` 每 20 tick 推一次，另每 60 tick 补一次真寻路兜底防卡死。
+4. **核心四态**：新增 `CoreStatus`（INCOMPLETE / RUNNING / HALTED / DESTROYED）+ `status()` / `statusText()`；面板第一行改为显示四态（含「运转中 · 燃料不足」「停机（无燃料）」），右键聊天行改为 `T1 · 运转中`。低燃料不算独立态，是 RUNNING 的附加说明——`CoreState` 存档状态机未动，避免影响怪潮/结算判定。
+5. 配置契约文档 `overrides/config/irontide/README.md` 重写（原文还写着「尚未实现」），补 `raids.json` 关键字段表；新测试用例 `文件/测试/怪潮与状态-测试用例.md`（S1~S10）。
+- 构建通过并已同步实例（modmind-local-irontide.jar 169,993 B）。**未实机验证**（用户自测）。老配置向后兼容：缺 `maxAlive`/`chaseRadius` 按 0 / 48 处理，不报错；写错值仍然直接拒绝加载。

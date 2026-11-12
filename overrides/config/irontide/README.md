@@ -23,6 +23,8 @@
 | `spawn.perBurst` / `spawn.intervalTicks` | 每轮刷几只 / 两轮之间隔多少 tick |
 | `spawn.maxAlive` | **同时存活上限**，`0` = 不限。到顶后暂停刷怪，清掉一批再继续，避免几十只同屏掉帧 |
 | `spawn.chaseRadius` | **寻路半径**。半径内交给原版 A* 寻路，半径外只做直线移动（每 3 秒补一次真寻路兜底），大幅降低怪多的寻路开销 |
+| `spawn.glowWhenAliveBelow` | 剩余来袭怪**少于这个数**时给每只挂发光（默认 10；`0` = 关闭），收尾时好找漏网的 |
+| `minWaveSize` | 单波规模下限（默认 32）。波次表的 `base` 低于它按它算，保证「一波不少于 32 只」 |
 | `attack.damagePerSecond` / `attack.dpsCap` | 每只围核怪每秒伤害 / 全程 DPS 上限（`0` = 不限） |
 | `gearMulMax` | 规模按核心档位缩放的上限（T1 → ×1.00，最高档 → ×(1 + gearMulMax)） |
-| `waves[]` | 每波基础怪数、词缀数、词缀等级 |
+| `waves[]` | 每波基础怪数（当前 32 / 38 / 44 / 50 / 56 / 62 / 68 / 74）、词缀数、词缀等级 |

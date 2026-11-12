@@ -15,6 +15,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -35,6 +37,8 @@ import java.util.UUID;
  */
 public final class RaidScheduler {
     private static final int CHECK_INTERVAL = 20;
+    /** 收尾发光每次挂 3 秒，靠每秒一次的 tickActive 续上。 */
+    private static final int GLOW_DURATION_TICKS = 60;
 
     private static int counter;
     private static int lastDay = Integer.MIN_VALUE;
@@ -161,7 +165,7 @@ public final class RaidScheduler {
             scoutedThisCycle = true;
             RaidConfig.Wave wave = config.wave(waveIndex);
             announce(server, "§6[钢铁潮汐] §e第 " + config.scoutDay() + " 天：侦察确认 —— 第 "
-                    + waveIndex + " 波，约 " + wave.base() + " 个目标，词缀 " + wave.affixes()
+                    + waveIndex + " 波，约 " + config.effectiveBase(waveIndex) + " 个目标，词缀 " + wave.affixes()
                     + " 条（最高 " + roman(wave.maxAffixLevel()) + " 级）。明晚进攻。");
         }
     }
@@ -227,6 +231,7 @@ public final class RaidScheduler {
         });
 
         steerRaiders(level);
+        highlightLeftovers(level, config);
 
         if (spawnedCount >= targetCount && raiders.isEmpty()) {
             endRaid(server, "§a怪潮被清空。");
@@ -299,6 +304,23 @@ public final class RaidScheduler {
             } else if (mob.tickCount % 10 == 0 && mob.getNavigation().isDone()) {
                 // 近怪：交给原版寻路绕障碍；已经在走就不重算路径
                 mob.getNavigation().moveTo(coreX, coreY, coreZ, 1.0D);
+            }
+        }
+    }
+
+    /**
+     * 收尾高亮：剩余来袭怪少于阈值时给每只挂发光（配置 spawn.glowWhenAliveBelow，0 = 关闭）。
+     * 每次更新 60 tick 持续时间，够撑到下一次 1 秒结算；怪清空或波次结束就不再加。
+     */
+    private static void highlightLeftovers(ServerLevel level, RaidConfig config) {
+        int threshold = config.glowWhenAliveBelow();
+        if (threshold <= 0 || raiders.isEmpty() || raiders.size() >= threshold) {
+            return;
+        }
+        for (UUID uuid : raiders) {
+            Entity entity = level.getEntity(uuid);
+            if (entity instanceof Mob mob && mob.isAlive()) {
+                mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_DURATION_TICKS, 0, false, false, false));
             }
         }
     }

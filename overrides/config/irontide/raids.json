@@ -5,6 +5,7 @@
   "attackDay": 10,
   "headMulPerPlayer": 0.35,
   "gearMulMax": 0.25,
+  "minWaveSize": 32,
   "spawn": {
     "radiusMin": 26,
     "radiusMax": 40,
@@ -12,6 +13,7 @@
     "intervalTicks": 20,
     "maxAlive": 16,
     "chaseRadius": 48,
+    "glowWhenAliveBelow": 10,
     "airHeight": 18
   },
   "safeZone": {
@@ -34,13 +36,13 @@
   ],
   "airRaiders": [],
   "waves": [
-    { "index": 1, "base": 14, "affixes": 1, "maxAffixLevel": 1 },
-    { "index": 2, "base": 20, "affixes": 1, "maxAffixLevel": 1 },
-    { "index": 3, "base": 26, "affixes": 2, "maxAffixLevel": 1 },
-    { "index": 4, "base": 32, "affixes": 2, "maxAffixLevel": 2 },
-    { "index": 5, "base": 38, "affixes": 2, "maxAffixLevel": 2 },
-    { "index": 6, "base": 44, "affixes": 3, "maxAffixLevel": 2 },
-    { "index": 7, "base": 50, "affixes": 3, "maxAffixLevel": 3 },
-    { "index": 8, "base": 56, "affixes": 3, "maxAffixLevel": 3 }
+    { "index": 1, "base": 32, "affixes": 1, "maxAffixLevel": 1 },
+    { "index": 2, "base": 38, "affixes": 1, "maxAffixLevel": 1 },
+    { "index": 3, "base": 44, "affixes": 2, "maxAffixLevel": 1 },
+    { "index": 4, "base": 50, "affixes": 2, "maxAffixLevel": 2 },
+    { "index": 5, "base": 56, "affixes": 2, "maxAffixLevel": 2 },
+    { "index": 6, "base": 62, "affixes": 3, "maxAffixLevel": 2 },
+    { "index": 7, "base": 68, "affixes": 3, "maxAffixLevel": 3 },
+    { "index": 8, "base": 74, "affixes": 3, "maxAffixLevel": 3 }
   ]
 }

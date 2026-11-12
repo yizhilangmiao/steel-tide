@@ -25,6 +25,8 @@ public record RaidConfig(
         List<Wave> waves,
         double headMulPerPlayer,
         double gearMulMax,
+        /** 单波规模下限：波次表的 base 低于它时按它算（默认 32，保证一波不少于 32 只）。 */
+        int minWaveSize,
         int spawnRadiusMin,
         int spawnRadiusMax,
         int spawnPerBurst,
@@ -33,6 +35,8 @@ public record RaidConfig(
         int spawnMaxAlive,
         /** 寻路半径：半径内交给原版寻路，半径外只做直线移动，省掉远处的寻路开销。 */
         int chaseRadius,
+        /** 剩余来袭怪少于这个数时给每只挂发光（0 = 关闭），方便收尾时找漏网的。 */
+        int glowWhenAliveBelow,
         double attackRange,
         int attackDamagePerSecond,
         /** 攻核全程 DPS 上限；{@code 0} = 不限（老配置缺少该字段时也是 0）。 */
@@ -104,6 +108,8 @@ public record RaidConfig(
         int attackDay = JsonSupport.integer(root, "attackDay", "attackDay");
         double headMulPerPlayer = JsonSupport.number(root, "headMulPerPlayer", "headMulPerPlayer");
         double gearMulMax = JsonSupport.number(root, "gearMulMax", "gearMulMax");
+        // 缺省 32：老配置的波次表偏小，按「一波最少 32 只」兜底
+        int minWaveSize = optionalInt(root, "minWaveSize", "minWaveSize", 32);
 
         JsonObject spawn = JsonSupport.object(root, "spawn", "spawn");
         int spawnRadiusMin = JsonSupport.integer(spawn, "radiusMin", "spawn.radiusMin");
@@ -113,6 +119,7 @@ public record RaidConfig(
         // 老配置没有这两个键：maxAlive 缺省 0（不限），chaseRadius 缺省 48，行为与旧版一致
         int spawnMaxAlive = optionalInt(spawn, "maxAlive", "spawn.maxAlive", 0);
         int chaseRadius = optionalInt(spawn, "chaseRadius", "spawn.chaseRadius", 48);
+        int glowWhenAliveBelow = optionalInt(spawn, "glowWhenAliveBelow", "spawn.glowWhenAliveBelow", 10);
         int airHeight = JsonSupport.integer(spawn, "airHeight", "spawn.airHeight");
 
         JsonObject attack = JsonSupport.object(root, "attack", "attack");
@@ -174,11 +181,18 @@ public record RaidConfig(
         if (attackDpsCap < 0) {
             throw JsonSupport.invalid("attack.dpsCap", "must be >= 0 (0 = unlimited), was " + attackDpsCap);
         }
+        if (minWaveSize < 0) {
+            throw JsonSupport.invalid("minWaveSize", "must be >= 0 (0 = no floor), was " + minWaveSize);
+        }
+        if (glowWhenAliveBelow < 0) {
+            throw JsonSupport.invalid("spawn.glowWhenAliveBelow",
+                    "must be >= 0 (0 = disabled), was " + glowWhenAliveBelow);
+        }
 
         return new RaidConfig(cycleDays, warnDay, scoutDay, attackDay, List.copyOf(waves),
-                headMulPerPlayer, gearMulMax, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
-                spawnIntervalTicks, spawnMaxAlive, chaseRadius, attackRange, attackDamagePerSecond,
-                attackDpsCap, airHeight,
+                headMulPerPlayer, gearMulMax, minWaveSize, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
+                spawnIntervalTicks, spawnMaxAlive, chaseRadius, glowWhenAliveBelow, attackRange,
+                attackDamagePerSecond, attackDpsCap, airHeight,
                 List.copyOf(groundRaiders), List.copyOf(airRaiders), safeZone);
     }
 
@@ -237,13 +251,17 @@ public record RaidConfig(
         return waves.get(Math.min(waveIndex, waves.size()) - 1);
     }
 
-    /** 最终规模 = round(Base × HeadMul × GearMul)（设计 §2.4）。 */
+    /** 该波的生效基础数：波次表的 base 与 minWaveSize 取大（保证「一波不少于 N 只」）。 */
+    public int effectiveBase(int waveIndex) {
+        return Math.max(wave(waveIndex).base(), Math.max(0, minWaveSize));
+    }
+
+    /** 最终规模 = round(Base × HeadMul × GearMul)（设计 §2.4），Base 已套用 minWaveSize 下限。 */
     public int scaledSize(int waveIndex, int onlinePlayers, int coreTier, int maxTier) {
-        Wave wave = wave(waveIndex);
         double headMul = 1.0D + headMulPerPlayer * Math.max(0, onlinePlayers - 1);
         double gearRatio = maxTier <= 1 ? 1.0D : (double) (Math.max(1, coreTier) - 1) / (maxTier - 1);
         double gearMul = 1.0D + gearMulMax * Math.min(1.0D, Math.max(0.0D, gearRatio));
-        return Math.max(1, (int) Math.round(wave.base() * headMul * gearMul));
+        return Math.max(1, (int) Math.round(effectiveBase(waveIndex) * headMul * gearMul));
     }
 
     private static List<String> stringList(JsonObject parent, String key, String path) {

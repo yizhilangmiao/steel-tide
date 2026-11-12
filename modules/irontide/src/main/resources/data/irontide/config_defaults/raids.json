@@ -10,6 +10,8 @@
     "radiusMax": 40,
     "perBurst": 2,
     "intervalTicks": 20,
+    "maxAlive": 16,
+    "chaseRadius": 48,
     "airHeight": 18
   },
   "safeZone": {

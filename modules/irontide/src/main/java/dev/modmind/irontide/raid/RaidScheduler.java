@@ -2,6 +2,7 @@ package dev.modmind.irontide.raid;
 
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
 import dev.modmind.irontide.block.CoreState;
+import dev.modmind.irontide.config.CoreConfig;
 import dev.modmind.irontide.config.RaidConfig;
 import dev.modmind.irontide.data.IronTideData;
 import dev.modmind.irontide.net.SteamHudPayload;
@@ -181,7 +182,11 @@ public final class RaidScheduler {
             return;
         }
         int online = Math.max(1, server.getPlayerCount());
-        targetCount = config.scaledSize(waveIndex, online, 1, 1);
+        // GearMul 按核心实际档位缩放（设计 §2.4）：T1 → 1.00，最高档 → 1 + gearMulMax
+        CoreConfig coreConfig = IronTideData.config();
+        int maxTier = Math.max(1, coreConfig.tiers().size());
+        int coreTier = Math.max(1, Math.min(maxTier, core.tierIndex()));
+        targetCount = config.scaledSize(waveIndex, online, coreTier, maxTier);
         spawnedCount = 0;
         raiders.clear();
         spawnCooldown = 0;
@@ -232,7 +237,9 @@ public final class RaidScheduler {
             return;
         }
 
-        if (spawnedCount < targetCount) {
+        // 同时存活上限：到顶就暂停刷怪，等清掉一批再继续（气氛更连续，也不至于几十只同屏）
+        boolean aliveAtCap = config.spawnMaxAlive() > 0 && raiders.size() >= config.spawnMaxAlive();
+        if (spawnedCount < targetCount && !aliveAtCap) {
             if (--spawnCooldown <= 0) {
                 spawnCooldown = Math.max(1, config.spawnIntervalTicks() / CHECK_INTERVAL);
                 int burst = Math.min(config.spawnPerBurst(), targetCount - spawnedCount);
@@ -266,6 +273,9 @@ public final class RaidScheduler {
         double coreY = corePos.getY();
         double coreZ = corePos.getZ() + 0.5D;
 
+        RaidConfig config = IronTideData.raidConfig();
+        double chaseSq = (double) config.chaseRadius() * (double) config.chaseRadius();
+
         for (UUID uuid : raiders) {
             Entity entity = level.getEntity(uuid);
             if (!(entity instanceof Mob mob) || !mob.isAlive()) {
@@ -277,7 +287,17 @@ public final class RaidScheduler {
             if (level.getNearestPlayer(mob, 16.0D) != null) {
                 continue;
             }
-            if (mob.tickCount % 10 == 0) {
+            double distSq = mob.distanceToSqr(coreX, coreY, coreZ);
+            if (distSq > chaseSq) {
+                // 远怪：平时只给移动控制一个直线目标，不做 A* 寻路——几十只怪同时寻路是这里最贵的一块；
+                // 每 3 秒补一次真寻路当兜底，避免被地形卡住后永远原地磨
+                if (mob.tickCount % 60 == 0) {
+                    mob.getNavigation().moveTo(coreX, coreY, coreZ, 1.0D);
+                } else if (mob.tickCount % 20 == 0) {
+                    mob.getMoveControl().setWantedPosition(coreX, coreY, coreZ, 1.0D);
+                }
+            } else if (mob.tickCount % 10 == 0 && mob.getNavigation().isDone()) {
+                // 近怪：交给原版寻路绕障碍；已经在走就不重算路径
                 mob.getNavigation().moveTo(coreX, coreY, coreZ, 1.0D);
             }
         }

@@ -6,6 +6,7 @@ import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.config.CoreConfig;
 import dev.modmind.irontide.config.ModuleSpec;
 import dev.modmind.irontide.config.ModuleType;
+import dev.modmind.irontide.config.TierSpec;
 import dev.modmind.irontide.data.IronTideData;
 import dev.modmind.irontide.item.CoreModuleItem;
 import dev.modmind.irontide.multiblock.MultiblockDefinition;
@@ -982,7 +983,7 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
         CoreConfig config = IronTideData.config();
         if (result.complete()) {
             player.sendSystemMessage(Component.literal(
-                    "[钢铁潮汐] 结构完整 / " + definition.tier() + " 已激活"));
+                    "[钢铁潮汐] " + definition.tier() + " · " + statusText()));
             player.sendSystemMessage(Component.literal(
                     "[钢铁潮汐] 生命：" + health + " / " + healthMax
                             + "（基础 " + formatWhole(config.healthBase())
@@ -1031,6 +1032,60 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
 
     public CoreState getState() {
         return state;
+    }
+
+    /**
+     * 面板 / 聊天用的四态：未成型 / 运转中 / 停机 / 已摧毁。低燃料算「运转中」的附加信息。
+     */
+    public CoreStatus status() {
+        if (state == CoreState.DESTROYED) {
+            return CoreStatus.DESTROYED;
+        }
+        if (state != CoreState.ACTIVE) {
+            return CoreStatus.INCOMPLETE;
+        }
+        return powerStatus == FuelStatus.STOPPED ? CoreStatus.HALTED : CoreStatus.RUNNING;
+    }
+
+    /** 四态的中文描述，GUI 和聊天提示共用同一份文案。 */
+    public String statusText() {
+        return switch (status()) {
+            case INCOMPLETE -> "未成型（缺 " + lastMissing + " 格）";
+            case RUNNING -> powerStatus == FuelStatus.LOW
+                    ? "运转中 · 燃料不足（" + percentFuel() + "%）"
+                    : "运转中";
+            case HALTED -> "停机（无燃料）";
+            case DESTROYED -> "已摧毁（需要维修）";
+        };
+    }
+
+    private int percentFuel() {
+        int capacity = Math.max(1, getFuelCapacity());
+        return (int) Math.round(fuel * 100.0D / capacity);
+    }
+
+    /**
+     * 结构档位序号（1 起，对应 core.json 的 tiers 顺序）。怪潮的 GearMul 按这个序号缩放
+     * （设计 2.4）；认不出档位时按 T1 处理。
+     */
+    public int tierIndex() {
+        if (!IronTideData.isLoaded()) {
+            return 1;
+        }
+        MultiblockDefinition definition = IronTideData.definitions().get(structureId);
+        if (definition == null) {
+            definition = IronTideData.definitions().primary();
+        }
+        if (definition == null) {
+            return 1;
+        }
+        List<TierSpec> tiers = IronTideData.config().tiers();
+        for (int i = 0; i < tiers.size(); i++) {
+            if (tiers.get(i).id().equals(definition.tier())) {
+                return i + 1;
+            }
+        }
+        return 1;
     }
 
     public int getHealth() {

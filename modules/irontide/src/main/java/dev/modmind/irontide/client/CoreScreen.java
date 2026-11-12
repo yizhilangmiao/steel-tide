@@ -1,5 +1,6 @@
 package dev.modmind.irontide.client;
 
+import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
 import dev.modmind.irontide.block.CoreState;
 import dev.modmind.irontide.menu.CoreMenu;
 import dev.modmind.irontide.multiblock.MultiblockDefinition;
@@ -160,9 +161,30 @@ public class CoreScreen extends AbstractContainerScreen<CoreMenu> {
         int healthMax = menu.value(CoreMenu.DATA_HEALTH_MAX);
         graphics.drawString(font, "生命 " + health + " / " + healthMax, 12, 26, TEXT_HEALTH, false);
 
-        boolean active = menu.value(CoreMenu.DATA_STATE) == CoreState.ACTIVE.ordinal();
-        graphics.drawString(font, active ? "结构 完整（已激活）" : "结构 不完整", 12, 42,
-                active ? TEXT_OK : TEXT_WARN, false);
+        // 四态展示：未成型 / 运转中（含燃料不足）/ 停机 / 已摧毁
+        CoreState state = CoreState.values()[Math.max(0, Math.min(CoreState.values().length - 1,
+                menu.value(CoreMenu.DATA_STATE)))];
+        int power = menu.value(CoreMenu.DATA_POWER_STATUS);
+        boolean active = state == CoreState.ACTIVE;
+        String statusLine;
+        int statusColor;
+        if (state == CoreState.DESTROYED) {
+            statusLine = "状态 已摧毁（需要维修）";
+            statusColor = TEXT_HEALTH;
+        } else if (!active) {
+            statusLine = "状态 未成型";
+            statusColor = TEXT_WARN;
+        } else if (power == AndesiteCoreBlockEntity.FuelStatus.STOPPED.ordinal()) {
+            statusLine = "状态 停机（无燃料）";
+            statusColor = TEXT_WARN;
+        } else if (power == AndesiteCoreBlockEntity.FuelStatus.LOW.ordinal()) {
+            statusLine = "状态 运转中 · 燃料不足";
+            statusColor = TEXT_WARN;
+        } else {
+            statusLine = "状态 运转中";
+            statusColor = TEXT_OK;
+        }
+        graphics.drawString(font, statusLine, 12, 42, statusColor, false);
         if (active) {
             graphics.drawString(font, "朝向 " + MultiblockDefinition.layoutLabel(menu.value(CoreMenu.DATA_LAYOUT)),
                     12, 56, TEXT_DIM, false);

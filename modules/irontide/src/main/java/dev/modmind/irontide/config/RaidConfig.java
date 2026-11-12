@@ -29,6 +29,10 @@ public record RaidConfig(
         int spawnRadiusMax,
         int spawnPerBurst,
         int spawnIntervalTicks,
+        /** 同时存活上限（{@code 0} = 不限）。到顶后暂停刷怪，等现存的清掉再继续，避免峰值同屏。 */
+        int spawnMaxAlive,
+        /** 寻路半径：半径内交给原版寻路，半径外只做直线移动，省掉远处的寻路开销。 */
+        int chaseRadius,
         double attackRange,
         int attackDamagePerSecond,
         /** 攻核全程 DPS 上限；{@code 0} = 不限（老配置缺少该字段时也是 0）。 */
@@ -106,6 +110,9 @@ public record RaidConfig(
         int spawnRadiusMax = JsonSupport.integer(spawn, "radiusMax", "spawn.radiusMax");
         int spawnPerBurst = JsonSupport.integer(spawn, "perBurst", "spawn.perBurst");
         int spawnIntervalTicks = JsonSupport.integer(spawn, "intervalTicks", "spawn.intervalTicks");
+        // 老配置没有这两个键：maxAlive 缺省 0（不限），chaseRadius 缺省 48，行为与旧版一致
+        int spawnMaxAlive = optionalInt(spawn, "maxAlive", "spawn.maxAlive", 0);
+        int chaseRadius = optionalInt(spawn, "chaseRadius", "spawn.chaseRadius", 48);
         int airHeight = JsonSupport.integer(spawn, "airHeight", "spawn.airHeight");
 
         JsonObject attack = JsonSupport.object(root, "attack", "attack");
@@ -147,6 +154,12 @@ public record RaidConfig(
         if (spawnRadiusMin <= 0 || spawnRadiusMax < spawnRadiusMin) {
             throw JsonSupport.invalid("spawn", "radiusMax must be >= radiusMin > 0");
         }
+        if (spawnMaxAlive < 0) {
+            throw JsonSupport.invalid("spawn.maxAlive", "must be >= 0 (0 = unlimited), was " + spawnMaxAlive);
+        }
+        if (chaseRadius < 8 || chaseRadius > 128) {
+            throw JsonSupport.invalid("spawn.chaseRadius", "must be within [8, 128], was " + chaseRadius);
+        }
         if (waves.isEmpty()) {
             throw JsonSupport.invalid("waves", "must contain at least one wave");
         }
@@ -164,7 +177,8 @@ public record RaidConfig(
 
         return new RaidConfig(cycleDays, warnDay, scoutDay, attackDay, List.copyOf(waves),
                 headMulPerPlayer, gearMulMax, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
-                spawnIntervalTicks, attackRange, attackDamagePerSecond, attackDpsCap, airHeight,
+                spawnIntervalTicks, spawnMaxAlive, chaseRadius, attackRange, attackDamagePerSecond,
+                attackDpsCap, airHeight,
                 List.copyOf(groundRaiders), List.copyOf(airRaiders), safeZone);
     }
 
@@ -200,6 +214,11 @@ public record RaidConfig(
                     "must be >= 1, was " + particleIntervalTicks);
         }
         return new SafeZone(enabled, radius, halfHeight, lightLevel, lightUp, beacons, particleIntervalTicks);
+    }
+
+    /** 缺省键用既成默认值，保证老存档的 raids.json 不改也能继续加载。 */
+    private static int optionalInt(JsonObject parent, String key, String path, int fallback) {
+        return parent.has(key) ? JsonSupport.integer(parent, key, path) : fallback;
     }
 
     private static boolean bool(JsonObject parent, String key, String path) {

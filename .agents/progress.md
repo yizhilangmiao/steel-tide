@@ -1,5 +1,5 @@
 # 进度 · 钢铁潮汐（mod_l61phe）
-  更新时间：2026-11-12 16:45 · 会话 codex（燃料模块上限返修）
+  更新时间：2026-11-12 17:05 · 会话 codex（W2.5 信标 + W2.6 传输接线）
   工程：`E:\ioncreating\mod_l61phe` · ModMind 整合包「钢铁潮汐」· MC 1.21.1 / NeoForge 21.1.265 / JDK 21 · 69 Mod
   > 本文件覆盖写，**MC 线的进度真源就是这里**。稳定知识（目录地图/启动方式/MCP 桥/mod 版本矩阵/铁律）→ `文件\设计\项目手册.md`。
 
@@ -23,12 +23,13 @@
   - `dd16cdb` **W2 单向怪潮**：新增 `spawn.arcDegrees`（默认 60，0=一条线 / 360=四周随机）——每波开打抽一次主攻方位，整波落在该方位 ±一半张角的扇面里；出生即面朝核心；开战播报追加「来自 东/南/西/北 侧」。README 字段表与测试用例（新增 S15）同步。
   - 退出世界卡「保存世界中」排查：见 文件/诊断/退出卡死-排查.md。已证实世界存盘完整，卡点在 MinecraftServer.stopServer() 尾部（level close / resources close / storage close）；新增 client/StuckShutdownWatchdog 自动抓 Server thread 堆栈（20 秒触发，最多 3 次）。**尚未定位到具体 mod**。
   - 93d449c 燃料模块上限返修：updatePowerState 夹取/低燃料阈值、feedFuel 容量与余量、reportStatus 百分比三处都由 config.fuelCapacity()(12000) 改为 getFuelCapacity()(模块容量)。装 FUEL I 时原先燃料被钉在 12000 = 20% 且煤一直被吃；README 补燃料/模块对照表，用例补 S16。
+  - **W2.5 信标接线**：`RaidSettlement` 读 `core.getBeaconReward()`，残骸 = round((波次×2+2)×performance×(1+reward))，结算播报附「信标 +N%」，日志加 `beacon=`。
+  - **W2.6 传输接线**：`AndesiteCoreBlock#hasShaftTowards` 改为 自身轴线恒通 → 未装 TRANSFER 一律 false → I 级仅水平 / II 级以上全方向；BE 新增 `hasModule(ModuleType)`。两处均通过托管构建并同步实例（**未实机验证**）。
 
-## 下一步
-  1. **用户自测 W2**：`文件\测试\怪潮与状态-测试用例.md`，重点 S1~S6（四态）、S7/S8（maxAlive / chaseRadius）、S11~S13（波次 32 起步 / 收尾发光）、**S15（同向来袭）**。
-  2. 继续 W2 剩余：tier→壳材质（钢/铜壳 + `minTier` 门槛，需把 `CoreConfig` 从「安山↔黄铜二元插值」改成多材质加权）。
-  3. W3 前哨核心 + 主核无血；W4 破坏白名单/MSPT 实测；W5 手册与任务书同步 + 打 tag。
-
+## 下一步（完整排期见 `文件\设计\排期表.md`）
+  1. 用户自测：`文件\测试\怪潮与状态-测试用例.md`（重点 S15 同向来袭、S16 燃料模块、S17 信标、S18 传输）。
+  2. W2 收尾遗留 D2：核心 BE 缺 `getUpdateTag`/`getUpdatePacket`，模块槽不同步到客户端（服务端传动正常）。
+  3. W2.7 tier→壳材质；W3 前哨核心；W4 白名单/MSPT；W5 手册任务书 + tag。
 ## 卡点
   - **退出世界偶发卡在「保存世界中」（5 次里 2 次）**：世界已存盘，卡在集成服务器 stopServer() 尾部（level close / resources close / storage close），要等下一次复现的线程堆栈才能定位到具体 mod；卡住时强杀进程安全。
   - W2 只做到构建通过，**未实机验证**（用户自测）。

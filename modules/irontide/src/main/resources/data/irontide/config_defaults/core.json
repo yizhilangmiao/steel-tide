@@ -62,7 +62,8 @@
   "network": {
     "radius": 96,
     "shareDamage": true,
-    "settlementSplit": true
+    "settlementSplit": true,
+    "mainCoreInvulnerable": true
   },
 
   "materialSwap": { "enabled": true },

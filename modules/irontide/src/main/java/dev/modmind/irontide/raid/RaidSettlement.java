@@ -19,13 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 战后结算：按核心剩余血量分档给奖，并把战果播报到聊天栏。
+ * 战后结算：按前哨剩余血量分档给奖，并把战果播报到聊天栏。
  *
- * <p>首版没有词缀系统，所以只发通用货币「怪潮残骸」；词缀战利品等词缀做完再接进来。
- * 波次越高给得越多，权重是 {@code wave * 2 + 2}。</p>
- *
- * <p>W3 前哨分摊：开了 {@code core.json → network.settlementSplit} 且网络里有多座存活核心时，
- * 残骸按核心数拆份，每份给离那座核心最近的玩家（128 格内；没人就并回全员发放）。</p>
+ * <p>W3 前哨：主核默认「无血」——怪潮伤害只打前哨。所以本波表现按前哨总血量比例算：
+ * 有前哨 → 前哨当前总血量 ÷ 开战时前哨总血量；没前哨 → 不给加成（主核无损）。
+ * 残骸按存活前哨拆份，每份给离那座前哨最近的玩家（128 格内；没人就并回全员）。</p>
  */
 public final class RaidSettlement {
 
@@ -40,28 +38,51 @@ public final class RaidSettlement {
     }
 
     /**
-     * @param core      结算时的核心方块实体，可能已被摧毁或已不在（返回 null）
-     * @param network   本波的核心网络（主核 + 前哨），可以为空
-     * @param remaining 结束时还活着的怪数量
-     * @param reason    结束原因，用于播报
+     * @param core            结算时的锚点核心（主核），可能已被拆除或停机
+     * @param network         本波的核心网络（主核 + 前哨），可以为空
+     * @param outpostMaxTotal 开战时前哨血量上限总和（主核无血模式下算比例用；0 = 本波没有前哨）
      */
     public static void settle(MinecraftServer server, ServerLevel level, BlockPos pos,
                               AndesiteCoreBlockEntity core, List<AndesiteCoreBlockEntity> network,
-                              int wave, int total, int remaining, String reason) {
+                              int outpostMaxTotal, int wave, int total, int remaining, String reason) {
         if (server == null) {
             return;
         }
+        CoreConfig coreConfig = IronTideData.isLoaded() ? IronTideData.config() : null;
+        boolean invulnerable = coreConfig == null || coreConfig.mainCoreInvulnerable();
 
-        boolean alive = core != null && core.getState() == CoreState.ACTIVE && core.getHealth() > 0;
-        int health = core != null ? core.getHealth() : 0;
-        int max = core != null ? core.getHealthMax() : 0;
-        double ratio = max > 0 ? (double) health / max : 0.0D;
+        // 可承伤集合：主核无血时 = 前哨；否则 = 整张网络（含主核）
+        List<AndesiteCoreBlockEntity> damaged = invulnerable
+                ? outposts(network, core) : aliveMembers(network);
+        List<AndesiteCoreBlockEntity> survivors = aliveMembers(damaged);
+
+        int health;
+        int max;
+        boolean alive;
+        double ratio;
+        if (invulnerable) {
+            health = 0;
+            for (AndesiteCoreBlockEntity member : survivors) {
+                health += Math.max(0, member.getHealth());
+            }
+            max = Math.max(0, outpostMaxTotal);
+            ratio = max > 0 ? Math.min(1.0D, (double) health / (double) max) : 1.0D;
+            alive = max > 0 ? health > 0 : true;
+        } else {
+            alive = core != null && core.getState() == CoreState.ACTIVE && core.getHealth() > 0;
+            health = core != null ? Math.max(0, core.getHealth()) : 0;
+            max = core != null ? core.getHealthMax() : 0;
+            ratio = max > 0 ? Math.min(1.0D, (double) health / (double) max) : 0.0D;
+        }
 
         double performance;
         String grade;
         if (!alive) {
             performance = 0.0D;
-            grade = "核心失守";
+            grade = invulnerable ? "前哨全部失守" : "核心失守";
+        } else if (invulnerable && max == 0) {
+            performance = 1.0D;
+            grade = "无前哨 · 主核无损";
         } else if (ratio >= PERFECT_RATIO) {
             performance = 1.5D;
             grade = "完美防守 +50%";
@@ -77,11 +98,8 @@ public final class RaidSettlement {
         double beaconBonus = core != null ? core.getBeaconReward() : 0.0D;
         int scrap = (int) Math.round((wave * 2 + 2) * performance * (1.0D + beaconBonus));
 
-        List<AndesiteCoreBlockEntity> survivors = aliveMembers(network);
-        CoreConfig coreConfig = IronTideData.isLoaded() ? IronTideData.config() : null;
         boolean split = coreConfig != null && coreConfig.settlementSplit()
                 && survivors.size() > 1 && scrap > 0;
-
         int shareAmount = 0;
         if (scrap > 0) {
             if (split) {
@@ -101,8 +119,8 @@ public final class RaidSettlement {
             }
         }
 
-        announceSummary(server, wave, total, remaining, reason, alive, health, max, ratio, grade,
-                scrap, beaconBonus, split ? survivors.size() : 0, shareAmount);
+        announceSummary(server, wave, total, remaining, reason, invulnerable, alive,
+                health, max, ratio, grade, scrap, beaconBonus, split ? survivors.size() : 0, shareAmount);
         ModMindEntry.LOGGER.info(
                 "[IronTide] raid settled wave={} total={} remaining={} reason='{}' alive={} health={}/{}"
                         + " performance={} scrap={} beacon={} cores={} split={} peakMspt={}",
@@ -110,7 +128,22 @@ public final class RaidSettlement {
                 survivors.size(), split, String.format("%.1f", RaidPerf.peakMspt()));
     }
 
-    /** 网络里还活着的核心（ACTIVE 且血量 > 0）；结算分摊只用这张表。 */
+    /** 网络里的前哨（排除锚点主核）。 */
+    private static List<AndesiteCoreBlockEntity> outposts(List<AndesiteCoreBlockEntity> network,
+                                                          AndesiteCoreBlockEntity main) {
+        List<AndesiteCoreBlockEntity> out = new ArrayList<>();
+        if (network == null) {
+            return out;
+        }
+        for (AndesiteCoreBlockEntity member : network) {
+            if (member != null && member != main) {
+                out.add(member);
+            }
+        }
+        return out;
+    }
+
+    /** 存活核心（ACTIVE 且血量 > 0）；结算分摊只用这张表。 */
     private static List<AndesiteCoreBlockEntity> aliveMembers(List<AndesiteCoreBlockEntity> network) {
         List<AndesiteCoreBlockEntity> out = new ArrayList<>();
         if (network == null) {
@@ -176,29 +209,40 @@ public final class RaidSettlement {
     }
 
     private static void announceSummary(MinecraftServer server, int wave, int total, int remaining,
-                                        String reason, boolean alive, int health, int max,
-                                        double ratio, String grade, int scrap, double beaconBonus,
-                                        int splitCores, int shareAmount) {
+                                        String reason, boolean invulnerable, boolean alive,
+                                        int health, int max, double ratio, String grade, int scrap,
+                                        double beaconBonus, int splitCores, int shareAmount) {
         StringBuilder out = new StringBuilder();
         out.append("§6[钢铁潮汐] §f第 ").append(wave).append(" 波结算 §7—— ").append(reason).append('\n');
         out.append("§7- 来袭 §f").append(total).append(" §7只，撤退时剩 §f").append(remaining).append(" §7只\n");
 
         if (alive) {
-            out.append("§7- 核心 §f").append(health).append(" / ").append(max)
-                    .append(" §7（§f").append(Math.round(ratio * 100)).append("%§7）· ")
-                    .append(ratio >= PERFECT_RATIO ? "§a" : ratio >= STEADY_RATIO ? "§e" : "§c")
-                    .append(grade).append('\n');
+            if (invulnerable && max > 0) {
+                out.append("§7- 前哨 §f").append(health).append(" / ").append(max)
+                        .append(" §7（§f").append(Math.round(ratio * 100)).append("%§7）· ")
+                        .append(ratio >= PERFECT_RATIO ? "§a" : ratio >= STEADY_RATIO ? "§e" : "§c")
+                        .append(grade).append("§7 · 主核无损\n");
+            } else if (invulnerable) {
+                out.append("§7- 前哨：§f无 §7· ").append(grade).append('\n');
+            } else {
+                out.append("§7- 核心 §f").append(health).append(" / ").append(max)
+                        .append(" §7（§f").append(Math.round(ratio * 100)).append("%§7）· ")
+                        .append(ratio >= PERFECT_RATIO ? "§a" : ratio >= STEADY_RATIO ? "§e" : "§c")
+                        .append(grade).append('\n');
+            }
             out.append("§7- 战利品：§6怪潮残骸 ×").append(scrap);
             if (beaconBonus > 0.0D) {
                 out.append(" §7· 信标 §a+").append(Math.round(beaconBonus * 100)).append('%');
             }
             out.append(" §7（已放入背包）");
             if (splitCores > 1) {
-                out.append('\n').append("§7- 前哨分摊：§f").append(splitCores).append("§7 座核心，每座 §f")
-                        .append(shareAmount).append(" §7残骸（发给离该核心最近的玩家）");
+                out.append('\n').append("§7- 前哨分摊：§f").append(splitCores).append("§7 座前哨，每座 §f")
+                        .append(shareAmount).append(" §7残骸（发给离该前哨最近的玩家）");
             }
         } else {
-            out.append("§c- 核心被摧毁，本波无奖励。持「核心维修套件」右键核心可修复。");
+            out.append("§c- ")
+                    .append(invulnerable ? "前哨全部失守，本波无奖励。" : "核心被摧毁，本波无奖励。")
+                    .append("持「核心维修套件」右键核心可修复。");
         }
 
         server.getPlayerList().broadcastSystemMessage(Component.literal(out.toString()), false);

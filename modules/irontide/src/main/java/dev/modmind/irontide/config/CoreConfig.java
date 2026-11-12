@@ -38,6 +38,8 @@ public record CoreConfig(
         boolean shareDamage,
         /** 结算分摊：残骸按存活核心数拆份，每份给离该核心最近的玩家。 */
         boolean settlementSplit,
+        /** 主核无血：怪潮伤害只打前哨，主核本身不掉血（关掉则回到多核均摊）。 */
+        boolean mainCoreInvulnerable,
         List<TierSpec> tiers,
         JsonObject stress,
         JsonObject build,
@@ -274,6 +276,9 @@ public record CoreConfig(
                 || JsonSupport.bool(network, "shareDamage", "network.shareDamage");
         boolean settlementSplit = !network.has("settlementSplit")
                 || JsonSupport.bool(network, "settlementSplit", "network.settlementSplit");
+        // 主核无血：默认开；老配置没这一段时跟新行为一致（只打前哨）
+        boolean mainCoreInvulnerable = !network.has("mainCoreInvulnerable")
+                || JsonSupport.bool(network, "mainCoreInvulnerable", "network.mainCoreInvulnerable");
         if (networkRadius < 8 || networkRadius > 256) {
             throw JsonSupport.invalid("network.radius", "must be within [8, 256], was " + networkRadius);
         }
@@ -335,7 +340,7 @@ public record CoreConfig(
 
         return new CoreConfig(healthBase, minRatioOnUpgrade, carryRatioOnUpgrade,
                 fuelCapacity, burnPerSecond, lowFuelRatio, noFuelModuleCapacity, noFuelModuleEfficiency,
-                casings, armorCap, networkRadius, shareDamage, settlementSplit,
+                casings, armorCap, networkRadius, shareDamage, settlementSplit, mainCoreInvulnerable,
                 List.copyOf(tiers), stress, build, modules,
                 parseModuleList(modules, "fuel"),
                 parseModuleList(modules, "armor"),

@@ -57,6 +57,8 @@ public final class RaidScheduler {
     private static int damageCooldown;
 
     private static final Set<UUID> raiders = new HashSet<>();
+    /** 本波的主攻方向（弧度）。一波怪只从这个扇面里出来，不再是四面八方随机。 */
+    private static double spawnAngle;
     private static BlockPos corePos;
     private static ServerLevel coreLevel;
     private static int coreDimId = Integer.MIN_VALUE;
@@ -91,6 +93,7 @@ public final class RaidScheduler {
         spawnCooldown = 0;
         damageCooldown = 0;
         raiders.clear();
+        spawnAngle = 0.0D;
         SafeZone.deactivate(coreLevel);
         corePos = null;
         coreLevel = null;
@@ -199,6 +202,8 @@ public final class RaidScheduler {
         coreLevel = level;
         coreDimId = level.dimension().location().hashCode();
         active = true;
+        // 每波抽一个主攻方向：整波怪都压在同一侧，玩家能把防线摆对地方
+        spawnAngle = level.random.nextDouble() * Math.PI * 2.0D;
 
         RaidConfig.SafeZone zone = config.safeZone();
         if (zone.enabled()) {
@@ -207,7 +212,7 @@ public final class RaidScheduler {
         }
 
         announce(server, "§4[钢铁潮汐] §c怪潮第 " + waveIndex + " 波开始！§7目标：安山核心（"
-                + targetCount + " 个来袭）。守住它直到天亮。");
+                + targetCount + " 个来袭），来自§e " + directionLabel(spawnAngle) + "§7 侧。守住它直到天亮。");
     }
 
     private static void tickActive(MinecraftServer server, RaidConfig config, boolean night) {
@@ -365,7 +370,9 @@ public final class RaidScheduler {
             return false;
         }
 
-        double angle = level.random.nextDouble() * Math.PI * 2.0D;
+        // 只在主攻方向的扇面里落点：arcDegrees 越小越像「一队人从同一条路压过来」
+        double spread = Math.toRadians(Math.max(0, Math.min(360, config.spawnArcDegrees()))) * 0.5D;
+        double angle = spawnAngle + (level.random.nextDouble() * 2.0D - 1.0D) * spread;
         int radius = config.spawnRadiusMin()
                 + level.random.nextInt(Math.max(1, config.spawnRadiusMax() - config.spawnRadiusMin() + 1));
         int x = corePos.getX() + (int) Math.round(Math.cos(angle) * radius);
@@ -374,7 +381,11 @@ public final class RaidScheduler {
                 ? corePos.getY() + config.airHeight()
                 : level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 
-        entity.moveTo(x + 0.5D, y, z + 0.5D, level.random.nextFloat() * 360.0F, 0.0F);
+        // 出生就面朝核心，一落地就往里冲（省掉一段转身时间）
+        double toCoreX = corePos.getX() + 0.5D - (x + 0.5D);
+        double toCoreZ = corePos.getZ() + 0.5D - (z + 0.5D);
+        float yaw = (float) (Math.toDegrees(Math.atan2(toCoreZ, toCoreX)) - 90.0D);
+        entity.moveTo(x + 0.5D, y, z + 0.5D, yaw, 0.0F);
         if (!level.addFreshEntity(entity)) {
             return false;
         }
@@ -383,6 +394,21 @@ public final class RaidScheduler {
         }
         raiders.add(entity.getUUID());
         return true;
+    }
+
+    /** 把弧度换成广播里的方位词（MC 里 +X 是东、+Z 是南）。 */
+    private static String directionLabel(double angle) {
+        double degrees = (Math.toDegrees(angle) % 360.0D + 360.0D) % 360.0D;
+        if (degrees < 45.0D || degrees >= 315.0D) {
+            return "东";
+        }
+        if (degrees < 135.0D) {
+            return "南";
+        }
+        if (degrees < 225.0D) {
+            return "西";
+        }
+        return "北";
     }
 
     private static AndesiteCoreBlockEntity pickCore() {

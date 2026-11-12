@@ -37,6 +37,8 @@ public record RaidConfig(
         int chaseRadius,
         /** 剩余来袭怪少于这个数时给每只挂发光（0 = 关闭），方便收尾时找漏网的。 */
         int glowWhenAliveBelow,
+        /** 主攻方向的可视扇形张角（度）。0 = 全从同一点来，360 = 四面八方形同随机。 */
+        int spawnArcDegrees,
         double attackRange,
         int attackDamagePerSecond,
         /** 攻核全程 DPS 上限；{@code 0} = 不限（老配置缺少该字段时也是 0）。 */
@@ -120,6 +122,8 @@ public record RaidConfig(
         int spawnMaxAlive = optionalInt(spawn, "maxAlive", "spawn.maxAlive", 0);
         int chaseRadius = optionalInt(spawn, "chaseRadius", "spawn.chaseRadius", 48);
         int glowWhenAliveBelow = optionalInt(spawn, "glowWhenAliveBelow", "spawn.glowWhenAliveBelow", 10);
+        // 缺省 60°：一波怪挤在一个扇面里，从同一个方向压过来
+        int spawnArcDegrees = optionalInt(spawn, "arcDegrees", "spawn.arcDegrees", 60);
         int airHeight = JsonSupport.integer(spawn, "airHeight", "spawn.airHeight");
 
         JsonObject attack = JsonSupport.object(root, "attack", "attack");
@@ -188,11 +192,14 @@ public record RaidConfig(
             throw JsonSupport.invalid("spawn.glowWhenAliveBelow",
                     "must be >= 0 (0 = disabled), was " + glowWhenAliveBelow);
         }
+        if (spawnArcDegrees < 0 || spawnArcDegrees > 360) {
+            throw JsonSupport.invalid("spawn.arcDegrees", "must be within [0, 360], was " + spawnArcDegrees);
+        }
 
         return new RaidConfig(cycleDays, warnDay, scoutDay, attackDay, List.copyOf(waves),
                 headMulPerPlayer, gearMulMax, minWaveSize, spawnRadiusMin, spawnRadiusMax, spawnPerBurst,
-                spawnIntervalTicks, spawnMaxAlive, chaseRadius, glowWhenAliveBelow, attackRange,
-                attackDamagePerSecond, attackDpsCap, airHeight,
+                spawnIntervalTicks, spawnMaxAlive, chaseRadius, glowWhenAliveBelow, spawnArcDegrees,
+                attackRange, attackDamagePerSecond, attackDpsCap, airHeight,
                 List.copyOf(groundRaiders), List.copyOf(airRaiders), safeZone);
     }
 

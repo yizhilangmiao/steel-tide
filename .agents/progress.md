@@ -8,7 +8,7 @@
   等用户按 `文件\测试\怪潮与状态-测试用例.md` 实机验收，通过后再打 tag `m1`。
 
 ## 本轮完成
-  - **W3 前哨核心网络**：`CoreNetwork`（同维度 / ACTIVE / ≤ `network.radius` 96）＋ `network.shareDamage` 承伤均摊＋`network.settlementSplit` 结算拆份；主核失守时网络内核心接替锚点，怪潮继续。
+  - **W3 前哨核心网络**：`CoreNetwork`（同维度 / ACTIVE / ≤ `network.radius` 96）；**主核无血**（`network.mainCoreInvulnerable`，怪潮伤害只打前哨），前哨之间用 `shareDamage` 均摊；结算按前哨血量比例分档、`settlementSplit` 拆份；无前哨不打主核、也不给加成；前哨全灭提前结束无奖；主核方块被拆时前哨接替锚点。
   - **W4 拆墙白名单**：`RaidBreaker` 只拆 `raids.json → break.whitelist`（木板/原木/木制件/玻璃），`maxPerTick=2` 全局预算；石墙/铁块/核心壳不拆。
   - **W4 MSPT 采样**：`RaidPerf` 每 5 秒一行 `[IronTide] raid perf mspt/peak/raiders`，≥50ms warn；结算日志带 `peakMspt=`。
   - **W5 文档**：`overrides/config/irontide/README.md` 补 network / break / MSPT 契约；新增 FTB 任务章「核心与防御」（`core_defense.snbt` + lang）；手册与排期表同步；用例补 S22~S27。
@@ -16,7 +16,7 @@
 
 ## 待用户实测（自己进游戏，我不启动）
   - 旧：S15 同向来袭、S16 燃料（20% 卡死已修）、S17 信标、S18 传输、S19/S20 机壳、S21 模块同步。
-  - 新：S22 前哨识别、S23/S23b 承伤分摊、S24 结算分摊、S25 拆墙白名单、S26 MSPT 日志、S27 主核失守接替。
+  - 新：S22 前哨识别、S23 主核无血、S23b 前哨内部分摊、S24 结算分摊、S25 拆墙白名单、S26 MSPT 日志、S27 前哨全灭 / 主核接替。
   - 改 `core.json` / `raids.json` 必须重启客户端（启动只读一次）。
 
 ## 下一步

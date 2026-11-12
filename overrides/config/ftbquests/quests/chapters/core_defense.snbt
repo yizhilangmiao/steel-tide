@@ -1,0 +1,122 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: "core_defense"
+	group: ""
+	icon: {
+		id: "irontide:andesite_core"
+	}
+	id: "2000000000000005"
+	images: [ ]
+	order_index: 4
+	quest_links: [ ]
+	quests: [
+		{
+			id: "6000000000000001"
+			subtitle: "安山核心是整条线的地基：成型 → 投燃料 → 插模块 → 守夜。\n模块只能插在对应槽位，停机/被摧毁时先修再谈输出。"
+			tasks: [{
+				id: "6100000000000001"
+				type: "checkmark"
+			}]
+			title: "核心与防御 · 从这里开始"
+			x: 0.0d
+			y: 0.0d
+		},
+		{
+			dependencies: ["6000000000000001"]
+			id: "6000000000000002"
+			subtitle: "3×3×3 外壳围住控制器，右键核心查看缺口，搭满自动成型。\n外壳材质决定生命/护甲（安山→黄铜→铜→钢），成型后整体换成对应机壳。\n燃料烧完会停机，记得留一条补给线。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000002"
+				item: { count: 1, id: "irontide:andesite_core" }
+				type: "item"
+			}]
+			title: "安山核心"
+			x: 0.0d
+			y: 1.5d
+		},
+		{
+			dependencies: ["6000000000000002"]
+			id: "6000000000000003"
+			subtitle: "燃料 I：容量 60000，效率 1.00（5/秒）。II/III 容量更大但烧得更快。\n面板上的百分比按当前装的模块容量算；没装模块时是应急小油箱 12000。\n以前出现的「卡在 20%」是旧版上限写死 12000 导致的，已修。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000003"
+				item: { count: 1, id: "irontide:fuel_module_1" }
+				type: "item"
+			}]
+			title: "燃料模块 I"
+			x: -1.5d
+			y: 3.0d
+		},
+		{
+			dependencies: ["6000000000000002"]
+			id: "6000000000000004"
+			subtitle: "装甲模块按比例减免怪潮攻核伤害，每一下至少掉 1 点。\nI/II/III 减伤递增，和外壳护甲叠加计算。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000004"
+				item: { count: 1, id: "irontide:armor_module_1" }
+				type: "item"
+			}]
+			title: "装甲模块 I"
+			x: 0.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["6000000000000002"]
+			id: "6000000000000005"
+			subtitle: "信标模块给战后残骸加成：I/II/III = +10% / +25% / +50%。\n只影响结算数量，不改变完美/稳住的分档。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000005"
+				item: { count: 1, id: "irontide:beacon_module_1" }
+				type: "item"
+			}]
+			title: "信标模块 I"
+			x: 1.5d
+			y: 3.0d
+		},
+		{
+			dependencies: ["6000000000000002"]
+			id: "6000000000000006"
+			subtitle: "传动轴默认只能接核心自身轴线。\n装传输 I：水平四面可接；II 及以上：水平+垂直任意面；III 行为同 II（过载保护未实现）。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000006"
+				item: { count: 1, id: "irontide:transfer_module_1" }
+				type: "item"
+			}]
+			title: "传输模块 I"
+			x: 3.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["6000000000000002"]
+			id: "6000000000000007"
+			subtitle: "在距主核 96 格内再搭一座成型核心，就自动编入同一张网：\n· 承伤分摊：怪潮伤害在存活核心间均摊；\n· 结算分摊：残骸按核心数拆份，发给离各自核心最近的玩家；\n· 主核被毁时由前哨接替，怪潮继续。\n超过 96 格就不算同一张网（改 core.json → network.radius）。"
+			tasks: [{
+				id: "6100000000000007"
+				type: "checkmark"
+			}]
+			title: "前哨核心"
+			x: 1.5d
+			y: 4.5d
+		},
+		{
+			dependencies: ["6000000000000007"]
+			id: "6000000000000008"
+			subtitle: "核心被打到 0 会变「已摧毁」，不再输出也不再承伤。\n持维修套件右键核心即可修回；被摧毁的核心不会自己复活。"
+			tasks: [{
+				consume_items: false
+				id: "6100000000000008"
+				item: { count: 1, id: "irontide:core_repair_kit" }
+				type: "item"
+			}]
+			title: "核心维修套件"
+			x: 1.5d
+			y: 6.0d
+		}
+	]
+}

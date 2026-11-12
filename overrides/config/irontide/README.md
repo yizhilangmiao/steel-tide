@@ -57,3 +57,44 @@
 | `attack.damagePerSecond` / `attack.dpsCap` | 每只围核怪每秒伤害 / 全程 DPS 上限（`0` = 不限） |
 | `gearMulMax` | 规模按核心档位缩放的上限（T1 → ×1.00，最高档 → ×(1 + gearMulMax)） |
 | `waves[]` | 每波基础怪数（当前 32 / 38 / 44 / 50 / 56 / 62 / 68 / 74）、词缀数、词缀等级 |
+
+## 核心网络（前哨）
+
+`core.json → network`
+
+| 字段 | 默认 | 含义 |
+| --- | --- | --- |
+| `radius` | 96 | 同维度、距离 ≤ 半径的 ACTIVE 核心与主核组成一张网络。只认已加载的核心，不扫描区块 |
+| `shareDamage` | true | 攻核伤害在存活核心间均摊（每座至少 1 点）；`false` = 各挨各的 |
+| `settlementSplit` | true | 残骸按存活核心数拆份，每份给该核心 128 格内最近的玩家；没人接就并回全员 |
+
+- 前哨不是新方块：任何**成型且运转中**的核心，落在主核半径内就自动加入网络。
+- 主核被摧毁或停机时，网络里还活着的核心接替锚点（聊天播报坐标），怪潮继续；全部倒下才结束。
+- `radius` 校验 [8, 256]，越界拒绝启动；老配置没有 `network` 段时按 96 / true / true 走。
+
+## 拆墙（`raids.json → break`）
+
+| 字段 | 默认 | 含义 |
+| --- | --- | --- |
+| `enabled` | 缺省段时 false；示例配置为 true | 总开关 |
+| `intervalTicks` | 40 | 每只怪隔多久尝试拆一格（≥5） |
+| `maxPerTick` | 2 | 全局每 tick 最多拆几格，防止几十只怪同 tick 改方块 |
+| `range` | 24 | 离目标核心多近才开始拆（[4, 64]） |
+| `whitelist` | 见下 | 只拆名单里的方块；`#namespace:tag` 走标签，其余按方块 id |
+
+默认白名单：`#minecraft:planks`、`#minecraft:logs`、`#minecraft:wooden_stairs`、`#minecraft:wooden_slabs`、`#minecraft:wooden_fences`、`#minecraft:fence_gates`、`#minecraft:wooden_doors`、`#minecraft:wooden_trapdoors`、`minecraft:glass`、`minecraft:glass_pane`。
+
+- 设计口径：**木墙 / 玻璃会被拆，石墙 / 铁墙 / 核心壳不会被拆**。想加防线材料就往 `whitelist` 里加 id。
+- 只对怪潮刷出来的怪生效，且只朝「离自己最近的核心」方向拆一格；“拆的是路线上的第一格阻挡”。
+
+## 性能日志（MSPT）
+
+怪潮期间每 100 tick（5 秒）打一行：
+
+```
+[IronTide] raid perf mspt=12.4 peak=18.9 raiders=14
+```
+
+- `mspt` = 本窗口平均每 tick 毫秒（自算，不含渲染/GC）；`peak` = 本波最高窗口平均；`raiders` = 本波峰值同屏怪数。
+- ≥ 50ms（低于 20 TPS）时改打 `warn`，句尾带「低于 20 TPS」。
+- 波次结束时结算日志追加 `peakMspt=`，用于比对「怪更多后掉不掉 TPS」。

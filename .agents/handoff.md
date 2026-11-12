@@ -35,3 +35,5 @@
 4. **核心四态**：新增 `CoreStatus`（INCOMPLETE / RUNNING / HALTED / DESTROYED）+ `status()` / `statusText()`；面板第一行改为显示四态（含「运转中 · 燃料不足」「停机（无燃料）」），右键聊天行改为 `T1 · 运转中`。低燃料不算独立态，是 RUNNING 的附加说明——`CoreState` 存档状态机未动，避免影响怪潮/结算判定。
 5. 配置契约文档 `overrides/config/irontide/README.md` 重写（原文还写着「尚未实现」），补 `raids.json` 关键字段表；新测试用例 `文件/测试/怪潮与状态-测试用例.md`（S1~S10）。
 - 构建通过并已同步实例（modmind-local-irontide.jar 169,993 B）。**未实机验证**（用户自测）。老配置向后兼容：缺 `maxAlive`/`chaseRadius` 按 0 / 48 处理，不报错；写错值仍然直接拒绝加载。
+
+**2026-11-12（W2 数值返修：波次变大 + 收尾发光，提交 `ac1b55a`）**：用户要求「一波太少，最少 32 只，依此增加；少于 10 只时每只怪发光」。改动：① `raids.json.waves[].base` 整体抬高为 32/38/44/50/56/62/68/74（原 14→56），并新增顶层 `minWaveSize`（默认 32，`0`=不兜底）：`RaidConfig.effectiveBase()` 用 `max(base, minWaveSize)`，`scaledSize()` 与第 9 天侦察播报都走它，以后改表也不会掉到 32 以下；② 新增 `spawn.glowWhenAliveBelow`（默认 10，`0`=关）：`RaidScheduler.highlightLeftovers()` 在**当前存活来袭怪数 < 阈值**时给每只挂 `MobEffects.GLOWING`（60 tick，靠每秒 tickActive 续），波次结束随实体 discard 消失。两个键都是 optional 解析，老 raids.json 不改也能加载。jar 默认与 `overrides/config/irontide/raids.json` 同步更新，README 字段表与测试用例补 S11~S14。构建通过并已同步实例（modmind-local-irontide.jar 170,645 B），**未实机验证**。

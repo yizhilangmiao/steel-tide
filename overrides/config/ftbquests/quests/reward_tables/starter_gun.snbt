@@ -1,0 +1,19 @@
+{
+	empty_weight: 0.0f
+	hide_tooltip: false
+	id: "7300000000000001"
+	loot_size: 1
+	order_index: 0
+	rewards: [{
+		id: "7300000000000011"
+		item: { count: 1, id: "superbwarfare:glock_17" }
+		type: "item"
+		weight: 1.0f
+	}, {
+		id: "7300000000000012"
+		item: { count: 1, id: "superbwarfare:homemade_shotgun" }
+		type: "item"
+		weight: 1.0f
+	}]
+	use_title: false
+}

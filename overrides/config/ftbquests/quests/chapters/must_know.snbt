@@ -1,0 +1,122 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: "must_know"
+	group: ""
+	icon: {
+		id: "minecraft:bell"
+	}
+	id: "2000000000000006"
+	images: [ ]
+	order_index: 5
+	quest_links: [ ]
+	quests: [
+		{
+			id: "8000000000000001"
+			subtitle: "这一章不讲怎么造东西，只列会直接坑到你的规则。\n每条末尾括号里是能改的配置字段，改完要重启才生效。\n奖励要点右下角的「领取」才进背包。"
+			tasks: [{
+				id: "8100000000000001"
+				type: "checkmark"
+			}]
+			title: "先读这一章"
+			x: 0.0d
+			y: 0.0d
+		},
+		{
+			dependencies: ["8000000000000001"]
+			id: "8000000000000002"
+			subtitle: "周期 5 天：第 4 天夜里播报方位，第 5 天开战。\n一大波 = 3 小波，每小波清空后等 3 分钟才开下一小波。\n小波没清完不会刷新的，所以「清场」比「硬扛」重要。\n（raids.json → spawn.waveGapTicks / cycleDays）"
+			tasks: [{
+				id: "8100000000000002"
+				type: "checkmark"
+			}]
+			title: "五天一大波，一波三小波"
+			x: 0.0d
+			y: 1.5d
+		},
+		{
+			dependencies: ["8000000000000002"]
+			id: "8000000000000003"
+			subtitle: "核心受击是全局脉冲：每 100 tick（5 秒）统一结一次，不是每只怪各打各的。\n每只贴核怪每次脉冲 10 点，全场每次最多 80 点。\n3 只围攻约 14 分钟打空 5000；8 只以上反而只要 5 分钟——怪越多越亏。\n所以别让它们堆成一片，也别以为掉血慢就是没打。\n（raids.json → attack）"
+			tasks: [{
+				id: "8100000000000003"
+				type: "checkmark"
+			}]
+			title: "主核有血，而且 5 秒才结算一次"
+			x: 0.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["8000000000000003"]
+			id: "8000000000000004"
+			subtitle: "以核心为中心：r≤26 的方块它们拆不掉，26 格是一道看不见的墙。\n那墙只拦怪：玩家、牛羊、子弹随便穿；怪永远停在 26.35 外。\n27–40 是防御区，怪会按硬度凿墙（木板 8 下、石头 6 下、铁块 20 下、黑曜石 120 下）。\n它们还会把 2–4 深、3 宽以内的沟用圆石填平。\n围栏和细柱子挡不住，厚墙才挡得住。\n（raids.json → defense / break / fill）"
+			tasks: [{
+				id: "8100000000000004"
+				type: "checkmark"
+			}]
+			title: "26 以内是你的，27 以外是它的"
+			x: 0.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["8000000000000004"]
+			id: "8000000000000005"
+			subtitle: "96 格内成型的核心会自动并进同一张网，一起承伤，也能接替被打爆的主核。\n但建在主核 26 格以内的前哨，开战会提示「位于保护区内，本波无法攻击」，也不给任何加成。\n想让它真分伤：建在 44–60 格，并且和来袭方向同向（角差 ≤45°）。\n（core.json → network，raids.json → outpost）"
+			tasks: [{
+				id: "8100000000000005"
+				type: "checkmark"
+			}]
+			title: "前哨别贴着主核建"
+			x: -1.5d
+			y: 6.0d
+		},
+		{
+			dependencies: ["8000000000000004"]
+			id: "8000000000000006"
+			subtitle: "血量上限从 500 提到了 5000，但这个值存在方块实体里。\n旧存档里的主核，下次结构校验会按当时的血量比例继承新上限（日志打 health cap updated），不会卡在 500/500。\n想回满血就拆掉核心重新成型，或者用维修套件一点点修。\n（core.json → health.base）"
+			tasks: [{
+				id: "8100000000000006"
+				type: "checkmark"
+			}]
+			title: "旧存档的血量会自己跟上"
+			x: 1.5d
+			y: 6.0d
+		},
+		{
+			dependencies: ["8000000000000005"]
+			id: "8000000000000007"
+			subtitle: "TaCZ 的弹药统一是同一个物品，弹种靠自定义数据 AmmoId 区分。\n箱子里长得一样、其实不能混用，先看 tooltip 里的口径再装。\n本包的弹药配方走 Create 的混合/序列装配，别拿原版工作台硬凑。"
+			tasks: [{
+				id: "8100000000000007"
+				type: "checkmark"
+			}]
+			title: "枪和弹：弹药是带数据的"
+			x: -1.5d
+			y: 7.5d
+		},
+		{
+			dependencies: ["8000000000000006"]
+			id: "8000000000000008"
+			subtitle: "同屏存活上限 16 只，到顶就暂停刷怪，清一批再刷下一批。\n别在核心边上堆漏斗、传送带、掉落物——那 16 只已经在跑寻路了。\n掉帧先看日志里的 raid perf mspt，每 5 秒一行。\n（raids.json → spawn.maxAlive / chaseRadius）"
+			tasks: [{
+				id: "8100000000000008"
+				type: "checkmark"
+			}]
+			title: "同屏最多 16 只"
+			x: 1.5d
+			y: 7.5d
+		},
+		{
+			dependencies: ["8000000000000007", "8000000000000008"]
+			id: "8000000000000009"
+			subtitle: "两份必须一起改：config_defaults/irontide（模组内置默认）和 overrides/config/irontide（整合包实际生效）。\n只改一边，下次生成会把另一边盖回去。\n配置启动时只读一次：改完要重启，写错值会直接拒绝启动，不会悄悄退回默认。"
+			tasks: [{
+				id: "8100000000000009"
+				type: "checkmark"
+			}]
+			title: "改配置只改这两份"
+			x: 0.0d
+			y: 9.0d
+		}
+	]
+}

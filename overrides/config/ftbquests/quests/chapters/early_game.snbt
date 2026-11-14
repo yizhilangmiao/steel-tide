@@ -1,0 +1,214 @@
+{
+	default_hide_dependency_lines: false
+	default_quest_shape: ""
+	filename: "early_game"
+	group: ""
+	icon: {
+		id: "minecraft:iron_pickaxe"
+	}
+	id: "2000000000000007"
+	images: [ ]
+	order_index: -1
+	quest_links: [ ]
+	quests: [
+		{
+			id: "7000000000000001"
+			rewards: [{
+				id: "7200000000000101"
+				table_id: 8286623314361712641L
+				table_data: {
+					empty_weight: 0.0f
+					hide_tooltip: false
+					loot_size: 1
+					rewards: [{
+						id: "7200000000000102"
+						item: { count: 1, id: "superbwarfare:glock_17" }
+						type: "item"
+						weight: 1.0f
+					}, {
+						id: "7200000000000103"
+						item: { count: 1, id: "superbwarfare:homemade_shotgun" }
+						type: "item"
+						weight: 1.0f
+					}]
+					use_title: false
+				}
+				type: "choice"
+			}]
+			subtitle: "包里第 5 天就开怪潮，前 4 天全是准备时间。\n目标：16 块铁、16 个煤（木炭也算），再加一组木头。\n找不到矿就顺着山洞往下，别在露天过夜——晚上会刷怪。\n第一次进服会发钻石背包、64 个面包和一本《军械手册》，看不懂枪就看它。\n本章第一个任务给一把入门枪：手枪还是霰弹枪，二选一，选完才能领。\n任务书右下角的奖励要点「领取」才进背包，不领不会自动给。"
+			tasks: [{
+				id: "7100000000000001"
+				type: "checkmark"
+			}]
+			title: "第 0 天：先别盖房，先下矿"
+			x: 0.0d
+			y: 0.0d
+		},
+		{
+			dependencies: ["7000000000000001"]
+			id: "7000000000000002"
+			rewards: [{
+				id: "7200000000000021"
+				item: { count: 1, id: "minecraft:iron_helmet" }
+				type: "item"
+			}, {
+				id: "7200000000000022"
+				item: { count: 1, id: "minecraft:iron_chestplate" }
+				type: "item"
+			}, {
+				id: "7200000000000023"
+				item: { count: 1, id: "minecraft:iron_leggings" }
+				type: "item"
+			}, {
+				id: "7200000000000024"
+				item: { count: 1, id: "minecraft:iron_boots" }
+				type: "item"
+			}, {
+				id: "7200000000000025"
+				item: { count: 1, id: "minecraft:iron_sword" }
+				type: "item"
+			}, {
+				id: "7200000000000026"
+				item: { count: 1, id: "minecraft:iron_pickaxe" }
+				type: "item"
+			}]
+			subtitle: "这一套铁甲是白送的，领了直接穿，别舍不得。\n铁剑打怪、铁镐挖矿，两把都留着——本包的怪比原版硬。\n穿齐之后你才敢往地下走。"
+			tasks: [{
+				id: "7100000000000002"
+				type: "checkmark"
+			}]
+			title: "领开荒装备"
+			x: 0.0d
+			y: 1.5d
+		},
+		{
+			dependencies: ["7000000000000002"]
+			id: "7000000000000003"
+			subtitle: "核心吃任何熔炉燃料（煤、木炭、煤块都行），煤最省事。\n没有煤就烧木炭：一块原木进熔炉 = 一个木炭。\n先攒 16 个，够应急油箱跑一阵；后面靠燃料模块扩容。"
+			tasks: [{
+				consume_items: false
+				id: "7100000000000003"
+				item: { count: 16, id: "minecraft:coal" }
+				type: "item"
+			}]
+			title: "煤：核心的饭"
+			x: 0.0d
+			y: 3.0d
+		},
+		{
+			dependencies: ["7000000000000003"]
+			id: "7000000000000004"
+			rewards: [{
+				id: "7200000000000111"
+				item: { count: 32, id: "create:andesite_casing" }
+				type: "item"
+			}, {
+				id: "7200000000000112"
+				item: { count: 64, id: "create:shaft" }
+				type: "item"
+			}, {
+				id: "7200000000000113"
+				item: { count: 32, id: "create:andesite_alloy" }
+				type: "item"
+			}]
+			subtitle: "工作台合成，材料：安山岩 ×2、安山机壳 ×2、十字齿轮箱 ×1。\n摆法（3×3，从上到下）：\n· 上排中间放安山岩\n· 中排：安山机壳 · 十字齿轮箱 · 安山机壳\n· 下排中间放安山岩\n放下后右键能看到缺口，用安山机壳按 3×3×3 围起来；中层正对核心那一格就是十字齿轮箱，搭满自动成型。"
+			tasks: [{
+				consume_items: false
+				id: "7100000000000004"
+				item: { count: 1, id: "irontide:andesite_core" }
+				type: "item"
+			}]
+			title: "安山核心"
+			x: 0.0d
+			y: 4.5d
+		},
+		{
+			dependencies: ["7000000000000004"]
+			id: "7000000000000005"
+			subtitle: "安山壳 5000 血、黄铜 8000、铜 7250、钢 11000，混搭按格数加权平均。\n铜要求核心到 T2、钢要求 T3，档位不够会直接判结构不完整。\n成型后外壳会整体换成对应机壳，别手动再拆——拆了要重新成型。"
+			tasks: [{
+				id: "7100000000000005"
+				type: "checkmark"
+			}]
+			title: "成型：外壳决定血量"
+			x: -1.5d
+			y: 6.0d
+		},
+		{
+			dependencies: ["7000000000000004"]
+			id: "7000000000000006"
+			subtitle: "燃料模块 I：4 个残骸 + 3 个木炭 → 容量 60000，每秒烧 5。\n装甲模块 I：4 个残骸 + 3 个铁锭 → 按比例减伤，和外壳护甲叠加。\n残骸只能靠怪潮结算拿，第一波之前不够就先用应急油箱顶。"
+			tasks: [{
+				consume_items: false
+				id: "7100000000000006"
+				item: { count: 1, id: "irontide:fuel_module_1" }
+				type: "item"
+			}]
+			title: "模块：先上燃料和装甲"
+			x: 1.5d
+			y: 6.0d
+		},
+		{
+			dependencies: ["7000000000000005", "7000000000000006"]
+			id: "7000000000000007"
+			rewards: [{
+				id: "7200000000000071"
+				item: { count: 16, id: "minecraft:barrel" }
+				type: "item"
+			}, {
+				id: "7200000000000072"
+				item: { count: 1, id: "toms_storage:crafting_terminal" }
+				type: "item"
+			}]
+			subtitle: "16 个木桶够放一整波战利品，靠墙摆一排，别挡住核心正面。\n合成终端要放在箱子或库存接口上才有网络库存，否则只是个自带合成台。\n核心正面那一格留空，开战时你要站那儿补燃料。"
+			tasks: [{
+				id: "7100000000000007"
+				type: "checkmark"
+			}]
+			title: "仓库：木桶 + 合成终端"
+			x: 0.0d
+			y: 7.5d
+		},
+		{
+			dependencies: ["7000000000000007"]
+			id: "7000000000000008"
+			subtitle: "第 4 天夜里会播报来袭方位，第一个大波固定从西边来。\n第 5 天开战：一大波 3 小波，每小波清完等 3 分钟再刷下一波。\n26 格内它们进不来，27–40 是它们拆墙填沟的地方——防线修在 30 格附近最省料。"
+			tasks: [{
+				id: "7100000000000008"
+				type: "checkmark"
+			}]
+			title: "第 5 天：第一波"
+			x: 0.0d
+			y: 9.0d
+		},
+		{
+			dependencies: ["7000000000000008"]
+			id: "7000000000000009"
+			rewards: [{
+				id: "7200000000000091"
+				item: { count: 1, id: "sophisticatedbackpacks:diamond_backpack" }
+				type: "item"
+			}, {
+				id: "7200000000000092"
+				item: { count: 32, id: "minecraft:iron_ingot" }
+				type: "item"
+			}, {
+				id: "7200000000000093"
+				item: { count: 64, id: "minecraft:copper_ingot" }
+				type: "item"
+			}, {
+				id: "7200000000000094"
+				item: { count: 64, id: "minecraft:gunpowder" }
+				type: "item"
+			}]
+			subtitle: "第一波打完就能领。\n后期背包比箱子重要：战利品、弹药、模块都往里塞。\n下一章「注意事项」讲的全是会坑到你的规则，建议打完第一波就读。\n本章通关奖励：32 铁锭、64 铜锭、64 火药。"
+			tasks: [{
+				id: "7100000000000009"
+				type: "checkmark"
+			}]
+			title: "战后：钻石背包"
+			x: 0.0d
+			y: 10.5d
+		}
+	]
+}

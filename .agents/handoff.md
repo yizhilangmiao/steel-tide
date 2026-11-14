@@ -1,3 +1,61 @@
+# 交接 · 2026-11-14（第 0 天任务补奖励表引用）
+进度：任务书报「缺少奖励表引用」。根因不是选项没写，而是 `choice` 奖励只有内联 `table_data`（`RandomReward.readData` 会临时建 id=-1 内部表，所以能领但 EDIT 界面报警）。已新建 `overrides/config/ftbquests/quests/reward_tables/starter_gun.snbt`（手枪/土制霰弹 50/50），并在 `chapters/early_game.snbt` 该奖励后写 `table_id: 8286623314361712641L`；**关键坑**：奖励表文件里的 `id` 是十六进制码串（`getCodeString` = %016X，加载走 base16 解析），而 `table_id` 是十进制 long（`putLong`），所以 `id: "7300000000000001"` 必须写成十进制 `8286623314361712641L`，直接写 7300000000000001L 会静默落回内联表。内联 `table_data` 留作兜底（表解析不到时才用，重新保存后会被 FTB 丢弃）。
+下一步：用户进游戏看任务书 → 前期教程 → 第 0 天任务的奖励按钮，应弹出 GLOCK-17 / 土制霰弹二选一；EDIT 界面不应再提示缺表。
+卡点：托管构建通过（76 mod + 49 override 已同步实例）；未实机跑（用户自测）。`脚本/check-ftb-quests.ps1` 只扫 chapters，不覆盖 reward_tables（扩展它的尝试被安全策略拒过一次，未重试）。
+
+# 交接 · 2026-11-14（撤回弹药统一：狙击弹恢复）
+进度：玩家反馈狙击并入步枪弹后沉浸感下降，D11 全部回退——删掉 `overrides/kubejs/data/superbwarfare/sbw/guns/` 下 7 个覆盖文件（awm/hunting_rifle/k_98/mosin_nagant/m_98b/sentinel/svd），移除 `irontide_recipes.js` 里的 `event.remove(sniper_ammo)`，狙击枪回到 `@SniperAmmo`；帕秋莉 5 页（types/make/snipers/ballistics/pitfalls/chain）与 `arms_manual.snbt` 5 处文案恢复五类，顺手把 NTW-20 从「狙击弹」改归「重型弹」（它实际吃 @HeavyAmmo）。Create 压床批量配方（手枪 128 / 步枪 96 / 霰弹 48）保留。
+下一步：用户进游戏确认 AWM 又能装狙击弹、狙击弹配方重新出现在 JEI。
+卡点：无；弹药合并的技术路径已验证可用（见 `文件/设计/弹药盘点.md` 第 6/8 节），以后再合直接复用。
+
+# 交接 · 2026-11-13（W7-D11 弹药统一 5 类 → 3 类，已撤回）
+进度：7 把狙击枪（`awm`/`hunting_rifle`/`k_98`/`mosin_nagant`/`m_98b`/`sentinel`/`svd`）的 `data/superbwarfare/sbw/guns/<枪>.json` 已整份拷到 `overrides/kubejs/data/superbwarfare/sbw/guns/`，只把 `AmmoType` 从 `@SniperAmmo` 改成 `@RifleAmmo`；`irontide_recipes.js` 末尾 `event.remove({output:'superbwarfare:sniper_ammo'})` 下线旧弹配方（物品保留）；帕秋莉 3 页 + 任务书 `arms_manual.snbt` 5 处「五种弹药/狙击弹」文案同步改三类。`ntw_20`/`m_2_hb` 保持 `@HeavyAmmo`（留给载具级）。依据：`CustomData.class` 走 `DataLoader.createData("sbw/guns", …)`，`KubeJS.class` 明确把 `kubejs/data/` 注册为 datapack，同名路径覆盖成立。托管构建通过：77 Mod + 55 override，7 个覆盖文件已在实例内。
+下一步：用户进游戏拿 AWM 验是否吃步枪弹（重点）；顺带看狙击弹配方是否已从 JEI 消失、Create 批量配方是否注册。
+卡点：仍未实机跑（用户自测习惯）；若实测发现 SBW 不重读覆盖，回退方式是删掉这 7 个文件并把文案改回五类。
+
+
+# 交接 · 2026-11-13（W7 领地缩放 / 卡怪重刷 / 地图与优化 mod）
+进度：A1–A4、B5–B7、C8、D9/D10/D12、E14–E18 已落地。核心：新增 `raid/TerritoryScale.java`（T1=16/T2=19/T3=23/T4=26 带宽固定的半径表，`ring` 在 `RaidScheduler` 统一刷新，升级时把怪钳到新墙外）；`ZoneFlattener` 成型平整（64 列/tick，只削自然方块）；`trackStuckRaiders` 60 秒无进展重刷（最多 3 次）；`/irontide flatten|flatten auto|here|back`；`SteamHudPayload` 12 字段 + 顶部倒计时/进度条/闪红；`core_base_3.json` 传动箱移到顶层（中层留一台竖直桥接，因为核心只能水平出轴）。新增 mod：Lithium 0.15.4、Palladium 1.1.8、Toadlib 1.3.2、Xaero 小地图 26.6.0、世界地图 1.47.0（sha512 已核，pack/lock 已登记）。`chaseRadius` 48→72。托管构建通过：77 Mod，irontide jar 233 KB。文档 `文件/设计/W7-领地缩放与性能.md`。
+下一步：用户进游戏验收——重点看 T1/T4 半径、升级后怪是否被关进保护区、掉坑怪 60 秒是否重刷、贴墙怪是否被误判、Xaero 地图与 `/irontide back`、Create 自动化配方是否注册成功（KubeJS 日志）。
+卡点：Lithium/Palladium 动实体 AI，**未实机验证「怪仍绕障碍、到墙仍打墙」**；老存档按旧布局成型的核心会校验失败并还原（需预告 + 备份）；`modpack_apply_plan` 仍报 unresolved（第四次复现），mod 仍是原生下载 + sha512 兜底；本批未新增音频资源，脉冲音效沿用 `BEACON_ACTIVATE`。
+
+# 交接 · 2026-11-13（CSL 皮肤补丁 PCL 崩溃修复）
+进度：用户上传 PCL 崩溃包（crash-2026-11-13_20.53.45-client.txt）定位到 CustomSkinLoader 15.1 在 PCL 实例上把 MC 版本判成 0（`protocol=0, world=0`），`skin-manager.constructor.v1` 打不上直接崩在 `Minecraft.<init>`。根因：CSL 读 `systemClassLoader.getResourceAsStream("version.json")`，PCL 的 `-cp` 里只有不存在的占位 `versions\钢铁潮汐-开发\钢铁潮汐-开发.jar`，原版 `1.21.1.jar`（内含 version.json）不在 classpath；上游 issue #387 同因。已写 `脚本/修复皮肤版本探测.ps1` 生成只含 version.json 的占位 jar（无 class，`-DignoreList` 已排除），并已在本机 `D:\mc\versions\钢铁潮汐-开发` 执行成功（323 B，protocol_version=767 world_version=3955）；用真实 JVM 验证过读取前 NOT FOUND / 读取后 FOUND。排查文档 `文件/诊断/皮肤补丁-PCL版本探测.md`。
+下一步：用户重启客户端验皮肤；朋友用 Modrinth App / Prism / HMCL 不需要处理，用 PCL 需跑同一条脚本。
+卡点：未在游戏内验证（按用户习惯不启客户端）。另：PCL 日志里 13:08 还有一次旧崩溃（`iris$resetPipeline` 进服时），未查。
+
+# 交接 · 2026-11-13（整合包导出 mrpack）
+进度：`modmind_modpack_export` mode=bundled 成功，产物 `.modmind/exports/mod_l61phe-0.1.0-bundled.mrpack`（286,367,423 B ≈ 273 MB，versionId=0.1.0）。归档结构已核：`modrinth.index.json`（formatVersion 1，deps minecraft 1.21.1 / neoforge 21.1.265，`files: []` 全内嵌）+ 67 jar 在 `overrides/mods/` + 4 个客户端 jar 在 `client-overrides/mods/`（CustomSkinLoader、ponderjs、sodium、TravelersTitles）+ 112 项 overrides（ftbquests 8 章、irontide 配置、patchouli 书、kubejs 脚本）+ `overrides/mods/modmind-local-irontide.jar`。
+下一步：发给朋友用 Modrinth App / Prism / PCL2 导入 .mrpack；要联机需另做服务端包（先复查 client-only 分类：ponderjs、TravelersTitles 可能被误判）。
+卡点：导出用的 versionId 是 0.1.0（非项目版本 1.1.3），没有工具可直接设发布元数据；文件名不好看但不影响导入。`modpack_apply_plan` 仍不可用。
+
+# 交接 · 2026-11-13（CustomSkinLoader 万用皮肤补丁）
+进度：CustomSkinLoader 15.1-Universal（Modrinth `idMHQ4n2`/`yyYvYfZI`）已进 `mods/`，sha512/sha1/sha256 与 Modrinth 发布值一致（222,917 B）；`modmind.pack.json`（70 条）与 `modmind.modpack.lock.json`（40 条，side=client）已登记。托管构建通过：72 Mod（71 modpack + 1 本地 irontide），42 override，`.modmind/minecraft/mods/CustomSkinLoader_Universal-15.1.jar` 已确认存在。
+下一步：用户自己重启客户端验证皮肤（首次启动生成 `.minecraft/config/CustomSkinLoader/CustomSkinLoader.json`；游戏内 F12 打开 CSL 设置）。
+卡点：`modpack_apply_plan` 对零依赖 mod 也报 `cannot apply an unresolved modpack plan`（第三次复现），仍走原生下载 + sha512 核验兜底；CSL 是 bootstrap 型 jar（`META-INF/jar-jar/CustomSkinLoader-Common.jar` 内才有 mods.toml），**不要**用 `脚本/patch_datapack_modloader.ps1` 改它。
+
+# 交接 · 2026-11-13（Tom's Storage + 核心配方 + 任务书校验脚本）
+进度：Tom's Simple Storage `toms_storage-1.21-2.4.2.jar`（Modrinth XZNI4Cpy / WQAMoIMC，sha512/sha1 与发布值一致）已进 `mods/`，`modmind.pack.json` 与 `modmind.modpack.lock.json` 已登记；`irontide:andesite_core` 新增工作台配方（安山岩×2 + 安山机壳×2 + 十字齿轮箱×1）；「前期教程」第 4 步改为可合成并给出摆法，删掉白送核心；新增 `脚本/check-ftb-quests.ps1` 校验章节（括号/id 唯一/依赖/命名空间）。托管构建通过：71 Mod（70 modpack），irontide jar 214,829 B，42 override。
+下一步：用户进游戏看任务书渲染 + 试合核心；旧构建残留 `mods/modmind-local-irontide.jar` 已删，`mods/` 与 `pack.json` 现在都是 69 个。
+卡点：`modmind_modpack_write_ftb_quest` 传 snbt 直接抛 TypeError，`modpack_apply_plan` 对带可选依赖的 mod 一律报 unresolved（与 11-12 Mobile Packages 同因），mod 安装仍走原生下载 + sha512 核验兜底。
+# 交接 · 2026-11-13（W6 主核领地分区）
+进度：方形分区（`Territory`，`r≤26` 不可拆 / 空气墙 `26.35` / `27–40` 防御 / `45–60` 刷怪环）、主核有血（`mainCoreInvulnerable=false`，`health.base=5000`）、5 秒全局脉冲（`intervalTicks=100`，单次封顶 80）、硬度拆墙（封顶 120 次）、填沟（`RaidFiller`）、粒子环（`ZoneVisuals`）、5 天一大波 3 小波、前哨保护区过滤、旧存档上限按比例继承；新建 3 个类、重写 `RaidBreaker`/`RaidScheduler` 关键段，两份配置与 README / 设计文档 / 测试用例（S23/S25/S27 改写 + S29~S37）已同步；托管构建通过（`modmind-local-irontide.jar` 214,448 B，70 Mod + 40 override）。
+下一步：用户实机验收 S29~S37（重点 S36 脉冲封顶与 S35 MSPT），通过后再打 tag `m1`。
+卡点：未实机验证（用户自测）；拆墙/填沟在复杂地形下的可读性需实机看观感。
+
+
+
+进度：主核被拆后「主核失守，前哨接替」每秒刷屏——根因是拆方块后 `LOADED` 里残留 `setRemoved()` 的旧 BE，`successorCore` 每次都选中它、`resolveRaidCore()` 在废墟坐标又查不到实体，于是一秒一报。已修：`CoreNetwork.members`/`successorCore`/`pickCore`/`resolveRaidCore` 全部过滤 `isRemoved()`+「世界里的 BE 是否是它本人」；`promoteCore` 播报去重；`AndesiteCoreBlockEntity.pruneLoaded()` 每 5 秒由 `revalidateAll` 清理。托管构建通过并已同步（`modmind-local-irontide.jar` 192,549 B，70 Mod + 40 override）。
+下一步：用户重启客户端后按 `文件\测试\怪潮与状态-测试用例.md` 的 **S28** 验（主核被 `/setblock air` 拆掉 → 只播 1 条）。
+卡点：未实机验证；`invalidate()` 是否在拆方块路径上被调用仍未知，所以改用 `isRemoved()`+同一性校验兼底。
+
+
+# 交接 · 2026-11-12（Mobile Packages 装机）
+进度：Create: Mobile Packages 1.21.1-0.7.8 已装（`.modmind/minecraft/mods/`，sha512 与 Modrinth 一致，70 Mod）；`mods.lock.json` 已重建（error 0 / warn 0，顺带补录 22 个此前未登记的旧 jar，`modmind-local-irontide.jar` 内容变化=此前构建产物）。
+下一步：用户重启客户端自测（PCL 实例 mods 是 junction，无需复制）。
+卡点：ModMind 托管 apply 对本体有**可选**依赖（Create Factory Logistics）的 mod 一律拒绝（两种 plan 都报 `unresolved modpack plan`，属工具侧校验限制）；本轮改走原生下载兜底并核验 sha512，未装 Factory Logistics。
+
+
 # 交接 · 2026-11-12（W3 纠正：主核无血）
 进度：W3 改成「主核不承伤、只打前哨」——只劈前哨、结算按前哨血量比例分档，新开关 `network.mainCoreInvulnerable`（默认 true）；托管构建通过（jar 191,883 B，69 Mod + 40 override）。
 下一步：用户实测 S22~S27（重点 S23 主核一点不掉 / S24 无前哨不给加成）；通过后再打 tag `m1`。

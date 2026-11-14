@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "AWM、M98B、SVD、KAR-98K、莫辛纳甘、NTW-20。\n\n吃狙击弹。远距离一枪一个，但拉栓慢，站定再打。NTW-20 是反器材级，别拿它打人堆。"
+      "text": "AWM、M98B、SVD、KAR-98K、莫辛纳甘、Sentinel、猎枪（hunting_rifle）。\n\n吃狙击弹——钨锭线，一次 16 发，是五类里产量最低的。远距离一枪一个，但拉栓慢，站定再打。\n\nNTW-20 是例外：反器材级，走重型弹，别拿它打人堆。"
     }
   ]
 }

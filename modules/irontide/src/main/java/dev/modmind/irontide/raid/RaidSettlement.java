@@ -21,9 +21,9 @@ import java.util.List;
 /**
  * 战后结算：按前哨剩余血量分档给奖，并把战果播报到聊天栏。
  *
- * <p>W3 前哨：主核默认「无血」——怪潮伤害只打前哨。所以本波表现按前哨总血量比例算：
- * 有前哨 → 前哨当前总血量 ÷ 开战时前哨总血量；没前哨 → 不给加成（主核无损）。
- * 残骸按存活前哨拆份，每份给离那座前哨最近的玩家（128 格内；没人就并回全员）。</p>
+ * <p>W4 领地分区：主核也有血（`mainCoreInvulnerable=false`），所以表现按「网络内所有承伤核心的
+ * 当前总血量 ÷ 开战时的总上限」算；没前哨时主核自己委伤，结算按主核血量比例出档。
+ * 残骸按存活核心拆份，每份给离那座核心最近的玩家（128 格内；没人就并回全员）。</p>
  */
 public final class RaidSettlement {
 
@@ -38,20 +38,20 @@ public final class RaidSettlement {
     }
 
     /**
-     * @param core            结算时的锚点核心（主核），可能已被拆除或停机
-     * @param network         本波的核心网络（主核 + 前哨），可以为空
-     * @param outpostMaxTotal 开战时前哨血量上限总和（主核无血模式下算比例用；0 = 本波没有前哨）
+     * @param core         结算时的锚点核心（主核），可能已被拆除或停机
+     * @param network      本波的核心网络（主核 + 前哨），可以为空
+     * @param coreMaxTotal 开战时网络内所有承伤核心的血量上限总和（含主核）；0 = 无承伤核心
      */
     public static void settle(MinecraftServer server, ServerLevel level, BlockPos pos,
                               AndesiteCoreBlockEntity core, List<AndesiteCoreBlockEntity> network,
-                              int outpostMaxTotal, int wave, int total, int remaining, String reason) {
+                              int coreMaxTotal, int wave, int total, int remaining, String reason) {
         if (server == null) {
             return;
         }
         CoreConfig coreConfig = IronTideData.isLoaded() ? IronTideData.config() : null;
         boolean invulnerable = coreConfig == null || coreConfig.mainCoreInvulnerable();
 
-        // 可承伤集合：主核无血时 = 前哨；否则 = 整张网络（含主核）
+        // 可承伤集合：默认（mainCoreInvulnerable=false）主核也承伤；旧配置切到 true 时 = 只算前哨
         List<AndesiteCoreBlockEntity> damaged = invulnerable
                 ? outposts(network, core) : aliveMembers(network);
         List<AndesiteCoreBlockEntity> survivors = aliveMembers(damaged);
@@ -65,14 +65,18 @@ public final class RaidSettlement {
             for (AndesiteCoreBlockEntity member : survivors) {
                 health += Math.max(0, member.getHealth());
             }
-            max = Math.max(0, outpostMaxTotal);
+            max = Math.max(0, coreMaxTotal);
             ratio = max > 0 ? Math.min(1.0D, (double) health / (double) max) : 1.0D;
             alive = max > 0 ? health > 0 : true;
         } else {
-            alive = core != null && core.getState() == CoreState.ACTIVE && core.getHealth() > 0;
-            health = core != null ? Math.max(0, core.getHealth()) : 0;
-            max = core != null ? core.getHealthMax() : 0;
+            // 主核也有血：按「网络内所有承伤核心的当前总血量 ÷ 开战上限总和」算，除法公式不变
+            health = 0;
+            for (AndesiteCoreBlockEntity member : survivors) {
+                health += Math.max(0, member.getHealth());
+            }
+            max = Math.max(0, coreMaxTotal);
             ratio = max > 0 ? Math.min(1.0D, (double) health / (double) max) : 0.0D;
+            alive = health > 0;
         }
 
         double performance;

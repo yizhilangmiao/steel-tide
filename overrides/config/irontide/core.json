@@ -3,7 +3,7 @@
   "_placeholder": "数值待实测平衡；载入时只校验范围，不自动纠正",
 
   "health": {
-    "base": 500,
+    "base": 5000,
     "minRatioOnUpgrade": 0.0,
     "carryRatioOnUpgrade": true
   },
@@ -63,7 +63,7 @@
     "radius": 96,
     "shareDamage": true,
     "settlementSplit": true,
-    "mainCoreInvulnerable": true
+    "mainCoreInvulnerable": false
   },
 
   "materialSwap": { "enabled": true },

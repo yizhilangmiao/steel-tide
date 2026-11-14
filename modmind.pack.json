@@ -411,6 +411,48 @@
       "sha256": "61816c3b7c9d92c6b44f93dce87ceb0a22827f20285d5d9c4d10d519d734de04",
       "size": 782160,
       "addedAt": "2026-11-08T14:11:01.696Z"
+    },
+    {
+      "fileName": "toms_storage-1.21-2.4.2.jar",
+      "sha256": "a703e28391b914298223a515238c8729007606f2f967a83b65b8d5cb39e0789d",
+      "size": 856803,
+      "addedAt": "2026-11-13T03:56:30.141Z"
+    },
+    {
+      "fileName": "CustomSkinLoader_Universal-15.1.jar",
+      "sha256": "c8769a38b3cc1da2a7b2f5827d1a53a24cd1ef6d0784b1eb545569f5882a2ffb",
+      "size": 222917,
+      "addedAt": "2026-11-13T12:05:31.322Z"
+    },
+    {
+      "fileName": "lithium-neoforge-0.15.4+mc1.21.1.jar",
+      "sha256": "488f33216030c1cb0baa33e59de3d657d08d5795a6c2080c8c8bbbc133fc8757",
+      "size": 774220,
+      "addedAt": "2026-11-13T15:43:15.238Z"
+    },
+    {
+      "fileName": "Palladium-1.1.8-1.21-1.21.1.jar",
+      "sha256": "70083d3eaacec032a9ff066474e6df1e81d3e77125fa59f211252dcccec3997e",
+      "size": 84550,
+      "addedAt": "2026-11-13T15:43:15.238Z"
+    },
+    {
+      "fileName": "Toadlib-1.3.2-1.21-1.21.1.jar",
+      "sha256": "117fb312b170b5b38f1cd24ca51630737a9846412d3d14e69c2381b7c68b22dd",
+      "size": 472577,
+      "addedAt": "2026-11-13T15:43:15.238Z"
+    },
+    {
+      "fileName": "xaerominimap-neoforge-1.21.1-26.6.0.jar",
+      "sha256": "d3398221b2262abfe2d394b588122e5b3fd2e4d8c4bf66a5fd357352fcf51b2e",
+      "size": 2186351,
+      "addedAt": "2026-11-13T15:43:15.238Z"
+    },
+    {
+      "fileName": "xaeroworldmap-neoforge-1.21.1-1.47.0.jar",
+      "sha256": "6a42b6f01bd96b496e5fcc07d4541bad1a699d9ec8ad58ad40d5dcfe23a7d4c7",
+      "size": 1427078,
+      "addedAt": "2026-11-13T15:43:15.238Z"
     }
   ],
   "modules": [

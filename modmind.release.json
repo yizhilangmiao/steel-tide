@@ -1,0 +1,13 @@
+{
+  "version": "0.1.1",
+  "displayName": "钢铁潮汐 0.1.1",
+  "summary": "",
+  "changelog": "",
+  "autoBump": true,
+  "bumpMode": "patch",
+  "modpackExportMode": "bundled",
+  "channel": "release",
+  "modrinthProjectId": "",
+  "curseForgeProjectId": "",
+  "githubRepository": ""
+}

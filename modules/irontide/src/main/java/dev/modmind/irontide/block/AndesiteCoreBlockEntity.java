@@ -12,6 +12,8 @@ import dev.modmind.irontide.item.CoreModuleItem;
 import dev.modmind.irontide.multiblock.MultiblockDefinition;
 import dev.modmind.irontide.multiblock.StructureCheckResult;
 import dev.modmind.irontide.multiblock.StructureValidator;
+import dev.modmind.irontide.raid.TerritoryScale;
+import dev.modmind.irontide.raid.ZoneFlattener;
 import dev.modmind.irontide.util.BlockNames;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -144,6 +146,15 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
 
     public static Set<AndesiteCoreBlockEntity> loaded() {
         return LOADED;
+    }
+
+    /** 清掉世界里已经不存在的旧实例（拆方块后 setRemoved 的 BE 不该继续影响网络与选核）。 */
+    public static int pruneLoaded() {
+        int before = LOADED.size();
+        LOADED.removeIf(core -> core.isRemoved()
+                || core.getLevel() == null
+                || core.getLevel().getBlockEntity(core.getBlockPos()) != core);
+        return before - LOADED.size();
     }
 
     public static void clearLoaded() {
@@ -634,12 +645,22 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
                         definition.id(), worldPosition, result.layoutLabel(), health, healthMax,
                         format(result.healthMul()), format(result.armor()),
                         result.shellCells(), result.casingSummary());
-            } else if (healthMax <= 0) {
-                int max = (int) Math.round(config.healthBase() * result.healthMul());
-                structureHealthMax = max;
-                healthMax = baseHealthFor(max, getArmorBonusHealth());
-                health = healthMax;
-                setChanged();
+            } else {
+                // 配置 health.base 改了（500 → 5000）：旧存档的上限存在 BE NBT 里，不会自动跟上。
+                // 这里按「旧比例 × 新上限」继承一次，玩家不必拆了重搭。
+                int expected = (int) Math.round(config.healthBase() * result.healthMul());
+                if (expected > 0 && (healthMax <= 0 || expected != structureHealthMax)) {
+                    int newMax = baseHealthFor(expected, getArmorBonusHealth());
+                    double ratio = healthMax > 0 ? (double) health / healthMax : 1.0D;
+                    structureHealthMax = expected;
+                    healthMax = newMax;
+                    health = Math.max(1, Math.min(newMax, (int) Math.round(newMax * ratio)));
+                    setChanged();
+                    ModMindEntry.LOGGER.info(
+                            "[IronTide] {} at {} health cap updated: {}/{} (base={} healthMul={})",
+                            definition.id(), worldPosition, health, healthMax,
+                            formatWhole(config.healthBase()), format(result.healthMul()));
+                }
             }
         } else {
             // 先启动还原，再把状态置为 INCOMPLETE；还原队列在 serverTick 分批执行。
@@ -654,6 +675,9 @@ public class AndesiteCoreBlockEntity extends GeneratingKineticBlockEntity {
             applyExitDirection(result.layoutIndex());
             if (activatedNow) {
                 formStructure(serverLevel, definition, result);
+                // 成型那一刻把保护区内地形削平一次：只削自然方块，建筑/容器/带 BlockEntity 的列整列跳过
+                int flattenRadius = TerritoryScale.of(tierIndex(), IronTideData.raidConfig()).protectedRadius();
+                ZoneFlattener.startAuto(serverLevel, worldPosition, flattenRadius);
             }
         }
         updatePowerState(false);

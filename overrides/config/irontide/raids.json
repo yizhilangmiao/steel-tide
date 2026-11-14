@@ -1,53 +1,74 @@
 {
-  "cycleDays": 10,
-  "warnDay": 8,
-  "scoutDay": 9,
-  "attackDay": 10,
+  "cycleDays": 5,
+  "warnDay": 4,
+  "scoutDay": 3,
+  "attackDay": 5,
   "headMulPerPlayer": 0.35,
   "gearMulMax": 0.25,
   "minWaveSize": 32,
   "spawn": {
-    "radiusMin": 26,
-    "radiusMax": 40,
+    "radiusMin": 45,
+    "radiusMax": 60,
     "perBurst": 2,
     "intervalTicks": 20,
     "maxAlive": 16,
-    "chaseRadius": 48,
+    "chaseRadius": 72,
+    "stuckTimeoutTicks": 1200,
+    "stuckMaxRespawns": 3,
     "glowWhenAliveBelow": 10,
     "arcDegrees": 60,
-    "airHeight": 18
+    "waveGapTicks": 3600,
+    "airHeight": 18,
+    "early": { "singleSideBigWaves": 3, "firstBigWaveSide": "west" }
   },
   "safeZone": {
-    "enabled": true,
+    "enabled": false,
     "radius": 25,
     "halfHeight": 25,
-    "lightLevel": 7,
-    "lightUp": true,
-    "beacons": 4,
-    "particleIntervalTicks": 20
+    "lightLevel": 0,
+    "lightUp": false,
+    "beacons": 0,
+    "particleIntervalTicks": 20,
+    "shape": "square",
+    "protectBlocks": true,
+    "green": "#3CFF6E",
+    "visualRange": 64,
+    "airWall": true
+  },
+  "defense": {
+    "protectedRadius": 26,
+    "defenseRadius": 40,
+    "bufferRadius": 44,
+    "wallLimit": 26.35,
+    "denyEntities": []
+  },
+  "outpost": {
+    "minRadius": 44,
+    "maxRadius": 60,
+    "sameSideDegrees": 45,
+    "spawnRadius": 8
   },
   "attack": {
     "range": 3.5,
-    "damagePerSecond": 6,
-    "dpsCap": 0
+    "damagePerSecond": 2,
+    "dpsCap": 16,
+    "intervalTicks": 100
   },
   "break": {
     "enabled": true,
-    "intervalTicks": 40,
-    "maxPerTick": 2,
-    "range": 24,
-    "whitelist": [
-      "#minecraft:planks",
-      "#minecraft:logs",
-      "#minecraft:wooden_stairs",
-      "#minecraft:wooden_slabs",
-      "#minecraft:wooden_fences",
-      "#minecraft:fence_gates",
-      "#minecraft:wooden_doors",
-      "#minecraft:wooden_trapdoors",
-      "minecraft:glass",
-      "minecraft:glass_pane"
-    ]
+    "intervalTicks": 20,
+    "maxPerTick": 4,
+    "range": 40,
+    "maxProgress": 120
+  },
+  "fill": {
+    "enabled": true,
+    "block": "minecraft:cobblestone",
+    "perRaiderPerWave": 8,
+    "globalPerWave": 128,
+    "perTick": 1,
+    "maxDepth": 4,
+    "maxWidth": 3
   },
   "groundRaiders": [
     "minecraft:zombie",

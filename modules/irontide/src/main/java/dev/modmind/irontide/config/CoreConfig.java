@@ -38,7 +38,7 @@ public record CoreConfig(
         boolean shareDamage,
         /** 结算分摊：残骸按存活核心数拆份，每份给离该核心最近的玩家。 */
         boolean settlementSplit,
-        /** 主核无血：怪潮伤害只打前哨，主核本身不掉血（关掉则回到多核均摊）。 */
+        /** 主核是否无血：{@code true} 时怪潮只打前哨；{@code false}（新默认）时主核与网络内核心一起承伤。 */
         boolean mainCoreInvulnerable,
         List<TierSpec> tiers,
         JsonObject stress,
@@ -276,7 +276,7 @@ public record CoreConfig(
                 || JsonSupport.bool(network, "shareDamage", "network.shareDamage");
         boolean settlementSplit = !network.has("settlementSplit")
                 || JsonSupport.bool(network, "settlementSplit", "network.settlementSplit");
-        // 主核无血：默认开；老配置没这一段时跟新行为一致（只打前哨）
+        // 主核无血：缺键时按 true（保持老配置行为）；新 core.json 显式写 false（主核有血）
         boolean mainCoreInvulnerable = !network.has("mainCoreInvulnerable")
                 || JsonSupport.bool(network, "mainCoreInvulnerable", "network.mainCoreInvulnerable");
         if (networkRadius < 8 || networkRadius > 256) {

@@ -43,6 +43,8 @@ public final class SafeZone {
     private static int lightLevel;
     private static int beaconCount;
     private static int particleIntervalTicks;
+    /** true = 旧行为（带 halfHeight 的立方体）；false = 方形分区，y 不参与判定。 */
+    private static boolean cubeShape;
 
     private static int particleCooldown;
     private static boolean lightPending;
@@ -55,14 +57,16 @@ public final class SafeZone {
         return active;
     }
 
-    /** 水平半宽与竖直半高都按立方体判定。 */
+    /** 水平半宽按方形（切比雪夫）判定；{@code cubeShape} 时才额外看 halfHeight。 */
     public static boolean contains(int x, int y, int z) {
         if (!active) {
             return false;
         }
-        return Math.abs(x - centerX) <= radius
-                && Math.abs(z - centerZ) <= radius
-                && Math.abs(y - centerY) <= halfHeight;
+        boolean inside = Math.abs(x - centerX) <= radius && Math.abs(z - centerZ) <= radius;
+        if (!cubeShape) {
+            return inside;
+        }
+        return inside && Math.abs(y - centerY) <= halfHeight;
     }
 
     public static boolean contains(BlockPos pos) {
@@ -71,6 +75,11 @@ public final class SafeZone {
 
     public static void activate(ServerLevel level, BlockPos center, int zoneRadius, int zoneHalfHeight,
                                 int zoneLightLevel, int beacons, int intervalTicks) {
+        activate(level, center, zoneRadius, zoneHalfHeight, zoneLightLevel, beacons, intervalTicks, "square");
+    }
+
+    public static void activate(ServerLevel level, BlockPos center, int zoneRadius, int zoneHalfHeight,
+                                int zoneLightLevel, int beacons, int intervalTicks, String shape) {
         deactivate(level);
 
         centerX = center.getX();
@@ -81,6 +90,7 @@ public final class SafeZone {
         lightLevel = Math.max(0, Math.min(15, zoneLightLevel));
         beaconCount = Math.max(0, Math.min(4, beacons));
         particleIntervalTicks = Math.max(1, intervalTicks);
+        cubeShape = "cube".equalsIgnoreCase(shape);
         particleCooldown = particleIntervalTicks;
         active = true;
         lightPending = lightLevel > 0;

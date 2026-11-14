@@ -141,7 +141,7 @@
           "kind": "required"
         }
       ],
-      "publishedAt": "2026-06-22T22:26:12.060170Z",
+      "publishedAt": "2026-06-22T22:26:12.06017Z",
       "aliases": []
     },
     {
@@ -358,7 +358,7 @@
       "sources": [
         "https://edge.forgecdn.net/files/9415/760/ParCool-1.21.1-4.0.2.0.jar"
       ],
-      "installedAt": "2026-11-11T15:27:35.080Z",
+      "installedAt": "2026-11-11T15:27:35.08Z",
       "dependencies": [
         {
           "kind": "optional",
@@ -622,7 +622,7 @@
       "sources": [
         "https://cdn.modrinth.com/data/SzzJttH8/versions/O2Pfsh6w/tacz-neoforge-1.21.1-1.2.0.jar"
       ],
-      "installedAt": "2026-11-07T09:14:15.730Z",
+      "installedAt": "2026-11-07T09:14:15.73Z",
       "aliases": []
     },
     {
@@ -690,6 +690,139 @@
         "https://cdn.modrinth.com/data/Ua7DFN59/versions/2prKITKh/YungsApi-1.21.1-NeoForge-5.1.9.jar"
       ],
       "installedAt": "2026-11-11T15:29:33.225Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "XZNI4Cpy",
+      "versionId": "WQAMoIMC",
+      "versionName": "1.21-2.4.2",
+      "fileName": "toms_storage-1.21-2.4.2.jar",
+      "sha256": "a703e28391b914298223a515238c8729007606f2f967a83b65b8d5cb39e0789d",
+      "size": 856803,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/XZNI4Cpy/versions/WQAMoIMC/toms_storage-1.21-2.4.2.jar"
+      ],
+      "dependencies": [
+        {
+          "kind": "optional",
+          "projectId": "nfn13YXA",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "u6dRKJwZ",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "hMlaZH8f",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "fRiHVvU7",
+          "provider": "modrinth"
+        },
+        {
+          "kind": "optional",
+          "projectId": "tagwiZkJ",
+          "provider": "modrinth"
+        }
+      ],
+      "installedAt": "2026-11-13T03:56:39.335Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "idMHQ4n2",
+      "versionId": "yyYvYfZI",
+      "versionName": "15.1-Universal",
+      "fileName": "CustomSkinLoader_Universal-15.1.jar",
+      "sha256": "c8769a38b3cc1da2a7b2f5827d1a53a24cd1ef6d0784b1eb545569f5882a2ffb",
+      "size": 222917,
+      "side": "client",
+      "sources": [
+        "https://cdn.modrinth.com/data/idMHQ4n2/versions/yyYvYfZI/CustomSkinLoader_Universal-15.1.jar"
+      ],
+      "dependencies": [],
+      "installedAt": "2026-11-13T12:05:31.322Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "gvQqBUqZ",
+      "versionId": "DDUrRVCA",
+      "versionName": "mc1.21.1-0.15.4-neoforge",
+      "fileName": "lithium-neoforge-0.15.4+mc1.21.1.jar",
+      "sha256": "488f33216030c1cb0baa33e59de3d657d08d5795a6c2080c8c8bbbc133fc8757",
+      "size": 774220,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/gvQqBUqZ/versions/DDUrRVCA/lithium-neoforge-0.15.4%2Bmc1.21.1.jar"
+      ],
+      "installedAt": "2026-11-13T15:43:15.238Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "JNRr4jji",
+      "versionId": "GCEHKiTz",
+      "versionName": "1.1.8-1.21-1.21.1-neo",
+      "fileName": "Palladium-1.1.8-1.21-1.21.1.jar",
+      "sha256": "70083d3eaacec032a9ff066474e6df1e81d3e77125fa59f211252dcccec3997e",
+      "size": 84550,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/JNRr4jji/versions/GCEHKiTz/Palladium-1.1.8-1.21-1.21.1.jar"
+      ],
+      "installedAt": "2026-11-13T15:43:15.238Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "CYQ7VYrM",
+      "versionId": "Ljldqqcx",
+      "versionName": "1.3.2-1.21-1.21.1-neo",
+      "fileName": "Toadlib-1.3.2-1.21-1.21.1.jar",
+      "sha256": "117fb312b170b5b38f1cd24ca51630737a9846412d3d14e69c2381b7c68b22dd",
+      "size": 472577,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/CYQ7VYrM/versions/Ljldqqcx/Toadlib-1.3.2-1.21-1.21.1.jar"
+      ],
+      "installedAt": "2026-11-13T15:43:15.238Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "1bokaNcj",
+      "versionId": "irjR7dHk",
+      "versionName": "neoforge-1.21.1-26.6.0",
+      "fileName": "xaerominimap-neoforge-1.21.1-26.6.0.jar",
+      "sha256": "d3398221b2262abfe2d394b588122e5b3fd2e4d8c4bf66a5fd357352fcf51b2e",
+      "size": 2186351,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/1bokaNcj/versions/irjR7dHk/xaerominimap-neoforge-1.21.1-26.6.0.jar"
+      ],
+      "installedAt": "2026-11-13T15:43:15.238Z",
+      "aliases": []
+    },
+    {
+      "provider": "modrinth",
+      "projectId": "NcUtCpym",
+      "versionId": "SnQ4SoDe",
+      "versionName": "neoforge-1.21.1-1.47.0",
+      "fileName": "xaeroworldmap-neoforge-1.21.1-1.47.0.jar",
+      "sha256": "6a42b6f01bd96b496e5fcc07d4541bad1a699d9ec8ad58ad40d5dcfe23a7d4c7",
+      "size": 1427078,
+      "side": "both",
+      "sources": [
+        "https://cdn.modrinth.com/data/NcUtCpym/versions/SnQ4SoDe/xaeroworldmap-neoforge-1.21.1-1.47.0.jar"
+      ],
+      "installedAt": "2026-11-13T15:43:15.238Z",
       "aliases": []
     }
   ]

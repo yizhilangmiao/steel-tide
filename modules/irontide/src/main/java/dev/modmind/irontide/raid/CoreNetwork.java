@@ -22,7 +22,7 @@ public final class CoreNetwork {
 
     /** 与 origin 同网络的 ACTIVE 核心；origin 自己一定在第一个。 */
     public static List<AndesiteCoreBlockEntity> members(AndesiteCoreBlockEntity origin, int radius) {
-        if (origin == null) {
+        if (origin == null || origin.isRemoved() || !isLive(origin)) {
             return List.of();
         }
         int effective = Math.max(1, radius);
@@ -31,6 +31,10 @@ public final class CoreNetwork {
         List<AndesiteCoreBlockEntity> others = new ArrayList<>();
         for (AndesiteCoreBlockEntity core : AndesiteCoreBlockEntity.loaded()) {
             if (core == origin) {
+                continue;
+            }
+            // 拆方块后登记表里可能残留 setRemoved 的旧实例：既不该承伤，也不该被选作接替者
+            if (core.isRemoved() || !isLive(core)) {
                 continue;
             }
             if (core.getLevel() != origin.getLevel()) {
@@ -49,6 +53,11 @@ public final class CoreNetwork {
         out.add(origin);
         out.addAll(others);
         return List.copyOf(out);
+    }
+
+    /** 登记表里的实例是否仍是世界里那个方块实体本身（拆过、换过就不是）。 */
+    private static boolean isLive(AndesiteCoreBlockEntity core) {
+        return core.getLevel() != null && core.getLevel().getBlockEntity(core.getBlockPos()) == core;
     }
 
     /** 离给定坐标最近的一座核心；表为空时返回 null。 */

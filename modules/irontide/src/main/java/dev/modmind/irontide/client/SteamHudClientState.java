@@ -11,10 +11,21 @@ public final class SteamHudClientState {
     /** 收到 active=false 后再留这么久才真正收起，避免开关抖动把血条闪一下。 */
     private static final long LINGER_MS = 4000L;
 
+    /** 受伤闪红持续时间（毫秒）。 */
+    private static final long FLASH_MS = 700L;
+
     private static int health;
     private static int maxHealth;
     private static int wave;
     private static int remaining;
+    private static int daysToWave = -1;
+    private static int subWave;
+    private static int spawned;
+    private static int target;
+    private static int nextSpawnTicks;
+    private static int nextSubWaveTicks;
+    private static int hitPulse = Integer.MIN_VALUE;
+    private static long flashUntil;
     private static boolean active;
     private static long activeUntil;
     private static long lastUpdate;
@@ -30,10 +41,24 @@ public final class SteamHudClientState {
         }
         displayHealth = Math.min(displayHealth, payload.health());
 
+        if (payload.hitPulse() != hitPulse) {
+            if (hitPulse != Integer.MIN_VALUE) {
+                // 只在脉搏序号真的前进时闪一次，重连收到旧值不会闪
+                flashUntil = System.currentTimeMillis() + FLASH_MS;
+            }
+            hitPulse = payload.hitPulse();
+        }
+
         health = payload.health();
         maxHealth = payload.maxHealth();
         wave = payload.wave();
         remaining = payload.remaining();
+        daysToWave = payload.daysToWave();
+        subWave = payload.subWave();
+        spawned = payload.spawned();
+        target = payload.target();
+        nextSpawnTicks = payload.nextSpawnTicks();
+        nextSubWaveTicks = payload.nextSubWaveTicks();
         lastUpdate = System.currentTimeMillis();
         if (payload.active()) {
             active = true;
@@ -45,6 +70,11 @@ public final class SteamHudClientState {
 
     public static boolean visible() {
         return active && maxHealth > 0 && System.currentTimeMillis() - lastUpdate < STALE_MS;
+    }
+
+    /** 最近还在收包（不要求正在打怪潮）：顶部倒计时用。 */
+    public static boolean fresh() {
+        return System.currentTimeMillis() - lastUpdate < STALE_MS;
     }
 
     public static int health() {
@@ -61,6 +91,47 @@ public final class SteamHudClientState {
 
     public static int remaining() {
         return remaining;
+    }
+
+    public static int daysToWave() {
+        return daysToWave;
+    }
+
+    public static int subWave() {
+        return subWave;
+    }
+
+    public static int spawned() {
+        return spawned;
+    }
+
+    public static int target() {
+        return target;
+    }
+
+    public static int nextSpawnTicks() {
+        return nextSpawnTicks;
+    }
+
+    public static int nextSubWaveTicks() {
+        return nextSubWaveTicks;
+    }
+
+    /** 受伤闪红强度 0..1，按 {@link #FLASH_MS} 线性衰减。 */
+    public static float flashRatio() {
+        long left = flashUntil - System.currentTimeMillis();
+        if (left <= 0L) {
+            return 0.0F;
+        }
+        return Math.min(1.0F, left / (float) FLASH_MS);
+    }
+
+    /** 小波进度 0..1（已生成/目标），目标未知时返回 0。 */
+    public static float waveProgress() {
+        if (target <= 0) {
+            return 0.0F;
+        }
+        return Math.max(0.0F, Math.min(1.0F, spawned / (float) target));
     }
 
     /** 非效能：只用来算血条比例，0..1。 */

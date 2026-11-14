@@ -2,10 +2,12 @@ package dev.modmind.irontide.event;
 
 import dev.modmind.irontide.ModMindEntry;
 import dev.modmind.irontide.block.AndesiteCoreBlockEntity;
+import dev.modmind.irontide.command.IronTideCommand;
 import dev.modmind.irontide.data.IronTideData;
 import dev.modmind.irontide.multiblock.StructureValidator;
 import dev.modmind.irontide.raid.RaidScheduler;
 import dev.modmind.irontide.raid.SafeZone;
+import dev.modmind.irontide.raid.ZoneFlattener;
 import dev.modmind.irontide.util.BlockNames;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
@@ -32,6 +36,8 @@ import java.util.List;
 
 public final class IronTideEvents {
     private static int tickCounter;
+    /** 空气墙钩子：每 2 tick 跑一次，不沿用 RaidScheduler 的 20 tick 主循环。 */
+    private static int wallCounter;
 
     private IronTideEvents() {
     }
@@ -46,6 +52,15 @@ public final class IronTideEvents {
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onChunkLoad);
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onMobSpawn);
         NeoForge.EVENT_BUS.addListener(IronTideEvents::onLivingDrops);
+        NeoForge.EVENT_BUS.addListener(IronTideEvents::onLivingDeath);
+        NeoForge.EVENT_BUS.addListener(IronTideCommand::register);
+    }
+
+    /** 记录玩家死亡点，供 {@code /irontide back} 使用（不依赖 FTB Essentials）。 */
+    private static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) {
+            IronTideCommand.rememberDeath(player);
+        }
     }
 
     /**
@@ -111,11 +126,18 @@ public final class IronTideEvents {
         AndesiteCoreBlockEntity.clearLoaded();
         RaidScheduler.reset();
         tickCounter = 0;
+        wallCounter = 0;
     }
 
     private static void onServerTick(ServerTickEvent.Post event) {
         if (IronTideData.isLoaded()) {
             RaidScheduler.tick(event.getServer());
+            if (++wallCounter >= 2) {
+                wallCounter = 0;
+                RaidScheduler.tickAirWall(event.getServer());
+            }
+            // 成型后的地形平整：每 tick 推进 64 列，不在跑时只做一次布尔判断
+            ZoneFlattener.tick();
         }
         if (++tickCounter < 100) {
             return;
@@ -163,6 +185,7 @@ public final class IronTideEvents {
         if (!IronTideData.isLoaded()) {
             return;
         }
+        AndesiteCoreBlockEntity.pruneLoaded();
         for (AndesiteCoreBlockEntity core : List.copyOf(AndesiteCoreBlockEntity.loaded())) {
             try {
                 core.validateNow();

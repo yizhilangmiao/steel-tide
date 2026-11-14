@@ -1,14 +1,33 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-11T16:17:22+08:00",
+  "generatedAt": "2026-11-12T23:07:43+08:00",
   "project": "钢铁潮汐",
   "engine": "neoforge 21.1.265",
   "minecraft": "1.21.1",
   "java": "java-runtime-delta",
   "modsDir": "E:\\ioncreating\\mod_l61phe\\.modmind\\minecraft\\mods",
-  "count": 48,
-  "totalMB": 222.7,
+  "count": 70,
+  "totalMB": 278.9,
   "mods": [
+    {
+      "file": "appleskin-neoforge-mc1.21-3.0.9.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "38b48dd6231341c9",
+      "mtime": "2026-11-11T23:26:03",
+      "modId": "appleskin",
+      "version": "3.0.9",
+      "nameVer": "3.0.9",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": {
+        "modId": "neoforge",
+        "range": "[21.0.0-beta,)",
+        "type": "required"
+      },
+      "error": null
+    },
     {
       "file": "architectury-13.0.11-neoforge.jar",
       "sizeMB": 0.56,
@@ -52,6 +71,32 @@
         "range": "[21.1.199,)",
         "type": "required"
       },
+      "error": null
+    },
+    {
+      "file": "BetterAdvancements-NeoForge-1.21.1-0.4.3.21.jar",
+      "sizeMB": 0.09,
+      "sha256_16": "60b548bef04a2f0e",
+      "mtime": "2026-11-11T23:35:55",
+      "modId": "betteradvancements",
+      "version": "0.4.3.21",
+      "nameVer": "0.4.3.21",
+      "side": "NONE",
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.0,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1, 1.22)",
+          "type": "required"
+        }
+      ],
       "error": null
     },
     {
@@ -130,6 +175,68 @@
         {
           "modId": "minecraft",
           "range": "[1.21.1]",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "Controlling-neoforge-1.21.1-19.0.5.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "cc525fb6b030d9e4",
+      "mtime": "2026-11-11T23:27:20",
+      "modId": "controlling",
+      "version": "19.0.5",
+      "nameVer": "19.0.5",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.94,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "searchables",
+          "range": "[1.0.1,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "create_mobile_packages-1.21.1-0.7.8.jar",
+      "sizeMB": 0.59,
+      "sha256_16": "74a03a7d8112fd9a",
+      "mtime": "2026-11-12T23:07:29",
+      "modId": "create_mobile_packages",
+      "version": "0.7.8",
+      "nameVer": "0.7.8",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": "create_factory_abstractions",
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.0,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1, 1.22)",
+          "type": "required"
+        },
+        {
+          "modId": "create",
+          "range": "[6.0.7,6.1.0)",
           "type": "required"
         }
       ],
@@ -230,6 +337,77 @@
           "modId": "minecraft",
           "range": "[1.21.1]",
           "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "createbigcannons-5.11.7+mc.1.21.1.jar",
+      "sizeMB": 3.6,
+      "sha256_16": "ea017ab94637032d",
+      "mtime": "2026-11-12T00:19:04",
+      "modId": "createbigcannons",
+      "version": "5.11.7",
+      "nameVer": "5.11.7",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "21.1.228",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "create",
+          "range": "[6.0.7,6.1.0)",
+          "type": "required"
+        },
+        {
+          "modId": "ritchiesprojectilelib",
+          "range": "[2.1.2,)",
+          "type": "required"
+        },
+        {
+          "modId": "copycats",
+          "range": "[3.0.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "framedblocks",
+          "range": "[10.0.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "curios",
+          "range": "[9.2.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "sable",
+          "range": "[2.0.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "simulated",
+          "range": "[1.3.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "aeronautics",
+          "range": "[1.3.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "offroad",
+          "range": "[1.3.0,)",
+          "type": "optional"
         }
       ],
       "error": null
@@ -363,6 +541,32 @@
         {
           "modId": "neoforge",
           "range": "[20.2,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "ExplorersCompass-1.21.1-3.4.0-neoforge.jar",
+      "sizeMB": 0.17,
+      "sha256_16": "71e7b47bd88c9c21",
+      "mtime": "2026-11-11T23:28:39",
+      "modId": "explorerscompass",
+      "version": "1.21.1-3.4.0-neoforge",
+      "nameVer": "3.4.0",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.0.0-beta,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21,1.21.1)",
           "type": "required"
         }
       ],
@@ -513,6 +717,128 @@
       "error": null
     },
     {
+      "file": "ftb-ultimine-neoforge-2101.1.15.jar",
+      "sizeMB": 0.17,
+      "sha256_16": "1393a85ceb6e4794",
+      "mtime": "2026-11-11T20:08:11",
+      "modId": "ftbultimine",
+      "version": "2101.1.15",
+      "nameVer": "2101.1.15",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.0,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,)",
+          "type": "required"
+        },
+        {
+          "modId": "architectury",
+          "range": "[13.0.6,)",
+          "type": "required"
+        },
+        {
+          "modId": "ftblibrary",
+          "range": "[2101.1.28,)",
+          "type": "required"
+        },
+        {
+          "modId": "ftbezcrystals",
+          "range": "[21.1.1,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "ftb-xmod-compat-neoforge-21.1.14.jar",
+      "sizeMB": 0.14,
+      "sha256_16": "143c79710af4e17d",
+      "mtime": "2026-11-11T23:02:58",
+      "modId": "ftbxmodcompat",
+      "version": "21.1.14",
+      "nameVer": "21.1.14",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.0,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,)",
+          "type": "required"
+        },
+        {
+          "modId": "architectury",
+          "range": "[13.0.8,)",
+          "type": "required"
+        },
+        {
+          "modId": "ftblibrary",
+          "range": "[2101.1.38,)",
+          "type": "required"
+        },
+        {
+          "modId": "ftbquests",
+          "range": "[2101.1.28,)",
+          "type": "optional"
+        },
+        {
+          "modId": "ftbchunks",
+          "range": "[2101.1.13,)",
+          "type": "optional"
+        },
+        {
+          "modId": "ftbranks",
+          "range": "[2101.1.2,)",
+          "type": "optional"
+        },
+        {
+          "modId": "ftbeconomy",
+          "range": "[21.1.1-SNAPSHOT,)",
+          "type": "optional"
+        },
+        {
+          "modId": "jei",
+          "range": "[19.53.0.425,)",
+          "type": "optional"
+        },
+        {
+          "modId": "kubejs",
+          "range": "[2100.7.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "luckperms",
+          "range": "[5.4.112,)",
+          "type": "optional"
+        },
+        {
+          "modId": "waystones",
+          "range": "[21.1.5,)",
+          "type": "optional"
+        },
+        {
+          "modId": "sg_economy",
+          "range": "[1.1.0,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
       "file": "gd656killicon-1.1.0.020-1.21.1-neoforge.jar",
       "sizeMB": 5.66,
       "sha256_16": "4dda31eb7ad0768a",
@@ -606,6 +932,21 @@
       "error": null
     },
     {
+      "file": "inventorysorter-1.21.1-24.0.24.jar",
+      "sizeMB": 0.05,
+      "sha256_16": "6fde143f12b608ae",
+      "mtime": "2026-11-11T23:35:55",
+      "modId": "inventorysorter",
+      "version": "24.0.24",
+      "nameVer": "24.0.24",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": null,
+      "error": null
+    },
+    {
       "file": "iris-neoforge-1.8.14-beta.1+mc1.21.1.jar",
       "sizeMB": 2.42,
       "sha256_16": "60d5f8bf52f25e99",
@@ -692,6 +1033,25 @@
       "error": null
     },
     {
+      "file": "JadeAddons-1.21.1-NeoForge-6.1.2.jar",
+      "sizeMB": 0.08,
+      "sha256_16": "1e7ce561f66c9044",
+      "mtime": "2026-11-11T23:27:22",
+      "modId": "jadeaddons",
+      "version": "6.1.2",
+      "nameVer": "6.1.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": {
+        "modId": "jade",
+        "range": "[15.10, )",
+        "type": "required"
+      },
+      "error": null
+    },
+    {
       "file": "jecharacters-1.21.1-neoforge-4.5.30.jar",
       "sizeMB": 0.24,
       "sha256_16": "1b8e41c97fe4bc3b",
@@ -740,6 +1100,21 @@
           "type": "required"
         }
       ],
+      "error": null
+    },
+    {
+      "file": "kotlinforforge-5.12.0-all.jar",
+      "sizeMB": 6.94,
+      "sha256_16": "2785a4dd6de5c6c5",
+      "mtime": "2026-11-11T19:40:14",
+      "modId": null,
+      "version": null,
+      "nameVer": "5.12.0",
+      "side": null,
+      "hasMeta": false,
+      "metaFile": null,
+      "nested": "kotlinforforge",
+      "deps": null,
       "error": null
     },
     {
@@ -898,9 +1273,9 @@
     },
     {
       "file": "modmind-local-irontide.jar",
-      "sizeMB": 0.14,
-      "sha256_16": "40c6a5f2f57e8613",
-      "mtime": "2026-11-11T15:29:36",
+      "sizeMB": 0.18,
+      "sha256_16": "897620cc2128eb4f",
+      "mtime": "2026-11-12T20:53:55",
       "modId": "irontide",
       "version": "0.1.0",
       "nameVer": null,
@@ -922,6 +1297,47 @@
         {
           "modId": "create",
           "range": "[6.0.0,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "MouseTweaks-neoforge-mc1.21-2.26.1.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "68e6f4201c5de97b",
+      "mtime": "2026-11-11T23:26:03",
+      "modId": "mousetweaks",
+      "version": "2.26.1",
+      "nameVer": "2.26.1",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": null,
+      "error": null
+    },
+    {
+      "file": "NaturesCompass-1.21.1-3.4.0-neoforge.jar",
+      "sizeMB": 0.21,
+      "sha256_16": "0e249ac11b2f916c",
+      "mtime": "2026-11-11T23:28:36",
+      "modId": "naturescompass",
+      "version": "1.21.1-3.4.0-neoforge",
+      "nameVer": "3.4.0",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.0.0-beta,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21,1.21.1)",
           "type": "required"
         }
       ],
@@ -1000,6 +1416,47 @@
           "modId": "curios",
           "range": "[5.14.1,)",
           "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "ParCool-CompatibilityAddon-1.21.1-3.4.3.3-1.2.1.jar",
+      "sizeMB": 0.05,
+      "sha256_16": "4cdc7a02d07d3e38",
+      "mtime": "2026-11-11T23:27:18",
+      "modId": null,
+      "version": null,
+      "nameVer": "1.2.1",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/mods.toml",
+      "nested": null,
+      "deps": null,
+      "error": null
+    },
+    {
+      "file": "Patchouli-1.21.1-93-NEOFORGE.jar",
+      "sizeMB": 0.62,
+      "sha256_16": "959af52ed6640c31",
+      "mtime": "2026-11-11T19:41:24",
+      "modId": "patchouli",
+      "version": null,
+      "nameVer": null,
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.0.31-beta,)",
+          "type": "REQUIRED"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.21.2)",
+          "type": "REQUIRED"
         }
       ],
       "error": null
@@ -1122,6 +1579,32 @@
       "error": null
     },
     {
+      "file": "ritchiesprojectilelib-2.1.2+mc.1.21.1-neoforge.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "cc509060833736fb",
+      "mtime": "2026-11-12T00:19:16",
+      "modId": "ritchiesprojectilelib",
+      "version": "2.1.2",
+      "nameVer": "2.1.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.206,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "1.21.1",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
       "file": "sable-neoforge-1.21.1-2.0.6.jar",
       "sizeMB": 12.38,
       "sha256_16": "9c199157843bf953",
@@ -1171,6 +1654,32 @@
           "modId": "scalablelux",
           "range": "",
           "type": "incompatible"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "Searchables-neoforge-1.21.1-1.0.2.jar",
+      "sizeMB": 0.07,
+      "sha256_16": "ca193f0c69033d8f",
+      "mtime": "2026-11-11T23:27:37",
+      "modId": "searchables",
+      "version": "1.0.2",
+      "nameVer": "1.0.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[4,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1]",
+          "type": "required"
         }
       ],
       "error": null
@@ -1295,6 +1804,104 @@
       "error": null
     },
     {
+      "file": "sophisticatedbackpacks-1.21.1-3.26.21.2249.jar",
+      "sizeMB": 1.21,
+      "sha256_16": "8abc4b23b1feec31",
+      "mtime": "2026-11-11T23:32:10",
+      "modId": "sophisticatedbackpacks",
+      "version": "3.26.21",
+      "nameVer": "3.26.21.2249",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "sophisticatedcore",
+          "range": "[1.5.32,)",
+          "type": "required"
+        },
+        {
+          "modId": "neoforge",
+          "range": "[21.1.229,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.21.2)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "sophisticatedcore-1.21.1-1.5.33.2470.jar",
+      "sizeMB": 1.76,
+      "sha256_16": "c67df4b2fc325de1",
+      "mtime": "2026-11-11T23:35:26",
+      "modId": "sophisticatedcore",
+      "version": "1.5.33",
+      "nameVer": "1.5.33.2470",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "jei",
+          "range": "[19.32.0.359,)",
+          "type": "optional"
+        },
+        {
+          "modId": "neoforge",
+          "range": "[21.1.229,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.21.2)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
+      "file": "sound-physics-remastered-neoforge-1.21.1-1.5.2.jar",
+      "sizeMB": 0.19,
+      "sha256_16": "108cac1fe49d0dc2",
+      "mtime": "2026-11-11T23:26:43",
+      "modId": "sound_physics_remastered",
+      "version": "1.21.1-1.5.2",
+      "nameVer": "1.5.2",
+      "side": "IGNORE_ALL_VERSION",
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.0.0-beta,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21,1.21.1]",
+          "type": "required"
+        },
+        {
+          "modId": "cloth_config",
+          "range": "[15.0.127,)",
+          "type": "optional"
+        },
+        {
+          "modId": "voicechat",
+          "range": "[1.21-2.4.11,)",
+          "type": "optional"
+        }
+      ],
+      "error": null
+    },
+    {
       "file": "Structory_26.2_v1.3.7.jar",
       "sizeMB": 1.2,
       "sha256_16": "e9079b2bb9bc2efb",
@@ -1311,6 +1918,74 @@
         "range": "[1.21,)",
         "type": "required"
       },
+      "error": null
+    },
+    {
+      "file": "superbwarfare-0.8.9.2-hotfix-mc1.21.1-e0c2b27f.jar",
+      "sizeMB": 39.71,
+      "sha256_16": "f1003f5e6b9d8a6c",
+      "mtime": "2026-11-11T19:40:13",
+      "modId": "superbwarfare",
+      "version": "0.8.9.2",
+      "nameVer": "0.8.9.2",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": [
+        "cloth_config",
+        "curios",
+        "flywheel",
+        "geckolib",
+        "ponder",
+        "simplebedrockmodel"
+      ],
+      "deps": [
+        {
+          "modId": "neoforge",
+          "range": "[21.1.203,)",
+          "type": "required"
+        },
+        {
+          "modId": "minecraft",
+          "range": "[1.21.1,1.22)",
+          "type": "required"
+        },
+        {
+          "modId": "simplebedrockmodel",
+          "range": "[2.5.1.1,)",
+          "type": "required"
+        },
+        {
+          "modId": "geckolib",
+          "range": "[4.7.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "curios",
+          "range": "[9.0.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "cloth_config",
+          "range": "[15.0.0,)",
+          "type": "optional"
+        },
+        {
+          "modId": "optifine",
+          "range": "",
+          "type": "discouraged"
+        },
+        {
+          "modId": "geckoanimfix",
+          "range": "",
+          "type": "incompatible"
+        },
+        {
+          "modId": "realcamera",
+          "range": "[0.7.0-beta,)",
+          "type": "optional"
+        }
+      ],
       "error": null
     },
     {
@@ -1428,6 +2103,37 @@
       "error": null
     },
     {
+      "file": "TravelersTitles-1.21.1-NeoForge-5.1.3.jar",
+      "sizeMB": 0.22,
+      "sha256_16": "f7d6811b58a432e4",
+      "mtime": "2026-11-11T23:28:30",
+      "modId": "travelerstitles",
+      "version": "1.21.1-NeoForge-5.1.3",
+      "nameVer": "5.1.3",
+      "side": null,
+      "hasMeta": true,
+      "metaFile": "META-INF/neoforge.mods.toml",
+      "nested": null,
+      "deps": [
+        {
+          "modId": "minecraft",
+          "range": "[1.21, 1.22)",
+          "type": "required"
+        },
+        {
+          "modId": "neoforge",
+          "range": "[21.0.0,)",
+          "type": "required"
+        },
+        {
+          "modId": "yungsapi",
+          "range": "[1.21.1-NeoForge-5.1.2,)",
+          "type": "required"
+        }
+      ],
+      "error": null
+    },
+    {
       "file": "YungsApi-1.21.1-NeoForge-5.1.9.jar",
       "sizeMB": 0.39,
       "sha256_16": "375e0b2f988ab4f5",
@@ -1485,5 +2191,14 @@
       "error": null
     }
   ],
-  "issues": []
+  "issues": [
+    {
+      "level": "info",
+      "kind": "no-meta",
+      "what": "kotlinforforge-5.12.0-all.jar 无 neoforge.mods.toml / mods.toml（资源包或库）",
+      "files": [
+        "kotlinforforge-5.12.0-all.jar"
+      ]
+    }
+  ]
 }
